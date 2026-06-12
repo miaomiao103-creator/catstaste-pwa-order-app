@@ -7,7 +7,7 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 - `index.html` — single-page PWA order app
 - `manifest.webmanifest` — PWA manifest
 - `service-worker.js` — offline cache
-- `google_apps_script.gs` — Google Sheets sync endpoint
+- `google_apps_script.gs` — Google Sheets sync endpoint (v3 form POST compatible) (v3 form POST compatible)
 - `icon-192.svg` / `icon-512.svg` — app icons
 
 ## Business rules included
@@ -22,6 +22,9 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 - Payment statuses: Paid, Unpaid, Deposit paid, Pending confirmation
 - Product filters: Category + 包裝類型（包裝 / 罐裝 / 小食 / 福袋 / 玩具）
 - Device prefixes: CT-A, CT-B, CT-C
+- v3: Save Order no longer auto-syncs; staff presses Sync manually
+- v3: Synced status changed to sent/check-sheet to avoid false confirmation
+- v3: Mark Pending button added for resending orders
 
 ## Important event workflow
 
@@ -53,8 +56,7 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 
 ## CORS note
 
-The PWA sends sync requests using `mode:"no-cors"` for Google Apps Script compatibility. 
-This means the browser cannot fully read the server response. The app marks a sync request as sent after the request finishes, but you should spot-check the Google Sheet and keep CSV/JSON backups.
+v3 uses a hidden HTML form POST for Google Apps Script compatibility. The browser still cannot fully confirm the Sheet write, so the app shows `sent - check sheet` and you should spot-check the Google Sheet and keep CSV/JSON backups.
 
 ## Product catalog
 
