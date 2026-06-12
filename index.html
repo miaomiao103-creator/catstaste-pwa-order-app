@@ -330,7 +330,7 @@
           <input id="syncUrl" placeholder="貼上 /exec URL；未有可留空，之後 Export CSV" />
         </div>
         <div>
-          <label for="defaultShippingFee">Under $800 prepaid shipping fee</label>
+          <label for="defaultShippingFee">Under HK$800 prepaid shipping fee</label>
           <input id="defaultShippingFee" type="number" inputmode="decimal" min="0" step="1" value="0" />
         </div>
       </div>
@@ -345,7 +345,7 @@
 
     <div class="card">
       <h2>🛒 Products <span id="productCount" class="small"></span></h2>
-      <div class="grid two">
+      <div class="grid three">
         <div>
           <label for="searchInput">Search SKU / Name / Category</label>
           <input id="searchInput" placeholder="例如 TSH / 吞拿魚 / 主食罐" autocomplete="off" />
@@ -354,8 +354,12 @@
           <label for="categoryFilter">Category</label>
           <select id="categoryFilter"></select>
         </div>
+        <div>
+          <label for="packagingFilter">包裝類型</label>
+          <select id="packagingFilter"></select>
+        </div>
       </div>
-      <p class="small">原箱價會當作獨立 price mode；根據產品 remarks，原箱價不參與九折優惠。</p>
+      <p class="small">全單滿 HK$120 後，所有可享九折嘅單件貨品會自動套用 9 折；原箱價不參與九折優惠。</p>
       <div id="productList" class="product-list"></div>
     </div>
   </section>
@@ -425,8 +429,8 @@
         <div>
           <label for="shippingMethod">送貨方式</label>
           <select id="shippingMethod">
-            <option value="SF">順豐（滿$800 Free Shipping）</option>
-            <option value="JD">京東（滿$800 Free Shipping）</option>
+            <option value="SF">順豐（滿 HK$800 Free Shipping）</option>
+            <option value="JD">京東（滿 HK$800 Free Shipping）</option>
             <option value="SF_COD">順豐到付</option>
             <option value="JD_COD">京東到付</option>
           </select>
@@ -1165,7 +1169,7 @@ let cart = [];
 let lastSavedOrder = null;
 
 const $ = (id) => document.getElementById(id);
-const money = (n) => '$' + (Number(n || 0)).toFixed(2).replace(/\.00$/, '');
+const money = (n) => 'HK$' + (Number(n || 0)).toFixed(2).replace(/\.00$/, '');
 const todayKey = () => new Date().toISOString().slice(0,10).replaceAll('-', '');
 const nowISO = () => new Date().toISOString();
 const escapeCsv = (v) => {
@@ -1277,12 +1281,29 @@ function setupSettingsUI() {
   });
 }
 
+function productPackagingType(product) {
+  const spec = String(product.spec || '').trim();
+  if (spec.includes('罐')) return '罐裝';
+  if (spec.includes('包裝')) return '包裝';
+  if (spec.includes('福袋')) return '福袋';
+  if (spec.toLowerCase() === 'toy') return '玩具';
+  if (String(product.texture || '').includes('肉棒') || String(product.category || '').includes('Snack')) return '小食 / 肉棒';
+  return spec || '其他';
+}
+
 function initProductFilters() {
   const categories = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))].sort();
+  const packagingTypes = [...new Set(PRODUCTS.map(productPackagingType).filter(Boolean))].sort((a,b) => {
+    const order = ['包裝', '罐裝', '小食 / 肉棒', '福袋', '玩具', '其他'];
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b, 'zh-Hant');
+  });
   $('categoryFilter').innerHTML = '<option value="">All categories</option>' + categories.map(c => `<option value="${htmlEscape(c)}">${htmlEscape(c)}</option>`).join('');
+  $('packagingFilter').innerHTML = '<option value="">All packaging types</option>' + packagingTypes.map(t => `<option value="${htmlEscape(t)}">${htmlEscape(t)}</option>`).join('');
   $('productCount').textContent = `${PRODUCTS.length} SKUs`;
   $('searchInput').addEventListener('input', renderProducts);
   $('categoryFilter').addEventListener('change', renderProducts);
+  $('packagingFilter').addEventListener('change', renderProducts);
   renderProducts();
 }
 
@@ -1293,13 +1314,16 @@ function htmlEscape(s) {
 function renderProducts() {
   const q = $('searchInput').value.trim().toLowerCase();
   const cat = $('categoryFilter').value;
+  const packaging = $('packagingFilter').value;
   const filtered = PRODUCTS.filter(p => {
-    const text = `${p.sku} ${p.category} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
-    return (!cat || p.category === cat) && (!q || text.includes(q));
+    const packagingType = productPackagingType(p);
+    const text = `${p.sku} ${p.category} ${packagingType} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
+    return (!cat || p.category === cat) && (!packaging || packagingType === packaging) && (!q || text.includes(q));
   }).slice(0, 80);
 
   $('productList').innerHTML = filtered.map(p => {
     const hasBox = p.boxPrice !== null && p.boxPrice !== undefined && p.boxPrice !== '';
+    const packagingType = productPackagingType(p);
     return `
       <div class="product">
         <div>
@@ -1307,9 +1331,10 @@ function renderProducts() {
           <div class="product-meta">
             <span class="tag">SKU: ${htmlEscape(p.sku)}</span>
             <span class="tag">${htmlEscape(p.category)}</span>
+            <span class="tag">${htmlEscape(packagingType)}</span>
             <span class="tag">${htmlEscape(p.spec)} / ${htmlEscape(p.texture)}</span>
-            <span class="tag">單價 ${p.unitPrice}</span>
-            ${hasBox ? `<span class="tag">原箱價 ${p.boxPrice}</span>` : ''}
+            <span class="tag">單價 ${money(p.unitPrice)}</span>
+            ${hasBox ? `<span class="tag">原箱價 ${money(p.boxPrice)}</span>` : ''}
           </div>
           ${p.remarks ? `<div class="small">${htmlEscape(p.remarks)}</div>` : ''}
         </div>
@@ -1321,8 +1346,8 @@ function renderProducts() {
           <div>
             <label>Price Mode</label>
             <select id="mode-${cssId(p.sku)}">
-              <option value="unit">單件 ${p.unitPrice}</option>
-              ${hasBox ? `<option value="box">原箱 ${p.boxPrice}</option>` : ''}
+              <option value="unit">單件 ${money(p.unitPrice)}</option>
+              ${hasBox ? `<option value="box">原箱 ${money(p.boxPrice)}</option>` : ''}
             </select>
           </div>
           <button type="button" onclick="addProduct('${jsString(p.sku)}')">Add</button>
@@ -1354,6 +1379,7 @@ window.addProduct = function(sku) {
     name: p.name,
     spec: p.spec,
     texture: p.texture,
+    packagingType: productPackagingType(p),
     priceMode: mode,
     qty,
     unitPrice: price,
@@ -1375,7 +1401,8 @@ function calculateTotals() {
   const eligibleSubtotal = cart.filter(x => x.discountEligible).reduce((s,x) => s + x.qty*x.unitPrice, 0);
   const nonEligibleSubtotal = cart.filter(x => !x.discountEligible).reduce((s,x) => s + x.qty*x.unitPrice, 0);
   const subtotal = eligibleSubtotal + nonEligibleSubtotal;
-  const discountAmount = eligibleSubtotal >= PROMOS.discountThreshold ? round2(eligibleSubtotal * PROMOS.discountRate) : 0;
+  const discountTriggered = subtotal >= PROMOS.discountThreshold;
+  const discountAmount = discountTriggered ? round2(eligibleSubtotal * PROMOS.discountRate) : 0;
   const discountedSubtotal = round2(subtotal - discountAmount);
   const giftEligible = discountedSubtotal >= PROMOS.giftThreshold;
   const shippingMethod = $('shippingMethod') ? $('shippingMethod').value : 'SF';
@@ -1385,7 +1412,7 @@ function calculateTotals() {
   const shippingFee = isCod ? 0 : (freeShipping ? 0 : Number(settings.defaultShippingFee || 0));
   const total = round2(discountedSubtotal + shippingFee);
   return {
-    eligibleSubtotal, nonEligibleSubtotal, subtotal, discountAmount, discountedSubtotal,
+    eligibleSubtotal, nonEligibleSubtotal, subtotal, discountTriggered, discountAmount, discountedSubtotal,
     giftEligible, shippingMethod, isCod, freeShipping, shippingFee, total
   };
 }
@@ -1400,7 +1427,7 @@ function renderCart() {
   $('cartWrap').classList.toggle('hidden', !has);
   $('cartBody').innerHTML = cart.map(x => `
     <tr>
-      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? '原箱價 / 不參與九折' : '單件價 / 可參與九折'}</span></td>
+      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? '原箱價 / 不參與九折' : '單件價 / 滿 HK$120 後可享九折'}</span></td>
       <td class="num">${x.qty}</td>
       <td class="num">${money(x.unitPrice)}</td>
       <td class="num">${money(x.qty*x.unitPrice)}</td>
@@ -1414,15 +1441,21 @@ function renderSummary() {
   const t = calculateTotals();
   $('summary').innerHTML = `
     <div class="summary-row"><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
-    <div class="summary-row"><span>九折 discount（只計 eligible 單件貨）</span><span>-${money(t.discountAmount)}</span></div>
+    <div class="summary-row"><span>九折 discount（全單滿 HK$120，eligible 貨品九折）</span><span>-${money(t.discountAmount)}</span></div>
     <div class="summary-row"><span>After discount</span><span>${money(t.discountedSubtotal)}</span></div>
     <div class="summary-row"><span>Shipping</span><span>${t.isCod ? '到付，不計入總額' : (t.freeShipping ? 'Free' : money(t.shippingFee))}</span></div>
     <div class="summary-row"><span><strong>Total</strong></span><span><strong>${money(t.total)}</strong></span></div>
   `;
   let notes = [];
-  notes.push(t.discountAmount > 0 ? '✅ 已達滿 $120 9折。' : `未達滿 $120 9折，eligible items 尚差 ${money(Math.max(0, PROMOS.discountThreshold - t.eligibleSubtotal))}。`);
-  notes.push(t.giftEligible ? '🎁 已達滿 $150 送玩具。' : `未達滿 $150 送玩具，尚差 ${money(Math.max(0, PROMOS.giftThreshold - t.discountedSubtotal))}。`);
-  notes.push(t.freeShipping ? '🚚 已達滿 $800 Free Shipping。' : (t.isCod ? '🚚 到付單：運費由客人收貨時支付。' : `未達滿 $800 Free Shipping，尚差 ${money(Math.max(0, PROMOS.freeShippingThreshold - t.discountedSubtotal))}。`));
+  if (t.discountTriggered && t.eligibleSubtotal > 0) {
+    notes.push('✅ 全單已滿 HK$120，所有 eligible 單件貨品已套用 9 折。');
+  } else if (t.discountTriggered) {
+    notes.push('ℹ️ 全單已滿 HK$120，但目前只有原箱價 / 不參與九折貨品。');
+  } else {
+    notes.push(`未達滿 HK$120 9折，全單尚差 ${money(Math.max(0, PROMOS.discountThreshold - t.subtotal))}。`);
+  }
+  notes.push(t.giftEligible ? '🎁 已達滿 HK$150 送玩具。' : `未達滿 HK$150 送玩具，尚差 ${money(Math.max(0, PROMOS.giftThreshold - t.discountedSubtotal))}。`);
+  notes.push(t.freeShipping ? '🚚 已達滿 HK$800 Free Shipping。' : (t.isCod ? '🚚 到付單：運費由客人收貨時支付。' : `未達滿 HK$800 Free Shipping，尚差 ${money(Math.max(0, PROMOS.freeShippingThreshold - t.discountedSubtotal))}。`));
   $('promoNotice').innerHTML = notes.join('<br>');
 }
 
@@ -1458,7 +1491,7 @@ function shippingLabel(v) {
 
 function buildWhatsAppText(order) {
   const lines = order.items.map((x, i) => `${i+1}. [${x.sku}] ${x.name.replace(/\n/g, ' ')} x ${x.qty} @ ${money(x.unitPrice)} = ${money(x.qty*x.unitPrice)}${x.priceMode === 'box' ? '（原箱）' : ''}`);
-  const giftText = order.giftEligible ? '\n🎁 已達滿 $150 送玩具' : '';
+  const giftText = order.giftEligible ? '\n🎁 已達滿 HK$150 送玩具' : '';
   const shipText = order.isCod ? `${shippingLabel(order.shippingMethod)}（運費到付）` : `${shippingLabel(order.shippingMethod)}${order.freeShipping ? '（Free Shipping）' : ''}`;
   return `Hi ${order.customerName}，以下係你嘅 2026 HK寵物展預訂單：
 
@@ -1500,7 +1533,7 @@ async function saveCurrentOrder() {
     paymentStatus: $('paymentStatus').value,
     shippingMethod: totals.shippingMethod,
     items: cart.map(x => ({
-      sku: x.sku, category: x.category, name: x.name, spec: x.spec, texture: x.texture,
+      sku: x.sku, category: x.category, packagingType: x.packagingType, name: x.name, spec: x.spec, texture: x.texture,
       priceMode: x.priceMode, qty: x.qty, unitPrice: x.unitPrice, lineSubtotal: round2(x.qty*x.unitPrice),
       discountEligible: x.discountEligible
     })),

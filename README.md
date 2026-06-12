@@ -13,13 +13,14 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 ## Business rules included
 
 - Shipping only
-- $120+ → 10% off eligible unit-price items
+- HK$120+ full order subtotal → 10% off eligible unit-price items
 - Original box price items are treated as not eligible for the 10% discount
-- $150+ → toy gift flag
-- $800+ → free shipping for 順豐 / 京東 prepaid shipping
+- HK$150+ → toy gift flag
+- HK$800+ → free shipping for 順豐 / 京東 prepaid shipping
 - 順豐到付 / 京東到付 → shipping fee not included in order total
 - Payment methods: Cash, FPS, PayMe, Alipay, WeChat Pay, Deposit
 - Payment statuses: Paid, Unpaid, Deposit paid, Pending confirmation
+- Product filters: Category + 包裝類型（包裝 / 罐裝 / 小食 / 福袋 / 玩具）
 - Device prefixes: CT-A, CT-B, CT-C
 
 ## Important event workflow
