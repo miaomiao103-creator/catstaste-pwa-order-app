@@ -1,72 +1,71 @@
-# CatsTaste Offline-first PWA Order App
+# CatsTaste Offline-first PWA Order App — v6 Admin Catalog
 
-This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order flow.
+This version adds a hidden Admin product manager and Google Sheet Catalog source while keeping the front desk app offline-first.
 
 ## Included files
 
-- `index.html` — single-page PWA order app
+- `index.html` — single-page PWA order app + hidden Admin panel
 - `manifest.webmanifest` — PWA manifest
-- `service-worker.js` — offline cache
-- `google_apps_script.gs` — Google Sheets sync endpoint
-- `brand-logo.png` — CatsTaste logo used in the app header
-- `apple-touch-icon.png` / `icon-192.png` / `icon-512.png` — app icons generated from the CatsTaste company logo
+- `service-worker.js` — offline cache, version v6
+- `google_apps_script.gs` — Orders sync + Catalog API/Admin endpoint
+- optional logo/icon files may stay in GitHub repo: `brand-logo.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`
 
-## Business rules included
+## Google Apps Script URL
 
-- Shipping only
-- HK$120+ full order subtotal → 10% off unit-price items
-- Original box price items are not included in the 10% discount
-- HK$150+ → toy gift flag
-- HK$800+ → free shipping for 順豐 / 京東 prepaid shipping
-- 順豐到付 / 京東到付 → shipping fee not included in order total
-- Payment methods: Cash, FPS, PayMe, Alipay, WeChat Pay, Deposit
-- Payment statuses: Paid, Unpaid, Deposit paid, Pending confirmation
-- Product filters: Category + 包裝類型（包裝 / 罐裝 / 小食 / 福袋 / 玩具）
-- Device prefixes: CT-A, CT-B, CT-C
+The PWA is configured to use:
 
-## Important event workflow
+```text
+https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec
+```
 
-1. Host the folder on HTTPS before the event. Good free options:
-   - GitHub Pages
-   - Cloudflare Pages
-   - Netlify
-2. Open the app once on each iPhone/iPad while online.
-3. Add it to the Home Screen.
-4. Set a different Device Prefix per device:
-   - Device 1: CT-A
-   - Device 2: CT-B
-   - Device 3: CT-C
-5. Test with Airplane Mode.
-6. During the event, orders are saved locally first.
-7. Use Send Unsynced Orders when network is available.
-8. Orders sent through Google Apps Script are marked `sent_unverified` because browser `no-cors` responses cannot be read.
-9. Spot-check the Google Sheet, then tap Mark Verified in the PWA.
-10. Export CSV/JSON backup at least every half day and after the event.
+The front desk cannot edit this URL in Settings.
 
-## Google Sheets sync setup
+## Catalog management
 
-1. Create a Google Sheet.
-2. Open Extensions → Apps Script.
-3. Paste `google_apps_script.gs`.
-4. Deploy → New deployment → Web app.
-5. Execute as: Me.
-6. Who has access: Anyone with the link.
-7. Copy the `/exec` URL.
-8. Paste it in the PWA settings field.
+Hidden Admin entry:
 
-## CORS note
+- Tap the header logo 5 times, or
+- Open the app URL with `#admin`
 
-The PWA sends sync requests using `mode:"no-cors"` for Google Apps Script compatibility.
-This means the browser cannot read the server response. The app no longer marks these requests as fully synced. It uses:
+Admin PIN is verified by Google Apps Script server-side. It is **not** hard-coded in the front-end.
 
-- `pending` / `failed` — needs sending
-- `sent_unverified` — request was sent, but Sheet must be checked
-- `verified` — staff confirmed the order exists in Google Sheet
+Set PIN in Apps Script:
 
-Order numbers use Hong Kong date (`Asia/Hong_Kong`) so late-night event orders do not roll back to the previous UTC date.
+1. Apps Script → Project Settings
+2. Script properties → Add property
+3. Name: `ADMIN_PIN`
+4. Value: your PIN
 
-## Product catalog
+## Google Sheet tabs
 
-Loaded from `CatsTaste_productlist(1).xlsx`, sheet `Catalog`, range `A1:H63`.
+### Orders
 
-Detected product count: 62 SKUs.
+Used for order sync, same as previous versions.
+
+### Catalog
+
+Created automatically by `google_apps_script.gs` on first use. Fixed columns:
+
+```text
+active, id, sku, category, name, spec, texture, unitPrice, boxPrice, remarks, updatedAt
+```
+
+Products are not hard-deleted. Admin should set `active=false` to disable an item while preserving old SKU history.
+
+## Front desk behavior
+
+- The app loads catalog from local cache first.
+- If no cache exists, it uses the built-in fallback catalog.
+- Prices/SKUs do **not** auto-update.
+- Staff must press **更新商品資料** to manually pull the latest Catalog from Google Sheet.
+- Orders remain offline-first: saved to local IndexedDB first, then manually sent to Google Sheet.
+- Sent orders are marked `sent_unverified`; staff should spot-check Sheet and then tap Mark Verified.
+
+## Test plan
+
+1. Offline: open app, search products, add to cart, calculate HK$120 discount, save order.
+2. Online: press 更新商品資料; Catalog products should load from Google Sheet.
+3. Admin: login with PIN, edit a product price, save, reload catalog, verify price changed.
+4. Admin: deactivate a product; front desk update catalog and product should disappear from search.
+5. Wrong PIN: cannot save/toggle products.
+6. iPhone/iPad: admin modal should be usable without horizontal overflow.

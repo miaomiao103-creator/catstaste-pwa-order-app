@@ -523,13 +523,79 @@
       .product-list { padding-bottom: 80px; }
       .hero-copy { font-size: 13px; }
     }
+
+    .admin-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(16, 24, 40, .56);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 14px;
+      overflow: auto;
+    }
+    .admin-panel {
+      width: min(1100px, 100%);
+      margin: auto;
+      background: #fff;
+      border: 1px solid #d9e4f6;
+      border-radius: var(--radius);
+      box-shadow: 0 24px 80px rgba(16,24,40,.32);
+      padding: 14px;
+      max-height: calc(100vh - 28px);
+      overflow: auto;
+    }
+    .admin-head {
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      align-items:center;
+      position: sticky;
+      top: -14px;
+      background: #fff;
+      z-index: 2;
+      padding: 4px 0 10px;
+      border-bottom: 1px solid #d9e4f6;
+    }
+    .admin-grid {
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (min-width: 920px) {
+      .admin-grid { grid-template-columns: minmax(280px, .72fr) minmax(420px, 1fr); }
+    }
+    .admin-products {
+      display:grid;
+      gap: 7px;
+      max-height: 500px;
+      overflow:auto;
+      padding-right: 2px;
+    }
+    .admin-product-row {
+      border: 1px solid #d9e4f6;
+      border-radius: var(--radius);
+      padding: 9px;
+      background: #fff;
+      display:grid;
+      gap: 5px;
+    }
+    .admin-product-row.inactive { opacity: .55; background:#f7f9fd; }
+    .admin-product-row strong { color: var(--ink); }
+    .admin-form-grid { display:grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 620px) { .admin-form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .admin-login { border: 1px solid #d9e4f6; background:#f7faff; padding: 10px; border-radius: var(--radius); margin-top: 10px; }
+    .logo { cursor: pointer; }
+
   </style>
 </head>
 <body>
 <header>
   <div class="topbar">
     <div class="brand">
-      <div class="logo"><img src="./brand-logo.png" alt="CatsTaste" /></div>
+      <div class="logo" id="brandLogo" title="Admin"><img src="./brand-logo.png" alt="CatsTaste" /></div>
       <div>
         <h1>CatsTaste Order Desk</h1>
         <div class="subtitle">2026 HK 寵物展預訂 · 本機先存 · 同步需核對</div>
@@ -580,7 +646,7 @@
         <div class="grid two" style="margin-top:10px">
           <div>
             <label for="syncUrl">Google Apps Script Web App URL</label>
-            <input id="syncUrl" placeholder="貼上 /exec URL；未有可留空，之後 Export CSV" />
+            <input id="syncUrl" readonly value="https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec" title="Only admin/code owner can change this endpoint" />
           </div>
           <div>
             <label for="defaultShippingFee">Under HK$800 prepaid shipping fee</label>
@@ -589,11 +655,12 @@
         </div>
         <div class="btns" style="margin-top:10px">
           <button class="secondary" id="saveSettingsBtn">Save Settings</button>
+          <button class="secondary" id="refreshCatalogBtn">更新商品資料</button>
           <button class="secondary" id="syncAllBtn">送出未同步</button>
           <button class="secondary" id="exportCsvBtn">Export CSV</button>
           <button class="secondary" id="exportJsonBtn">Export JSON Backup</button>
         </div>
-        <p class="small">提示：每部 iPhone/iPad 請用不同 prefix：CT-A、CT-B、CT-C，避免 Order No. 撞號。Google Apps Script no-cors 送出後會標示為「已送出未核實」，請對照 Google Sheet 或 CSV。</p>
+        <p class="small">提示：每部 iPhone/iPad 請用不同 prefix：CT-A、CT-B、CT-C，避免 Order No. 撞號。Google Apps Script URL 已固定，只有 Admin / code owner 可改。商品資料不會自動更新；請有網時手動按「更新商品資料」。</p>
       </div>
     </details>
 
@@ -743,6 +810,69 @@
   </section>
 </main>
 
+
+<div id="adminModal" class="admin-modal hidden" role="dialog" aria-modal="true" aria-label="Admin product manager">
+  <div class="admin-panel">
+    <div class="admin-head">
+      <div>
+        <h2 style="margin:0;color:var(--ink)">Admin · Product Catalog</h2>
+        <div class="small">PIN 由 Google Apps Script server-side 驗證；商品資料儲存到 Google Sheet Catalog。</div>
+      </div>
+      <button class="secondary" id="adminCloseBtn" type="button">Close</button>
+    </div>
+
+    <div id="adminLoginBox" class="admin-login">
+      <div class="grid two">
+        <div>
+          <label for="adminPinInput">Admin PIN</label>
+          <input id="adminPinInput" type="password" inputmode="numeric" placeholder="Enter PIN" autocomplete="off" />
+        </div>
+        <div style="display:flex;align-items:end;gap:8px">
+          <button id="adminLoginBtn" type="button">Login</button>
+          <button class="secondary" id="adminRefreshCatalogBtn" type="button">只更新商品資料</button>
+        </div>
+      </div>
+      <div id="adminLoginMsg" class="small" style="margin-top:8px">提示：可連續點擊 logo 5 次，或網址加 <code>#admin</code> 開啟。</div>
+    </div>
+
+    <div id="adminBody" class="hidden">
+      <div class="notice">商品更新後會寫入 Google Sheet 的 Catalog sheet。前台不會自動改價；請回前台按「更新商品資料」才會拉新 catalog。</div>
+      <div class="admin-grid">
+        <div>
+          <div class="btns" style="margin:10px 0">
+            <button class="secondary" id="adminReloadBtn" type="button">Reload Catalog</button>
+            <button class="secondary" id="adminNewBtn" type="button">New Product</button>
+          </div>
+          <label for="adminSearch">Search Admin Products</label>
+          <input id="adminSearch" placeholder="SKU / name / category" />
+          <div id="adminProductList" class="admin-products" style="margin-top:10px"></div>
+        </div>
+        <div>
+          <h3 style="margin:0 0 10px;color:var(--ink)">Product Form</h3>
+          <div class="admin-form-grid two">
+            <div><label for="adminSku">SKU *</label><input id="adminSku" /></div>
+            <div><label for="adminId">ID *</label><input id="adminId" /></div>
+            <div><label for="adminCategory">系列 / Category *</label><input id="adminCategory" /></div>
+            <div><label for="adminSpec">規格 / Spec</label><input id="adminSpec" placeholder="包裝 / 罐裝 / 福袋 / Toy" /></div>
+            <div><label for="adminTexture">質地 / Texture</label><input id="adminTexture" placeholder="啫喱 / 肉汁 / 肉絲" /></div>
+            <div><label for="adminUnitPrice">單件價 HK$ *</label><input id="adminUnitPrice" type="number" min="0" step="0.01" /></div>
+            <div><label for="adminBoxPrice">原箱價 HK$</label><input id="adminBoxPrice" type="number" min="0" step="0.01" /></div>
+            <div style="display:flex;align-items:end;gap:8px"><label style="margin:0"><input id="adminActive" type="checkbox" style="width:auto;min-height:auto" checked /> Active / 啟用</label></div>
+          </div>
+          <div style="margin-top:10px"><label for="adminName">產品名 *</label><textarea id="adminName"></textarea></div>
+          <div style="margin-top:10px"><label for="adminRemarks">備註</label><textarea id="adminRemarks"></textarea></div>
+          <div class="btns" style="margin-top:12px">
+            <button id="adminSaveProductBtn" type="button">Save Product</button>
+            <button class="secondary" id="adminClearFormBtn" type="button">Clear Form</button>
+            <button class="danger" id="adminToggleActiveBtn" type="button">Toggle Active</button>
+          </div>
+          <div id="adminMsg" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="mobile-cart-bar hidden">
   <div>
     <span id="mobileCartText">購物車 0 件</span>
@@ -752,7 +882,7 @@
 </div>
 
 <script>
-const PRODUCTS = [
+const FALLBACK_PRODUCTS = [
   {
     "id": "TSH",
     "sku": "TSH",
@@ -762,7 +892,9 @@ const PRODUCTS = [
     "texture": "肉棒",
     "unitPrice": 9.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "TSK",
@@ -773,7 +905,9 @@ const PRODUCTS = [
     "texture": "肉棒",
     "unitPrice": 9.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "TS",
@@ -784,7 +918,9 @@ const PRODUCTS = [
     "texture": "肉棒",
     "unitPrice": 9.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T01",
@@ -795,7 +931,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T02",
@@ -806,7 +944,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T03",
@@ -817,7 +957,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T04",
@@ -828,7 +970,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T05",
@@ -839,7 +983,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T06",
@@ -850,7 +996,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "T07",
@@ -861,7 +1009,9 @@ const PRODUCTS = [
     "texture": "Toy",
     "unitPrice": 8.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PPU",
@@ -872,7 +1022,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PCR",
@@ -883,7 +1035,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PQC",
@@ -894,7 +1048,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PPA",
@@ -905,7 +1061,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PCA",
@@ -916,7 +1074,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PM",
@@ -927,7 +1087,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PSPIN",
@@ -938,7 +1100,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PT",
@@ -949,7 +1113,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PCS",
@@ -960,7 +1126,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PA",
@@ -971,7 +1139,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "KMT",
@@ -982,7 +1152,9 @@ const PRODUCTS = [
     "texture": "慕絲",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "KMC",
@@ -993,7 +1165,9 @@ const PRODUCTS = [
     "texture": "慕絲",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PSSA",
@@ -1004,7 +1178,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PST",
@@ -1015,7 +1191,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PSK",
@@ -1026,7 +1204,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJCS",
@@ -1037,7 +1217,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJK",
@@ -1048,7 +1230,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PGS",
@@ -1059,7 +1243,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PGCS",
@@ -1070,7 +1256,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PGK",
@@ -1081,7 +1269,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJSA",
@@ -1092,7 +1282,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJ",
@@ -1103,7 +1295,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJSH",
@@ -1114,7 +1308,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJS",
@@ -1125,7 +1321,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PJC",
@@ -1136,7 +1334,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PGSA",
@@ -1147,7 +1347,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PG",
@@ -1158,7 +1360,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PGSH",
@@ -1169,7 +1373,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "PGC",
@@ -1180,7 +1386,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 8.0,
     "boxPrice": 280.0,
-    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CCA",
@@ -1191,7 +1399,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CSPIN",
@@ -1202,7 +1412,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CQC",
@@ -1213,7 +1425,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CAAT",
@@ -1224,7 +1438,9 @@ const PRODUCTS = [
     "texture": "肉絲",
     "unitPrice": 11.0,
     "boxPrice": 220.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CAASA",
@@ -1235,7 +1451,9 @@ const PRODUCTS = [
     "texture": "肉絲",
     "unitPrice": 11.0,
     "boxPrice": 220.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CAAB",
@@ -1246,7 +1464,9 @@ const PRODUCTS = [
     "texture": "肉絲",
     "unitPrice": 11.0,
     "boxPrice": 220.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CAASH",
@@ -1257,7 +1477,9 @@ const PRODUCTS = [
     "texture": "肉絲",
     "unitPrice": 11.0,
     "boxPrice": 220.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CAAC",
@@ -1268,7 +1490,9 @@ const PRODUCTS = [
     "texture": "肉絲",
     "unitPrice": 11.0,
     "boxPrice": 220.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CAAD",
@@ -1279,7 +1503,9 @@ const PRODUCTS = [
     "texture": "肉絲",
     "unitPrice": 11.0,
     "boxPrice": 220.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJ",
@@ -1290,7 +1516,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJSH",
@@ -1301,7 +1529,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJS",
@@ -1312,7 +1542,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJCS",
@@ -1323,7 +1555,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJC",
@@ -1334,7 +1568,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJK",
@@ -1345,7 +1581,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CGSA",
@@ -1356,7 +1594,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CGSH",
@@ -1367,7 +1607,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CGS",
@@ -1378,7 +1620,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CGCS",
@@ -1389,7 +1633,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CGC",
@@ -1400,7 +1646,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CGK",
@@ -1411,7 +1659,9 @@ const PRODUCTS = [
     "texture": "肉汁",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "CJSA",
@@ -1422,7 +1672,9 @@ const PRODUCTS = [
     "texture": "啫喱",
     "unitPrice": 9.0,
     "boxPrice": 180.0,
-    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)",
+    "active": true,
+    "updatedAt": ""
   },
   {
     "id": "FK1",
@@ -1433,9 +1685,17 @@ const PRODUCTS = [
     "texture": "福袋",
     "unitPrice": 100.0,
     "boxPrice": null,
-    "remarks": ""
+    "remarks": "",
+    "active": true,
+    "updatedAt": ""
   }
 ];
+let products = [];
+
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec';
+const CATALOG_CACHE_KEY = 'catstaste_catalog_cache_v1';
+const CATALOG_CACHE_META_KEY = 'catstaste_catalog_cache_meta_v1';
+let adminPin = '';
 
 const DB_NAME = 'catstaste_order_db_v1';
 const DB_VERSION = 1;
@@ -1539,7 +1799,7 @@ function deleteOrder(orderId) {
 }
 
 function loadSettings() {
-  const defaults = { deviceId: 'CT-A', syncUrl: '', defaultShippingFee: 0 };
+  const defaults = { deviceId: 'CT-A', syncUrl: DEFAULT_SCRIPT_URL, defaultShippingFee: 0 };
   try {
     return { ...defaults, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')) };
   } catch {
@@ -1567,7 +1827,7 @@ function setupSettingsUI() {
     $('customDeviceWrap').classList.remove('hidden');
     $('customDeviceId').value = settings.deviceId || '';
   }
-  $('syncUrl').value = settings.syncUrl || '';
+  $('syncUrl').value = DEFAULT_SCRIPT_URL;
   $('defaultShippingFee').value = settings.defaultShippingFee ?? 0;
   $('devicePill').textContent = 'Device: ' + currentDeviceId();
 
@@ -1580,13 +1840,111 @@ function setupSettingsUI() {
     const deviceId = selected === 'CUSTOM' ? ($('customDeviceId').value || 'CT-X') : selected;
     saveSettings({
       deviceId,
-      syncUrl: $('syncUrl').value.trim(),
+      syncUrl: DEFAULT_SCRIPT_URL,
       defaultShippingFee: Number($('defaultShippingFee').value || 0)
     });
     $('devicePill').textContent = 'Device: ' + currentDeviceId();
     renderSummary();
     showSaveMessage('success', 'Settings saved。記得每部機用不同 Device Prefix。');
   });
+}
+
+
+function normalizeProduct(raw) {
+  const p = { ...raw };
+  p.id = String(p.id || p.sku || '').trim();
+  p.sku = String(p.sku || p.id || '').trim().toUpperCase();
+  p.category = String(p.category || '').trim();
+  p.name = String(p.name || '').trim();
+  p.spec = String(p.spec || '').trim();
+  p.texture = String(p.texture || '').trim();
+  p.remarks = String(p.remarks || '').trim();
+  p.unitPrice = Number(p.unitPrice || 0);
+  p.boxPrice = p.boxPrice === '' || p.boxPrice === null || p.boxPrice === undefined ? null : Number(p.boxPrice || 0);
+  p.active = p.active === undefined || p.active === null || p.active === '' ? true : !['false','0','no','停用','inactive'].includes(String(p.active).toLowerCase());
+  p.updatedAt = String(p.updatedAt || '');
+  return p;
+}
+
+function visibleProducts() {
+  return products.filter(p => p.active !== false);
+}
+
+function loadCatalogFromCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CATALOG_CACHE_KEY) || 'null');
+    if (Array.isArray(cached) && cached.length) {
+      products = cached.map(normalizeProduct).filter(p => p.sku && p.name);
+      return 'cache';
+    }
+  } catch (err) { console.warn('Catalog cache read failed', err); }
+  products = FALLBACK_PRODUCTS.map(normalizeProduct).filter(p => p.sku && p.name);
+  return 'fallback';
+}
+
+function saveCatalogToCache(list) {
+  const clean = (list || []).map(normalizeProduct).filter(p => p.sku && p.name);
+  localStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(clean));
+  localStorage.setItem(CATALOG_CACHE_META_KEY, JSON.stringify({ updatedAt: nowHK(), count: clean.length }));
+  products = clean;
+  return clean;
+}
+
+function scriptUrl() {
+  return (loadSettings().syncUrl || DEFAULT_SCRIPT_URL).trim();
+}
+
+function jsonp(url, params={}, timeoutMs=15000) {
+  return new Promise((resolve, reject) => {
+    const cb = 'ct_cb_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+    const qs = new URLSearchParams({ ...params, callback: cb });
+    const sep = url.includes('?') ? '&' : '?';
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('Request timeout'));
+    }, timeoutMs);
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cb];
+      script.remove();
+    }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); reject(new Error('Network or script load failed')); };
+    script.src = url + sep + qs.toString();
+    document.body.appendChild(script);
+  });
+}
+
+async function refreshCatalogFromSheet(showMessage=true) {
+  const url = scriptUrl();
+  if (!url) {
+    if (showMessage) showSaveMessage('error', '未設定 Google Apps Script URL。');
+    return false;
+  }
+  try {
+    const data = await jsonp(url, { action: 'catalog' });
+    if (!data || !data.ok || !Array.isArray(data.products)) throw new Error(data && data.error ? data.error : 'Invalid catalog response');
+    if (!data.products.length) throw new Error('Catalog sheet has no products');
+    const clean = saveCatalogToCache(data.products);
+    initProductFilters();
+    renderProducts();
+    renderCart();
+    if (showMessage) showSaveMessage('success', `商品資料已更新：${clean.filter(p => p.active !== false).length} active / ${clean.length} total SKUs。`);
+    if ($('adminProductList')) renderAdminProducts();
+    return true;
+  } catch (err) {
+    if (showMessage) showSaveMessage('error', '更新商品資料失敗：' + String(err && err.message ? err.message : err));
+    return false;
+  }
+}
+
+function catalogMetaText() {
+  try {
+    const meta = JSON.parse(localStorage.getItem(CATALOG_CACHE_META_KEY) || 'null');
+    if (meta && meta.updatedAt) return `Catalog cache: ${meta.count || 0} SKUs · ${meta.updatedAt}`;
+  } catch {}
+  return 'Catalog cache: fallback / not refreshed yet';
 }
 
 function productPackagingType(product) {
@@ -1611,19 +1969,26 @@ function productSeriesTheme(category) {
 }
 
 function initProductFilters() {
-  const categories = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))].sort();
-  const packagingTypes = [...new Set(PRODUCTS.map(productPackagingType).filter(Boolean))].sort((a,b) => {
+  const currentCategory = $('categoryFilter').value || '';
+  const currentPackaging = $('packagingFilter').value || '';
+  const categories = [...new Set(visibleProducts().map(p => p.category).filter(Boolean))].sort();
+  const packagingTypes = [...new Set(visibleProducts().map(productPackagingType).filter(Boolean))].sort((a,b) => {
     const order = ['包裝', '罐裝', '小食 / 肉棒', '福袋', '玩具', '其他'];
     const ia = order.indexOf(a), ib = order.indexOf(b);
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b, 'zh-Hant');
   });
   $('categoryFilter').innerHTML = '<option value="">All categories</option>' + categories.map(c => `<option value="${htmlEscape(c)}">${htmlEscape(c)}</option>`).join('');
   $('packagingFilter').innerHTML = '<option value="">All packaging types</option>' + packagingTypes.map(t => `<option value="${htmlEscape(t)}">${htmlEscape(t)}</option>`).join('');
-  $('productCount').textContent = `${PRODUCTS.length} SKUs`;
-  if ($('heroSkuCount')) $('heroSkuCount').textContent = `${PRODUCTS.length} SKUs`;
-  $('searchInput').addEventListener('input', renderProducts);
-  $('categoryFilter').addEventListener('change', renderProducts);
-  $('packagingFilter').addEventListener('change', renderProducts);
+  $('productCount').textContent = `${visibleProducts().length} active / ${products.length} total SKUs`;
+  if ($('heroSkuCount')) $('heroSkuCount').textContent = `${visibleProducts().length} SKUs`;
+  if ([...$('categoryFilter').options].some(o => o.value === currentCategory)) $('categoryFilter').value = currentCategory;
+  if ([...$('packagingFilter').options].some(o => o.value === currentPackaging)) $('packagingFilter').value = currentPackaging;
+  if (!$('searchInput').dataset.bound) {
+    $('searchInput').addEventListener('input', renderProducts);
+    $('categoryFilter').addEventListener('change', renderProducts);
+    $('packagingFilter').addEventListener('change', renderProducts);
+    $('searchInput').dataset.bound = '1';
+  }
   renderProducts();
 }
 
@@ -1635,7 +2000,7 @@ function renderProducts() {
   const q = $('searchInput').value.trim().toLowerCase();
   const cat = $('categoryFilter').value;
   const packaging = $('packagingFilter').value;
-  const filtered = PRODUCTS.filter(p => {
+  const filtered = visibleProducts().filter(p => {
     const packagingType = productPackagingType(p);
     const text = `${p.sku} ${p.category} ${packagingType} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
     return (!cat || p.category === cat) && (!packaging || packagingType === packaging) && (!q || text.includes(q));
@@ -1706,14 +2071,14 @@ function productInputPrice(product, sku) {
 }
 
 window.updateProductSubtotal = function(sku) {
-  const product = PRODUCTS.find(x => x.sku === sku);
+  const product = products.find(x => x.sku === sku);
   const subtotalEl = $('subtotal-' + cssId(sku));
   if (!product || !subtotalEl) return;
   subtotalEl.textContent = money(productInputQty(sku) * productInputPrice(product, sku));
 };
 
 window.addProduct = function(sku) {
-  const p = PRODUCTS.find(x => x.sku === sku);
+  const p = products.find(x => x.sku === sku);
   if (!p) return;
   const qty = productInputQty(sku);
   const mode = productInputMode(sku);
@@ -1926,9 +2291,8 @@ async function saveCurrentOrder() {
   clearCustomerForm(false);
   showSaveMessage('success', `Order saved locally: <strong>${order.orderId}</strong>`);
   await refreshOrders();
-  if (navigator.onLine && loadSettings().syncUrl) {
-    sendOrder(order.orderId).then(refreshOrders);
-  }
+  // Do not auto-send after saving. Event staff should manually press Send/Resend
+  // so local orders stay pending until they are intentionally submitted.
 }
 
 function clearCustomerForm(clearReceipt=true) {
@@ -2011,6 +2375,7 @@ async function refreshOrders() {
         ${!isVerifiedStatus(o.syncStatus) ? `<button class="secondary" onclick="sendOrder('${o.orderId}').then(refreshOrders)">${o.syncStatus === 'sent_unverified' ? 'Resend' : 'Send'}</button>` : ''}
         ${o.syncStatus === 'sent_unverified' ? `<button onclick="markOrderVerified('${o.orderId}')">Mark Verified</button>` : ''}
         <button class="ghost" onclick="duplicateOrder('${o.orderId}')">Duplicate</button>
+        <button class="danger" onclick="deleteLocalOrder('${o.orderId}')">Delete Local</button>
       </div>
       ${o.lastSyncError ? `<div class="small" style="color:#991b1b">Sync error: ${htmlEscape(o.lastSyncError)}</div>` : ''}
     </div>
@@ -2061,9 +2426,19 @@ window.markOrderVerified = async function(orderId) {
   await refreshOrders();
 };
 
+window.deleteLocalOrder = async function(orderId) {
+  const o = await getOrder(orderId);
+  if (!o) return;
+  const ok = confirm(`Delete local order ${orderId}?\n\nThis only removes it from this device. If it was already sent to Google Sheet, please delete/cancel the row there too.`);
+  if (!ok) return;
+  await deleteOrder(orderId);
+  showSaveMessage('success', `Deleted local order: <strong>${htmlEscape(orderId)}</strong>`);
+  await refreshOrders();
+};
+
 async function sendOrder(orderId) {
   const settings = loadSettings();
-  if (!settings.syncUrl) {
+  if (!scriptUrl()) {
     showSaveMessage('error', '未設定 Google Apps Script Web App URL。可先 Export CSV。');
     return;
   }
@@ -2078,7 +2453,7 @@ async function sendOrder(orderId) {
     const sentAt = nowHK();
     const payloadOrder = { ...order, syncStatus: 'sent_unverified', syncedAt: sentAt, lastSyncError: '' };
     const payload = JSON.stringify(payloadOrder);
-    await fetch(settings.syncUrl, {
+    await fetch(scriptUrl(), {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -2149,6 +2524,184 @@ function updateOnlineStatus() {
   $('onlinePill').className = online ? 'pill ok' : 'pill bad';
 }
 
+
+function setAdminMessage(type, msg) {
+  const el = $('adminMsg');
+  if (!el) return;
+  if (!msg) { el.className = ''; el.innerHTML = ''; return; }
+  el.className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'notice';
+  el.innerHTML = msg;
+}
+
+function setAdminLoginMessage(type, msg) {
+  const el = $('adminLoginMsg');
+  if (!el) return;
+  el.className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'small';
+  el.innerHTML = msg;
+}
+
+function openAdmin() {
+  $('adminModal').classList.remove('hidden');
+  $('adminPinInput').focus();
+  renderAdminProducts();
+}
+
+function closeAdmin() {
+  $('adminModal').classList.add('hidden');
+  if (location.hash === '#admin') history.replaceState(null, '', location.pathname + location.search);
+}
+
+async function verifyAdminPin() {
+  const pin = $('adminPinInput').value.trim();
+  if (!pin) { setAdminLoginMessage('error', '請輸入 PIN。'); return; }
+  try {
+    const data = await jsonp(scriptUrl(), { action: 'verifyAdmin', pin });
+    if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'PIN incorrect');
+    adminPin = pin;
+    $('adminBody').classList.remove('hidden');
+    setAdminLoginMessage('success', 'Admin login OK。');
+    await refreshCatalogFromSheet(false);
+    renderAdminProducts();
+  } catch (err) {
+    adminPin = '';
+    $('adminBody').classList.add('hidden');
+    setAdminLoginMessage('error', 'Admin login failed：' + String(err && err.message ? err.message : err));
+  }
+}
+
+function renderAdminProducts() {
+  if (!$('adminProductList')) return;
+  const q = ($('adminSearch') && $('adminSearch').value || '').trim().toLowerCase();
+  const list = products.filter(p => {
+    const text = `${p.sku} ${p.id} ${p.category} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
+    return !q || text.includes(q);
+  }).sort((a,b) => String(a.sku).localeCompare(String(b.sku)));
+  $('adminProductList').innerHTML = list.map(p => `
+    <div class="admin-product-row ${p.active === false ? 'inactive' : ''}">
+      <div class="row"><strong>${htmlEscape(p.sku)}</strong><span class="pill ${p.active === false ? 'bad' : 'ok'}">${p.active === false ? 'inactive' : 'active'}</span></div>
+      <div>${htmlEscape(p.name)}</div>
+      <div class="small">${htmlEscape(p.category)} · ${htmlEscape(p.spec)} · ${htmlEscape(p.texture)} · ${money(p.unitPrice)}${p.boxPrice ? ' · box ' + money(p.boxPrice) : ''}</div>
+      <div class="btns"><button class="secondary" type="button" onclick="adminEditProduct('${jsString(p.sku)}')">Edit</button><button class="ghost" type="button" onclick="adminToggleProduct('${jsString(p.sku)}')">${p.active === false ? 'Activate' : 'Deactivate'}</button></div>
+    </div>
+  `).join('') || '<div class="notice">No products found.</div>';
+}
+
+function clearAdminForm() {
+  ['adminSku','adminId','adminCategory','adminSpec','adminTexture','adminUnitPrice','adminBoxPrice','adminName','adminRemarks'].forEach(id => { if ($(id)) $(id).value = ''; });
+  $('adminActive').checked = true;
+  setAdminMessage('', '');
+}
+
+window.adminEditProduct = function(sku) {
+  const p = products.find(x => x.sku === sku);
+  if (!p) return;
+  $('adminSku').value = p.sku || '';
+  $('adminId').value = p.id || p.sku || '';
+  $('adminCategory').value = p.category || '';
+  $('adminName').value = p.name || '';
+  $('adminSpec').value = p.spec || '';
+  $('adminTexture').value = p.texture || '';
+  $('adminUnitPrice').value = p.unitPrice ?? '';
+  $('adminBoxPrice').value = p.boxPrice ?? '';
+  $('adminRemarks').value = p.remarks || '';
+  $('adminActive').checked = p.active !== false;
+  setAdminMessage('notice', 'Editing ' + htmlEscape(p.sku));
+};
+
+function collectAdminProduct() {
+  const sku = $('adminSku').value.trim().toUpperCase();
+  const product = {
+    active: $('adminActive').checked,
+    id: ($('adminId').value.trim() || sku).toUpperCase(),
+    sku,
+    category: $('adminCategory').value.trim(),
+    name: $('adminName').value.trim(),
+    spec: $('adminSpec').value.trim(),
+    texture: $('adminTexture').value.trim(),
+    unitPrice: Number($('adminUnitPrice').value || 0),
+    boxPrice: $('adminBoxPrice').value === '' ? '' : Number($('adminBoxPrice').value || 0),
+    remarks: $('adminRemarks').value.trim()
+  };
+  if (!product.sku || !product.id || !product.category || !product.name) throw new Error('SKU、ID、Category、產品名必填。');
+  if (!(product.unitPrice >= 0)) throw new Error('單件價不正確。');
+  return product;
+}
+
+async function postAdminAction(action, payload) {
+  if (!adminPin) throw new Error('請先 Admin login。');
+  await fetch(scriptUrl(), {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, pin: adminPin, ...payload })
+  });
+}
+
+async function adminSaveProduct() {
+  try {
+    const product = collectAdminProduct();
+    setAdminMessage('notice', 'Saving product...');
+    await postAdminAction('saveProduct', { product });
+    await new Promise(r => setTimeout(r, 900));
+    const ok = await refreshCatalogFromSheet(false);
+    const saved = products.find(p => p.sku === product.sku);
+    if (!ok || !saved) throw new Error('儲存後未能在 Catalog 找到該 SKU，請檢查 PIN / Apps Script execution。');
+    const priceOk = Number(saved.unitPrice) === Number(product.unitPrice);
+    if (!priceOk) throw new Error('Catalog 已回傳，但價格未更新，可能 Apps Script 未部署新版本。');
+    renderAdminProducts();
+    setAdminMessage('success', `已更新 ${htmlEscape(product.sku)}。前台如未見新資料，請按「更新商品資料」。`);
+  } catch (err) {
+    setAdminMessage('error', 'Save failed：' + String(err && err.message ? err.message : err));
+  }
+}
+
+window.adminToggleProduct = async function(sku) {
+  try {
+    const p = products.find(x => x.sku === sku);
+    if (!p) return;
+    const nextActive = p.active === false;
+    const okConfirm = confirm(`${nextActive ? 'Activate' : 'Deactivate'} ${sku}?\n\n商品只會 active=false 停用，不會硬刪除。`);
+    if (!okConfirm) return;
+    await postAdminAction('toggleProduct', { sku, active: nextActive });
+    await new Promise(r => setTimeout(r, 900));
+    await refreshCatalogFromSheet(false);
+    renderAdminProducts();
+    renderProducts();
+    setAdminMessage('success', `${htmlEscape(sku)} 已${nextActive ? '啟用' : '停用'}。`);
+  } catch (err) {
+    setAdminMessage('error', 'Toggle failed：' + String(err && err.message ? err.message : err));
+  }
+};
+
+async function adminToggleCurrentProduct() {
+  const sku = $('adminSku').value.trim().toUpperCase();
+  if (!sku) { setAdminMessage('error', '請先選擇 / 輸入 SKU。'); return; }
+  await window.adminToggleProduct(sku);
+}
+
+function setupAdminUI() {
+  let logoClicks = 0;
+  let logoTimer;
+  $('brandLogo').addEventListener('click', () => {
+    logoClicks += 1;
+    clearTimeout(logoTimer);
+    logoTimer = setTimeout(() => { logoClicks = 0; }, 1600);
+    if (logoClicks >= 5) { logoClicks = 0; openAdmin(); }
+  });
+  $('adminCloseBtn').addEventListener('click', closeAdmin);
+  $('adminLoginBtn').addEventListener('click', verifyAdminPin);
+  $('adminPinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verifyAdminPin(); });
+  $('adminRefreshCatalogBtn').addEventListener('click', () => refreshCatalogFromSheet(true));
+  $('adminReloadBtn').addEventListener('click', async () => { await refreshCatalogFromSheet(false); renderAdminProducts(); setAdminMessage('success', 'Catalog reloaded.'); });
+  $('adminNewBtn').addEventListener('click', clearAdminForm);
+  $('adminClearFormBtn').addEventListener('click', clearAdminForm);
+  $('adminSaveProductBtn').addEventListener('click', adminSaveProduct);
+  $('adminToggleActiveBtn').addEventListener('click', adminToggleCurrentProduct);
+  $('adminSearch').addEventListener('input', renderAdminProducts);
+  if (location.hash === '#admin') setTimeout(openAdmin, 350);
+  window.addEventListener('hashchange', () => { if (location.hash === '#admin') openAdmin(); });
+}
+
 function registerSW() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('SW registration failed', err));
@@ -2170,17 +2723,20 @@ $('copyReceiptBtn').addEventListener('click', async () => {
     showSaveMessage('error', 'Copy 唔成功；可以手動 highlight 複製。');
   }
 });
+$('refreshCatalogBtn').addEventListener('click', () => refreshCatalogFromSheet(true));
 $('syncAllBtn').addEventListener('click', syncAll);
 $('exportCsvBtn').addEventListener('click', exportCsv);
 $('exportJsonBtn').addEventListener('click', exportJson);
 
-window.addEventListener('online', () => { updateOnlineStatus(); if (loadSettings().syncUrl) syncAll(); });
+window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
 (async function boot() {
   registerSW();
   db = await openDB();
+  loadCatalogFromCache();
   setupSettingsUI();
+  setupAdminUI();
   initProductFilters();
   updateOnlineStatus();
   renderCart();
