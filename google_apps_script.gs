@@ -12,7 +12,9 @@
  *
  * Important:
  * The PWA sends orders with fetch(..., mode:"no-cors") to avoid browser CORS issues.
- * Keep CSV/JSON export as backup and spot-check the Sheet during event.
+ * Browser cannot read the response, so the PWA marks sent orders as "sent_unverified".
+ * Spot-check the Sheet, then mark the local order as verified in the PWA.
+ * Keep CSV/JSON export as backup during event.
  */
 
 const SHEET_NAME = 'Orders';
@@ -21,7 +23,7 @@ const HEADERS = [
   'orderId','deviceId','createdAt','customerName','phone','email','address','notes',
   'paymentMethod','paymentStatus','shippingMethod','subtotal','discountAmount',
   'discountedSubtotal','shippingFee','total','giftEligible','freeShipping','isCod',
-  'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText','serverReceivedAt'
+  'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText','serverReceivedAt','staffNotes'
 ];
 
 function doGet(e) {
@@ -67,8 +69,9 @@ function getOrCreateSheet_(ss) {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
 
-  const firstRow = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
-  const needsHeaders = firstRow.join('') === '' || firstRow[0] !== 'orderId';
+  const width = Math.max(HEADERS.length, sheet.getLastColumn() || HEADERS.length);
+  const firstRow = sheet.getRange(1, 1, 1, width).getValues()[0];
+  const needsHeaders = firstRow.join('') === '' || HEADERS.some((h, i) => firstRow[i] !== h);
 
   if (needsHeaders) {
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);

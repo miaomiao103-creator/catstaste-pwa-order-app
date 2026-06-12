@@ -1,10 +1,12 @@
-const CACHE_NAME = 'catstaste-order-app-v2';
+const CACHE_NAME = 'catstaste-order-app-v4';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icon-192.svg',
-  './icon-512.svg'
+  './brand-logo.png',
+  './apple-touch-icon.png',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -26,12 +28,16 @@ self.addEventListener('fetch', event => {
     caches.match(req).then(cached => {
       if (cached) return cached;
       return fetch(req).then(res => {
+        if (!res || !res.ok) return res;
         const copy = res.clone();
         if (new URL(req.url).origin === location.origin) {
           caches.open(CACHE_NAME).then(cache => cache.put(req, copy));
         }
         return res;
-      }).catch(() => caches.match('./index.html'));
+      }).catch(() => {
+        if (req.mode === 'navigate') return caches.match('./index.html');
+        return caches.match(req);
+      });
     })
   );
 });

@@ -7,14 +7,15 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 - `index.html` — single-page PWA order app
 - `manifest.webmanifest` — PWA manifest
 - `service-worker.js` — offline cache
-- `google_apps_script.gs` — Google Sheets sync endpoint (v3 form POST compatible) (v3 form POST compatible)
-- `icon-192.svg` / `icon-512.svg` — app icons
+- `google_apps_script.gs` — Google Sheets sync endpoint
+- `brand-logo.png` — CatsTaste logo used in the app header
+- `apple-touch-icon.png` / `icon-192.png` / `icon-512.png` — app icons generated from the CatsTaste company logo
 
 ## Business rules included
 
 - Shipping only
-- HK$120+ full order subtotal → 10% off eligible unit-price items
-- Original box price items are treated as not eligible for the 10% discount
+- HK$120+ full order subtotal → 10% off unit-price items
+- Original box price items are not included in the 10% discount
 - HK$150+ → toy gift flag
 - HK$800+ → free shipping for 順豐 / 京東 prepaid shipping
 - 順豐到付 / 京東到付 → shipping fee not included in order total
@@ -22,9 +23,6 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 - Payment statuses: Paid, Unpaid, Deposit paid, Pending confirmation
 - Product filters: Category + 包裝類型（包裝 / 罐裝 / 小食 / 福袋 / 玩具）
 - Device prefixes: CT-A, CT-B, CT-C
-- v3: Save Order no longer auto-syncs; staff presses Sync manually
-- v3: Synced status changed to sent/check-sheet to avoid false confirmation
-- v3: Mark Pending button added for resending orders
 
 ## Important event workflow
 
@@ -40,8 +38,10 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
    - Device 3: CT-C
 5. Test with Airplane Mode.
 6. During the event, orders are saved locally first.
-7. Use Sync Pending Orders when network is available.
-8. Export CSV/JSON backup at least every half day and after the event.
+7. Use Send Unsynced Orders when network is available.
+8. Orders sent through Google Apps Script are marked `sent_unverified` because browser `no-cors` responses cannot be read.
+9. Spot-check the Google Sheet, then tap Mark Verified in the PWA.
+10. Export CSV/JSON backup at least every half day and after the event.
 
 ## Google Sheets sync setup
 
@@ -56,7 +56,14 @@ This prototype was generated for the 2026 HK Pet Expo shipping-only pre-order fl
 
 ## CORS note
 
-v3 uses a hidden HTML form POST for Google Apps Script compatibility. The browser still cannot fully confirm the Sheet write, so the app shows `sent - check sheet` and you should spot-check the Google Sheet and keep CSV/JSON backups.
+The PWA sends sync requests using `mode:"no-cors"` for Google Apps Script compatibility.
+This means the browser cannot read the server response. The app no longer marks these requests as fully synced. It uses:
+
+- `pending` / `failed` — needs sending
+- `sent_unverified` — request was sent, but Sheet must be checked
+- `verified` — staff confirmed the order exists in Google Sheet
+
+Order numbers use Hong Kong date (`Asia/Hong_Kong`) so late-night event orders do not roll back to the previous UTC date.
 
 ## Product catalog
 
