@@ -1,0 +1,23 @@
+{
+  "name": "CatsTaste Pet Expo Offline Order",
+  "short_name": "CatsTaste Order",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#f97316",
+  "description": "Offline-first shipping-only pre-order form for CatsTaste 2026 HK Pet Expo.",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

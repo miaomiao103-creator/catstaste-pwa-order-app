@@ -1,0 +1,1737 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f97316" />
+  <title>CatsTaste 2026 HK Pet Expo Pre-order</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <style>
+    :root {
+      --bg: #fff7ed;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #fed7aa;
+      --brand: #f97316;
+      --brand-dark: #c2410c;
+      --ok: #047857;
+      --warn: #b45309;
+      --bad: #b91c1c;
+      --shadow: 0 10px 25px rgba(124, 45, 18, .08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang HK", "Noto Sans HK", Arial, sans-serif;
+      background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 247, 237, .94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 14px;
+    }
+    .topbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--brand);
+      color: #fff;
+      display:grid;
+      place-items:center;
+      font-size: 24px;
+      box-shadow: var(--shadow);
+    }
+    h1 { font-size: 16px; line-height: 1.2; margin:0; }
+    .subtitle { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .status {
+      display:flex;
+      gap: 7px;
+      align-items:center;
+      font-size: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 9px;
+      white-space: nowrap;
+    }
+    .pill.ok { color: var(--ok); border-color: #bbf7d0; background:#f0fdf4; }
+    .pill.warn { color: var(--warn); border-color:#fde68a; background:#fffbeb; }
+    .pill.bad { color: var(--bad); border-color:#fecaca; background:#fef2f2; }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 960px) {
+      main {
+        grid-template-columns: minmax(0, 1.1fr) minmax(360px, .9fr);
+        align-items: start;
+      }
+      .right-sticky { position: sticky; top: 78px; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 8px;
+    }
+    .small { font-size: 12px; color: var(--muted); }
+    label {
+      display:block;
+      font-weight: 650;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    input, select, textarea, button {
+      font: inherit;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 13px;
+      border: 1px solid #fdba74;
+      background: #fff;
+      outline: none;
+      min-height: 44px;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .16);
+    }
+    textarea { min-height: 74px; resize: vertical; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 520px) {
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+    }
+    .btns { display:flex; gap: 8px; flex-wrap: wrap; align-items:center; }
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 11px 13px;
+      min-height: 44px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    button.secondary { background: #fff; color: var(--brand-dark); border: 1px solid #fdba74; }
+    button.ghost { background: transparent; color: var(--brand-dark); border: 1px dashed #fdba74; }
+    button.danger { background: #b91c1c; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .product-list {
+      display:grid;
+      gap: 8px;
+      max-height: 56vh;
+      overflow:auto;
+      padding-right: 2px;
+    }
+    .product {
+      border: 1px solid #fed7aa;
+      border-radius: 16px;
+      padding: 10px;
+      background:#fffaf5;
+      display:grid;
+      gap: 8px;
+    }
+    .product-title {
+      font-weight: 800;
+      line-height: 1.25;
+      white-space: pre-line;
+    }
+    .product-meta {
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .tag {
+      background:#ffedd5;
+      border:1px solid #fed7aa;
+      border-radius:999px;
+      padding:3px 7px;
+    }
+    .product-actions {
+      display:grid;
+      grid-template-columns: 86px 120px 1fr;
+      gap: 8px;
+      align-items:end;
+    }
+    @media (max-width: 560px) {
+      .product-actions { grid-template-columns: 1fr; }
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      border-bottom: 1px solid #ffedd5;
+      padding: 8px 6px;
+      text-align:left;
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-size: 12px; }
+    .num { text-align:right; white-space:nowrap; }
+    .cart-name { white-space: pre-line; }
+    .summary-row {
+      display:flex;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 6px 0;
+      border-bottom: 1px dashed #fed7aa;
+    }
+    .summary-row strong { font-size: 18px; color: var(--brand-dark); }
+    .notice {
+      padding: 10px 12px;
+      border:1px solid #fde68a;
+      background:#fffbeb;
+      color:#92400e;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .success {
+      padding: 10px 12px;
+      border:1px solid #bbf7d0;
+      background:#f0fdf4;
+      color:#065f46;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .error {
+      padding: 10px 12px;
+      border:1px solid #fecaca;
+      background:#fef2f2;
+      color:#991b1b;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .order-list {
+      display:grid;
+      gap:8px;
+    }
+    .order-card {
+      border:1px solid #fed7aa;
+      border-radius: 15px;
+      padding:10px;
+      background:#fffaf5;
+    }
+    .order-card .row {
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .muted { color: var(--muted); }
+    .hidden { display:none !important; }
+    .hr { height:1px; background:#ffedd5; margin:12px 0; }
+    .whatsapp-box {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 13px;
+      max-height: 260px;
+      overflow:auto;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">🐾</div>
+      <div>
+        <h1>CatsTaste 2026 HK 寵物展預訂單</h1>
+        <div class="subtitle">Offline-first PWA · Shipping only · Local save first</div>
+      </div>
+    </div>
+    <div class="status">
+      <span id="onlinePill" class="pill">Checking...</span>
+      <span id="devicePill" class="pill">Device: CT-A</span>
+      <span id="pendingPill" class="pill warn">Pending: 0</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="card">
+      <h2>⚙️ Device & Sync Settings</h2>
+      <div class="grid two">
+        <div>
+          <label for="deviceId">Device Prefix / Staff Code</label>
+          <select id="deviceId">
+            <option value="CT-A">CT-A / Device 1</option>
+            <option value="CT-B">CT-B / Device 2</option>
+            <option value="CT-C">CT-C / Device 3</option>
+            <option value="CUSTOM">Custom...</option>
+          </select>
+        </div>
+        <div id="customDeviceWrap" class="hidden">
+          <label for="customDeviceId">Custom Device Prefix</label>
+          <input id="customDeviceId" placeholder="例如 CT-D / STAFF-01" />
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:10px">
+        <div>
+          <label for="syncUrl">Google Apps Script Web App URL</label>
+          <input id="syncUrl" placeholder="貼上 /exec URL；未有可留空，之後 Export CSV" />
+        </div>
+        <div>
+          <label for="defaultShippingFee">Under $800 prepaid shipping fee</label>
+          <input id="defaultShippingFee" type="number" inputmode="decimal" min="0" step="1" value="0" />
+        </div>
+      </div>
+      <div class="btns" style="margin-top:10px">
+        <button class="secondary" id="saveSettingsBtn">Save Settings</button>
+        <button class="secondary" id="syncAllBtn">Sync Pending Orders</button>
+        <button class="secondary" id="exportCsvBtn">Export CSV</button>
+        <button class="secondary" id="exportJsonBtn">Export JSON Backup</button>
+      </div>
+      <p class="small">提示：每部 iPhone/iPad 請用不同 prefix：CT-A、CT-B、CT-C，避免 Order No. 撞號。</p>
+    </div>
+
+    <div class="card">
+      <h2>🛒 Products <span id="productCount" class="small"></span></h2>
+      <div class="grid two">
+        <div>
+          <label for="searchInput">Search SKU / Name / Category</label>
+          <input id="searchInput" placeholder="例如 TSH / 吞拿魚 / 主食罐" autocomplete="off" />
+        </div>
+        <div>
+          <label for="categoryFilter">Category</label>
+          <select id="categoryFilter"></select>
+        </div>
+      </div>
+      <p class="small">原箱價會當作獨立 price mode；根據產品 remarks，原箱價不參與九折優惠。</p>
+      <div id="productList" class="product-list"></div>
+    </div>
+  </section>
+
+  <section class="right-sticky">
+    <div class="card">
+      <h2>📦 Current Order</h2>
+      <div id="cartEmpty" class="notice">未加產品。先喺左邊搜尋 SKU / 產品名，再 Add。</div>
+      <div id="cartWrap" class="hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="num">Qty</th>
+              <th class="num">Price</th>
+              <th class="num">Sub</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cartBody"></tbody>
+        </table>
+      </div>
+      <div class="hr"></div>
+      <div id="summary"></div>
+      <div id="promoNotice" class="notice" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>👤 Customer Info</h2>
+      <div class="grid two">
+        <div>
+          <label for="customerName">客人姓名 *</label>
+          <input id="customerName" autocomplete="name" />
+        </div>
+        <div>
+          <label for="phone">電話 / WhatsApp *</label>
+          <input id="phone" inputmode="tel" autocomplete="tel" />
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:10px">
+        <div>
+          <label for="email">Email（可選）</label>
+          <input id="email" inputmode="email" autocomplete="email" />
+        </div>
+        <div>
+          <label for="paymentMethod">付款方法</label>
+          <select id="paymentMethod">
+            <option>Cash</option>
+            <option>FPS</option>
+            <option>PayMe</option>
+            <option>Alipay</option>
+            <option>WeChat Pay</option>
+            <option>Deposit</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid two" style="margin-top:10px">
+        <div>
+          <label for="paymentStatus">Payment Status</label>
+          <select id="paymentStatus">
+            <option>Pending confirmation</option>
+            <option>Paid</option>
+            <option>Unpaid</option>
+            <option>Deposit paid</option>
+          </select>
+        </div>
+        <div>
+          <label for="shippingMethod">送貨方式</label>
+          <select id="shippingMethod">
+            <option value="SF">順豐（滿$800 Free Shipping）</option>
+            <option value="JD">京東（滿$800 Free Shipping）</option>
+            <option value="SF_COD">順豐到付</option>
+            <option value="JD_COD">京東到付</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <label for="address">地址 *</label>
+        <textarea id="address" autocomplete="street-address"></textarea>
+      </div>
+      <div style="margin-top:10px">
+        <label for="notes">備註（可選）</label>
+        <textarea id="notes" placeholder="例如送貨時間、付款備註、特別要求"></textarea>
+      </div>
+      <div class="btns" style="margin-top:12px">
+        <button id="saveOrderBtn">Save Order Locally</button>
+        <button class="secondary" id="resetOrderBtn">New / Clear Current</button>
+      </div>
+      <div id="saveMessage" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>🧾 Receipt / WhatsApp Text</h2>
+      <div id="receiptBox" class="whatsapp-box">Save order 後會喺呢度生成 WhatsApp receipt text。</div>
+      <div class="btns" style="margin-top:10px">
+        <button class="secondary" id="copyReceiptBtn">Copy WhatsApp Text</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📋 Saved Orders <span class="small" id="orderCount"></span></h2>
+      <div id="ordersList" class="order-list"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const PRODUCTS = [
+  {
+    "id": "TSH",
+    "sku": "TSH",
+    "category": "Snack 小食系列",
+    "name": "吞拿魚帶子風味肉棒小食 30g",
+    "spec": "30g",
+    "texture": "肉棒",
+    "unitPrice": 9.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "TSK",
+    "sku": "TSK",
+    "category": "Snack 小食系列",
+    "name": "吞拿魚鰹魚風味肉棒小食 30g",
+    "spec": "30g",
+    "texture": "肉棒",
+    "unitPrice": 9.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "TS",
+    "sku": "TS",
+    "category": "Snack 小食系列",
+    "name": "吞拿魚魚肉棒小食 30g",
+    "spec": "30g",
+    "texture": "肉棒",
+    "unitPrice": 9.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T01",
+    "sku": "T01",
+    "category": "Toy 公仔",
+    "name": "黃貓",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T02",
+    "sku": "T02",
+    "category": "Toy 公仔",
+    "name": "red cat",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T03",
+    "sku": "T03",
+    "category": "Toy 公仔",
+    "name": "blue cat",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T04",
+    "sku": "T04",
+    "category": "Toy 公仔",
+    "name": "old cat",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T05",
+    "sku": "T05",
+    "category": "Toy 公仔",
+    "name": "pink cat",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T06",
+    "sku": "T06",
+    "category": "Toy 公仔",
+    "name": "green cat",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "T07",
+    "sku": "T07",
+    "category": "Toy 公仔",
+    "name": "purple cat",
+    "spec": "Toy",
+    "texture": "Toy",
+    "unitPrice": 8.0,
+    "boxPrice": null,
+    "remarks": ""
+  },
+  {
+    "id": "PPU",
+    "sku": "PPU",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚南瓜啫喱濕貓糧 針對消化用 70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PCR",
+    "sku": "PCR",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚小紅莓啫喱濕貓糧 淨味用 70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PQC",
+    "sku": "PQC",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚小紅莓藜麥啫喱濕貓糧 針對泌尿系統用 70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PPA",
+    "sku": "PPA",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚木瓜啫喱濕貓糧 針對關節用70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PCA",
+    "sku": "PCA",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚椰菜啫喱濕貓糧 腎臟護理用70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PM",
+    "sku": "PM",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚芒果啫喱濕貓糧 針對化毛用70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PSPIN",
+    "sku": "PSPIN",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚菠菜啫喱濕貓糧 針對免疫系統用70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PT",
+    "sku": "PT",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚蕃茄啫喱濕貓糧 針對皮膚用70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PCS",
+    "sku": "PCS",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚蕃薯奇亞籽啫喱濕貓糧 控制體重用70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PA",
+    "sku": "PA",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚鯷魚啫喱濕貓糧 鈣質補充70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "KMT",
+    "sku": "KMT",
+    "category": "Kitten 幼貓系列",
+    "name": "幼貓吞拿魚雞肉慕絲70g",
+    "spec": "包裝",
+    "texture": "慕絲",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "KMC",
+    "sku": "KMC",
+    "category": "Kitten 幼貓系列",
+    "name": "幼貓雞肉慕絲70g",
+    "spec": "包裝",
+    "texture": "慕絲",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PSSA",
+    "sku": "PSSA",
+    "category": "Senior 7+ 老年貓系列",
+    "name": "吞拿魚三文魚啫喱貓糧70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PST",
+    "sku": "PST",
+    "category": "Senior 7+ 老年貓系列",
+    "name": "老年7歲+吞拿魚啫喱貓糧70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PSK",
+    "sku": "PSK",
+    "category": "Senior 7+ 老年貓系列",
+    "name": "老年7歲+吞拿魚鰹魚啫喱貓糧70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJCS",
+    "sku": "PJCS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蟹肉啫喱濕貓糧70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJK",
+    "sku": "PJK",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚鰹魚啫喱濕貓糧70g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PGS",
+    "sku": "PGS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蝦肉汁貓糧70g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PGCS",
+    "sku": "PGCS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蟹肉肉汁貓糧70g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PGK",
+    "sku": "PGK",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚鰹魚肉汁貓糧70g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJSA",
+    "sku": "PJSA",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚三文魚啫喱貓糧75g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJ",
+    "sku": "PJ",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚啫喱濕貓糧75g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJSH",
+    "sku": "PJSH",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚白飯魚啫喱貓糧75g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJS",
+    "sku": "PJS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蝦啫喱濕貓糧75g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PJC",
+    "sku": "PJC",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚雞肉啫喱濕貓糧75g",
+    "spec": "包裝",
+    "texture": "啫喱",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PGSA",
+    "sku": "PGSA",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚三文魚肉汁貓糧75g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PG",
+    "sku": "PG",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚肉汁貓糧75g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PGSH",
+    "sku": "PGSH",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚白飯魚肉汁貓糧75g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "PGC",
+    "sku": "PGC",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚雞肉肉汁貓糧75g",
+    "spec": "包裝",
+    "texture": "肉汁",
+    "unitPrice": 8.0,
+    "boxPrice": 280.0,
+    "remarks": "1 箱 48 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CCA",
+    "sku": "CCA",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚椰菜肉汁罐 針對腎臟護理75g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CSPIN",
+    "sku": "CSPIN",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚菠菜肉汁罐 針對免疫系統75g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CQC",
+    "sku": "CQC",
+    "category": "Healthy 健康系列",
+    "name": "吞拿魚小紅莓藜麥肉汁罐 針對泌尿系統75g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CAAT",
+    "sku": "CAAT",
+    "category": "Purrfect Balance 主食罐系列",
+    "name": "無膠肉絲主食罐 淨吞拿魚口味85g",
+    "spec": "罐裝",
+    "texture": "肉絲",
+    "unitPrice": 11.0,
+    "boxPrice": 220.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CAASA",
+    "sku": "CAASA",
+    "category": "Purrfect Balance 主食罐系列",
+    "name": "無膠肉絲主食罐 吞拿魚三文魚口味85g",
+    "spec": "罐裝",
+    "texture": "肉絲",
+    "unitPrice": 11.0,
+    "boxPrice": 220.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CAAB",
+    "sku": "CAAB",
+    "category": "Purrfect Balance 主食罐系列",
+    "name": "無膠肉絲主食罐 吞拿魚牛肉口味85g",
+    "spec": "罐裝",
+    "texture": "肉絲",
+    "unitPrice": 11.0,
+    "boxPrice": 220.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CAASH",
+    "sku": "CAASH",
+    "category": "Purrfect Balance 主食罐系列",
+    "name": "無膠肉絲主食罐 吞拿魚白飯魚口味85g",
+    "spec": "罐裝",
+    "texture": "肉絲",
+    "unitPrice": 11.0,
+    "boxPrice": 220.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CAAC",
+    "sku": "CAAC",
+    "category": "Purrfect Balance 主食罐系列",
+    "name": "無膠肉絲主食罐 吞拿魚雞肉口味85g",
+    "spec": "罐裝",
+    "texture": "肉絲",
+    "unitPrice": 11.0,
+    "boxPrice": 220.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CAAD",
+    "sku": "CAAD",
+    "category": "Purrfect Balance 主食罐系列",
+    "name": "無膠肉絲主食罐 吞拿魚鴨肉口味85g",
+    "spec": "罐裝",
+    "texture": "肉絲",
+    "unitPrice": 11.0,
+    "boxPrice": 220.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJ",
+    "sku": "CJ",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJSH",
+    "sku": "CJSH",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚白飯魚啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJS",
+    "sku": "CJS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蝦啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJCS",
+    "sku": "CJCS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蟹肉啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJC",
+    "sku": "CJC",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚雞肉啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJK",
+    "sku": "CJK",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚鰹魚啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CGSA",
+    "sku": "CGSA",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚三文魚肉汁罐85g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CGSH",
+    "sku": "CGSH",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚白飯魚肉汁罐85g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CGS",
+    "sku": "CGS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蝦肉汁罐85g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CGCS",
+    "sku": "CGCS",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚蟹肉肉汁罐85g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CGC",
+    "sku": "CGC",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚雞肉肉汁罐85g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CGK",
+    "sku": "CGK",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚鰹魚肉汁罐85g",
+    "spec": "罐裝",
+    "texture": "肉汁",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "CJSA",
+    "sku": "CJSA",
+    "category": "Tasty 美味系列",
+    "name": "吞拿魚三文魚啫喱罐85g",
+    "spec": "罐裝",
+    "texture": "啫喱",
+    "unitPrice": 9.0,
+    "boxPrice": 180.0,
+    "remarks": "1 箱 24 件 (原箱價不可與九折優惠同時使用)"
+  },
+  {
+    "id": "FK1",
+    "sku": "FK1",
+    "category": "主食罐福袋",
+    "name": "主食罐福袋\n淨吞拿魚口味x1\n吞拿魚三文魚口味x1\n吞拿魚雞肉口味x2\n吞拿魚牛肉口味x2\n吞拿魚鴨肉口味x2\n吞拿魚白飯魚口味x2",
+    "spec": "福袋",
+    "texture": "福袋",
+    "unitPrice": 100.0,
+    "boxPrice": null,
+    "remarks": ""
+  }
+];
+
+const DB_NAME = 'catstaste_order_db_v1';
+const DB_VERSION = 1;
+const ORDER_STORE = 'orders';
+const SETTINGS_KEY = 'catstaste_order_settings_v1';
+
+const PROMOS = {
+  discountThreshold: 120,
+  discountRate: 0.10,
+  giftThreshold: 150,
+  freeShippingThreshold: 800
+};
+
+let db;
+let cart = [];
+let lastSavedOrder = null;
+
+const $ = (id) => document.getElementById(id);
+const money = (n) => '$' + (Number(n || 0)).toFixed(2).replace(/\.00$/, '');
+const todayKey = () => new Date().toISOString().slice(0,10).replaceAll('-', '');
+const nowISO = () => new Date().toISOString();
+const escapeCsv = (v) => {
+  if (v === null || v === undefined) return '';
+  const s = String(v).replaceAll('"', '""');
+  return /[",\n\r]/.test(s) ? `"${s}"` : s;
+};
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      const d = req.result;
+      if (!d.objectStoreNames.contains(ORDER_STORE)) {
+        const store = d.createObjectStore(ORDER_STORE, { keyPath: 'orderId' });
+        store.createIndex('createdAt', 'createdAt');
+        store.createIndex('syncStatus', 'syncStatus');
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function txStore(mode='readonly') {
+  return db.transaction(ORDER_STORE, mode).objectStore(ORDER_STORE);
+}
+
+function putOrder(order) {
+  return new Promise((resolve, reject) => {
+    const req = txStore('readwrite').put(order);
+    req.onsuccess = () => resolve(order);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getAllOrders() {
+  return new Promise((resolve, reject) => {
+    const req = txStore().getAll();
+    req.onsuccess = () => resolve(req.result.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||'')));
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function getOrder(orderId) {
+  return new Promise((resolve, reject) => {
+    const req = txStore().get(orderId);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function deleteOrder(orderId) {
+  return new Promise((resolve, reject) => {
+    const req = txStore('readwrite').delete(orderId);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function loadSettings() {
+  const defaults = { deviceId: 'CT-A', syncUrl: '', defaultShippingFee: 0 };
+  try {
+    return { ...defaults, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')) };
+  } catch {
+    return defaults;
+  }
+}
+
+function saveSettings(settings) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function currentDeviceId() {
+  const settings = loadSettings();
+  return (settings.deviceId || 'CT-A').trim().replace(/\s+/g, '-').toUpperCase();
+}
+
+function setupSettingsUI() {
+  const settings = loadSettings();
+  const known = ['CT-A','CT-B','CT-C'];
+  if (known.includes(settings.deviceId)) {
+    $('deviceId').value = settings.deviceId;
+    $('customDeviceWrap').classList.add('hidden');
+  } else {
+    $('deviceId').value = 'CUSTOM';
+    $('customDeviceWrap').classList.remove('hidden');
+    $('customDeviceId').value = settings.deviceId || '';
+  }
+  $('syncUrl').value = settings.syncUrl || '';
+  $('defaultShippingFee').value = settings.defaultShippingFee ?? 0;
+  $('devicePill').textContent = 'Device: ' + currentDeviceId();
+
+  $('deviceId').addEventListener('change', () => {
+    $('customDeviceWrap').classList.toggle('hidden', $('deviceId').value !== 'CUSTOM');
+  });
+
+  $('saveSettingsBtn').addEventListener('click', () => {
+    const selected = $('deviceId').value;
+    const deviceId = selected === 'CUSTOM' ? ($('customDeviceId').value || 'CT-X') : selected;
+    saveSettings({
+      deviceId,
+      syncUrl: $('syncUrl').value.trim(),
+      defaultShippingFee: Number($('defaultShippingFee').value || 0)
+    });
+    $('devicePill').textContent = 'Device: ' + currentDeviceId();
+    renderSummary();
+    showSaveMessage('success', 'Settings saved。記得每部機用不同 Device Prefix。');
+  });
+}
+
+function initProductFilters() {
+  const categories = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))].sort();
+  $('categoryFilter').innerHTML = '<option value="">All categories</option>' + categories.map(c => `<option value="${htmlEscape(c)}">${htmlEscape(c)}</option>`).join('');
+  $('productCount').textContent = `${PRODUCTS.length} SKUs`;
+  $('searchInput').addEventListener('input', renderProducts);
+  $('categoryFilter').addEventListener('change', renderProducts);
+  renderProducts();
+}
+
+function htmlEscape(s) {
+  return String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function renderProducts() {
+  const q = $('searchInput').value.trim().toLowerCase();
+  const cat = $('categoryFilter').value;
+  const filtered = PRODUCTS.filter(p => {
+    const text = `${p.sku} ${p.category} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
+    return (!cat || p.category === cat) && (!q || text.includes(q));
+  }).slice(0, 80);
+
+  $('productList').innerHTML = filtered.map(p => {
+    const hasBox = p.boxPrice !== null && p.boxPrice !== undefined && p.boxPrice !== '';
+    return `
+      <div class="product">
+        <div>
+          <div class="product-title">${htmlEscape(p.name)}</div>
+          <div class="product-meta">
+            <span class="tag">SKU: ${htmlEscape(p.sku)}</span>
+            <span class="tag">${htmlEscape(p.category)}</span>
+            <span class="tag">${htmlEscape(p.spec)} / ${htmlEscape(p.texture)}</span>
+            <span class="tag">單價 ${p.unitPrice}</span>
+            ${hasBox ? `<span class="tag">原箱價 ${p.boxPrice}</span>` : ''}
+          </div>
+          ${p.remarks ? `<div class="small">${htmlEscape(p.remarks)}</div>` : ''}
+        </div>
+        <div class="product-actions">
+          <div>
+            <label>Qty</label>
+            <input type="number" min="1" step="1" value="1" id="qty-${cssId(p.sku)}" />
+          </div>
+          <div>
+            <label>Price Mode</label>
+            <select id="mode-${cssId(p.sku)}">
+              <option value="unit">單件 ${p.unitPrice}</option>
+              ${hasBox ? `<option value="box">原箱 ${p.boxPrice}</option>` : ''}
+            </select>
+          </div>
+          <button type="button" onclick="addProduct('${jsString(p.sku)}')">Add</button>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="notice">搵唔到產品，試下用 SKU / 中文產品名搜尋。</div>';
+}
+
+function cssId(s) {
+  return String(s).replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+function jsString(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+window.addProduct = function(sku) {
+  const p = PRODUCTS.find(x => x.sku === sku);
+  if (!p) return;
+  const qty = Math.max(1, Number($('qty-' + cssId(sku)).value || 1));
+  const mode = $('mode-' + cssId(sku)).value;
+  const price = mode === 'box' ? Number(p.boxPrice || p.unitPrice) : Number(p.unitPrice || 0);
+  const lineId = `${sku}-${mode}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  cart.push({
+    lineId,
+    sku: p.sku,
+    category: p.category,
+    name: p.name,
+    spec: p.spec,
+    texture: p.texture,
+    priceMode: mode,
+    qty,
+    unitPrice: price,
+    originalUnitPrice: p.unitPrice,
+    boxPrice: p.boxPrice,
+    lineSubtotal: qty * price,
+    discountEligible: mode !== 'box',
+    remarks: p.remarks || ''
+  });
+  renderCart();
+};
+
+window.removeLine = function(lineId) {
+  cart = cart.filter(x => x.lineId !== lineId);
+  renderCart();
+};
+
+function calculateTotals() {
+  const eligibleSubtotal = cart.filter(x => x.discountEligible).reduce((s,x) => s + x.qty*x.unitPrice, 0);
+  const nonEligibleSubtotal = cart.filter(x => !x.discountEligible).reduce((s,x) => s + x.qty*x.unitPrice, 0);
+  const subtotal = eligibleSubtotal + nonEligibleSubtotal;
+  const discountAmount = eligibleSubtotal >= PROMOS.discountThreshold ? round2(eligibleSubtotal * PROMOS.discountRate) : 0;
+  const discountedSubtotal = round2(subtotal - discountAmount);
+  const giftEligible = discountedSubtotal >= PROMOS.giftThreshold;
+  const shippingMethod = $('shippingMethod') ? $('shippingMethod').value : 'SF';
+  const isCod = shippingMethod.endsWith('_COD');
+  const freeShipping = !isCod && discountedSubtotal >= PROMOS.freeShippingThreshold;
+  const settings = loadSettings();
+  const shippingFee = isCod ? 0 : (freeShipping ? 0 : Number(settings.defaultShippingFee || 0));
+  const total = round2(discountedSubtotal + shippingFee);
+  return {
+    eligibleSubtotal, nonEligibleSubtotal, subtotal, discountAmount, discountedSubtotal,
+    giftEligible, shippingMethod, isCod, freeShipping, shippingFee, total
+  };
+}
+
+function round2(n) {
+  return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
+}
+
+function renderCart() {
+  const has = cart.length > 0;
+  $('cartEmpty').classList.toggle('hidden', has);
+  $('cartWrap').classList.toggle('hidden', !has);
+  $('cartBody').innerHTML = cart.map(x => `
+    <tr>
+      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? '原箱價 / 不參與九折' : '單件價 / 可參與九折'}</span></td>
+      <td class="num">${x.qty}</td>
+      <td class="num">${money(x.unitPrice)}</td>
+      <td class="num">${money(x.qty*x.unitPrice)}</td>
+      <td class="num"><button class="ghost" onclick="removeLine('${x.lineId}')">✕</button></td>
+    </tr>
+  `).join('');
+  renderSummary();
+}
+
+function renderSummary() {
+  const t = calculateTotals();
+  $('summary').innerHTML = `
+    <div class="summary-row"><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
+    <div class="summary-row"><span>九折 discount（只計 eligible 單件貨）</span><span>-${money(t.discountAmount)}</span></div>
+    <div class="summary-row"><span>After discount</span><span>${money(t.discountedSubtotal)}</span></div>
+    <div class="summary-row"><span>Shipping</span><span>${t.isCod ? '到付，不計入總額' : (t.freeShipping ? 'Free' : money(t.shippingFee))}</span></div>
+    <div class="summary-row"><span><strong>Total</strong></span><span><strong>${money(t.total)}</strong></span></div>
+  `;
+  let notes = [];
+  notes.push(t.discountAmount > 0 ? '✅ 已達滿 $120 9折。' : `未達滿 $120 9折，eligible items 尚差 ${money(Math.max(0, PROMOS.discountThreshold - t.eligibleSubtotal))}。`);
+  notes.push(t.giftEligible ? '🎁 已達滿 $150 送玩具。' : `未達滿 $150 送玩具，尚差 ${money(Math.max(0, PROMOS.giftThreshold - t.discountedSubtotal))}。`);
+  notes.push(t.freeShipping ? '🚚 已達滿 $800 Free Shipping。' : (t.isCod ? '🚚 到付單：運費由客人收貨時支付。' : `未達滿 $800 Free Shipping，尚差 ${money(Math.max(0, PROMOS.freeShippingThreshold - t.discountedSubtotal))}。`));
+  $('promoNotice').innerHTML = notes.join('<br>');
+}
+
+['shippingMethod'].forEach(id => document.addEventListener('change', e => {
+  if (e.target && e.target.id === id) renderSummary();
+}));
+
+function validateOrder() {
+  const errors = [];
+  if (!cart.length) errors.push('請先加入至少一件產品。');
+  if (!$('customerName').value.trim()) errors.push('請填客人姓名。');
+  if (!$('phone').value.trim()) errors.push('請填電話 / WhatsApp。');
+  if (!$('address').value.trim()) errors.push('Shipping order 必須填地址。');
+  return errors;
+}
+
+async function nextOrderId() {
+  const deviceId = currentDeviceId();
+  const key = `seq_${deviceId}_${todayKey()}`;
+  const next = Number(localStorage.getItem(key) || 0) + 1;
+  localStorage.setItem(key, String(next));
+  return `${deviceId}-${todayKey()}-${String(next).padStart(4, '0')}`;
+}
+
+function shippingLabel(v) {
+  return {
+    SF: '順豐',
+    JD: '京東',
+    SF_COD: '順豐到付',
+    JD_COD: '京東到付'
+  }[v] || v;
+}
+
+function buildWhatsAppText(order) {
+  const lines = order.items.map((x, i) => `${i+1}. [${x.sku}] ${x.name.replace(/\n/g, ' ')} x ${x.qty} @ ${money(x.unitPrice)} = ${money(x.qty*x.unitPrice)}${x.priceMode === 'box' ? '（原箱）' : ''}`);
+  const giftText = order.giftEligible ? '\n🎁 已達滿 $150 送玩具' : '';
+  const shipText = order.isCod ? `${shippingLabel(order.shippingMethod)}（運費到付）` : `${shippingLabel(order.shippingMethod)}${order.freeShipping ? '（Free Shipping）' : ''}`;
+  return `Hi ${order.customerName}，以下係你嘅 2026 HK寵物展預訂單：
+
+Order No: ${order.orderId}
+
+Items:
+${lines.join('\n')}
+
+Subtotal: ${money(order.subtotal)}
+Discount: -${money(order.discountAmount)}
+Shipping: ${order.isCod ? '到付' : (order.freeShipping ? 'Free' : money(order.shippingFee))}
+Total: ${money(order.total)}${giftText}
+
+送貨方式: ${shipText}
+地址: ${order.address}
+Payment: ${order.paymentMethod} / ${order.paymentStatus}
+
+Please confirm, and send us "Yes", 我哋會稍後確認付款及送貨安排，多謝！`;
+}
+
+async function saveCurrentOrder() {
+  const errors = validateOrder();
+  if (errors.length) {
+    showSaveMessage('error', errors.join('<br>'));
+    return;
+  }
+  const totals = calculateTotals();
+  const orderId = await nextOrderId();
+  const order = {
+    orderId,
+    deviceId: currentDeviceId(),
+    createdAt: nowISO(),
+    customerName: $('customerName').value.trim(),
+    phone: $('phone').value.trim(),
+    email: $('email').value.trim(),
+    address: $('address').value.trim(),
+    notes: $('notes').value.trim(),
+    paymentMethod: $('paymentMethod').value,
+    paymentStatus: $('paymentStatus').value,
+    shippingMethod: totals.shippingMethod,
+    items: cart.map(x => ({
+      sku: x.sku, category: x.category, name: x.name, spec: x.spec, texture: x.texture,
+      priceMode: x.priceMode, qty: x.qty, unitPrice: x.unitPrice, lineSubtotal: round2(x.qty*x.unitPrice),
+      discountEligible: x.discountEligible
+    })),
+    subtotal: round2(totals.subtotal),
+    discountAmount: round2(totals.discountAmount),
+    discountedSubtotal: round2(totals.discountedSubtotal),
+    shippingFee: round2(totals.shippingFee),
+    total: round2(totals.total),
+    giftEligible: totals.giftEligible,
+    freeShipping: totals.freeShipping,
+    isCod: totals.isCod,
+    syncStatus: 'pending',
+    syncedAt: '',
+    lastSyncError: ''
+  };
+  order.whatsappText = buildWhatsAppText(order);
+  await putOrder(order);
+  lastSavedOrder = order;
+  $('receiptBox').textContent = order.whatsappText;
+  showSaveMessage('success', `Order saved locally: <strong>${order.orderId}</strong>`);
+  cart = [];
+  renderCart();
+  clearCustomerForm(false);
+  await refreshOrders();
+  if (navigator.onLine && loadSettings().syncUrl) {
+    sendOrder(order.orderId).then(refreshOrders);
+  }
+}
+
+function clearCustomerForm(clearReceipt=true) {
+  ['customerName','phone','email','address','notes'].forEach(id => $(id).value = '');
+  $('paymentMethod').value = 'Cash';
+  $('paymentStatus').value = 'Pending confirmation';
+  $('shippingMethod').value = 'SF';
+  if (clearReceipt) $('receiptBox').textContent = 'Save order 後會喺呢度生成 WhatsApp receipt text。';
+  showSaveMessage('', '');
+  renderSummary();
+}
+
+function showSaveMessage(type, msg) {
+  const el = $('saveMessage');
+  if (!msg) { el.className = ''; el.innerHTML = ''; return; }
+  el.className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'notice';
+  el.innerHTML = msg;
+}
+
+async function refreshOrders() {
+  const orders = await getAllOrders();
+  const pending = orders.filter(o => o.syncStatus !== 'synced').length;
+  $('pendingPill').textContent = 'Pending: ' + pending;
+  $('pendingPill').className = pending ? 'pill warn' : 'pill ok';
+  $('orderCount').textContent = `${orders.length} orders`;
+  $('ordersList').innerHTML = orders.slice(0, 30).map(o => `
+    <div class="order-card">
+      <div class="row">
+        <strong>${htmlEscape(o.orderId)}</strong>
+        <span class="${o.syncStatus === 'synced' ? 'pill ok' : 'pill warn'}">${htmlEscape(o.syncStatus)}</span>
+      </div>
+      <div class="small">${new Date(o.createdAt).toLocaleString()} · ${htmlEscape(o.customerName)} · ${htmlEscape(o.phone)}</div>
+      <div class="row">
+        <span>Total: <strong>${money(o.total)}</strong></span>
+        <span>${htmlEscape(shippingLabel(o.shippingMethod))}</span>
+      </div>
+      <div class="btns" style="margin-top:8px">
+        <button class="secondary" onclick="loadReceipt('${o.orderId}')">Receipt Text</button>
+        <button class="secondary" onclick="sendOrder('${o.orderId}').then(refreshOrders)">Sync</button>
+        <button class="ghost" onclick="duplicateOrder('${o.orderId}')">Duplicate</button>
+      </div>
+      ${o.lastSyncError ? `<div class="small" style="color:#991b1b">Sync error: ${htmlEscape(o.lastSyncError)}</div>` : ''}
+    </div>
+  `).join('') || '<div class="notice">暫時未有 saved orders。</div>';
+}
+
+window.loadReceipt = async function(orderId) {
+  const o = await getOrder(orderId);
+  if (o) {
+    $('receiptBox').textContent = o.whatsappText || buildWhatsAppText(o);
+    lastSavedOrder = o;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+};
+
+window.duplicateOrder = async function(orderId) {
+  const o = await getOrder(orderId);
+  if (!o) return;
+  cart = (o.items || []).map(x => ({
+    ...x,
+    lineId: `${x.sku}-${Date.now()}-${Math.random()}`,
+    lineSubtotal: x.qty*x.unitPrice,
+    originalUnitPrice: x.unitPrice,
+    boxPrice: x.priceMode === 'box' ? x.unitPrice : null,
+    remarks: ''
+  }));
+  $('customerName').value = o.customerName || '';
+  $('phone').value = o.phone || '';
+  $('email').value = o.email || '';
+  $('address').value = o.address || '';
+  $('notes').value = o.notes || '';
+  $('paymentMethod').value = o.paymentMethod || 'Cash';
+  $('paymentStatus').value = 'Pending confirmation';
+  $('shippingMethod').value = o.shippingMethod || 'SF';
+  renderCart();
+  showSaveMessage('success', '已複製成 current order，請確認資料後再 Save 生成新 Order No.。');
+};
+
+async function sendOrder(orderId) {
+  const settings = loadSettings();
+  if (!settings.syncUrl) {
+    showSaveMessage('error', '未設定 Google Apps Script Web App URL。可先 Export CSV。');
+    return;
+  }
+  const order = await getOrder(orderId);
+  if (!order) return;
+  order.syncStatus = 'syncing';
+  await putOrder(order);
+  await refreshOrders();
+  try {
+    // Apps Script often needs a simple request to avoid CORS preflight.
+    // mode:no-cors means browser cannot read the response, so keep Export CSV as backup.
+    const payload = JSON.stringify(order);
+    await fetch(settings.syncUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: payload
+    });
+    order.syncStatus = 'synced';
+    order.syncedAt = nowISO();
+    order.lastSyncError = '';
+    await putOrder(order);
+    showSaveMessage('success', `Sync request sent: ${orderId}。請於 Google Sheet spot-check 確認。`);
+  } catch (err) {
+    order.syncStatus = 'failed';
+    order.lastSyncError = String(err && err.message ? err.message : err);
+    await putOrder(order);
+    showSaveMessage('error', `Sync failed: ${order.lastSyncError}`);
+  }
+}
+
+async function syncAll() {
+  const orders = await getAllOrders();
+  const pending = orders.filter(o => o.syncStatus !== 'synced');
+  if (!pending.length) {
+    showSaveMessage('success', '冇 pending orders。');
+    return;
+  }
+  for (const o of pending) {
+    await sendOrder(o.orderId);
+  }
+  await refreshOrders();
+}
+
+async function exportCsv() {
+  const orders = await getAllOrders();
+  const headers = [
+    'orderId','deviceId','createdAt','customerName','phone','email','address','notes',
+    'paymentMethod','paymentStatus','shippingMethod','subtotal','discountAmount',
+    'discountedSubtotal','shippingFee','total','giftEligible','freeShipping','isCod',
+    'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText'
+  ];
+  const rows = orders.map(o => headers.map(h => {
+    if (h === 'itemsJson') return JSON.stringify(o.items || []);
+    if (h === 'whatsappText') return o.whatsappText || '';
+    return o[h] ?? '';
+  }));
+  const csv = [headers, ...rows].map(r => r.map(escapeCsv).join(',')).join('\r\n');
+  downloadBlob(csv, `catstaste-orders-${todayKey()}-${currentDeviceId()}.csv`, 'text/csv;charset=utf-8');
+}
+
+async function exportJson() {
+  const orders = await getAllOrders();
+  downloadBlob(JSON.stringify({ exportedAt: nowISO(), deviceId: currentDeviceId(), orders }, null, 2), `catstaste-orders-backup-${todayKey()}-${currentDeviceId()}.json`, 'application/json;charset=utf-8');
+}
+
+function downloadBlob(content, filename, type) {
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+    a.remove();
+  }, 1000);
+}
+
+function updateOnlineStatus() {
+  const online = navigator.onLine;
+  $('onlinePill').textContent = online ? 'Online' : 'Offline';
+  $('onlinePill').className = online ? 'pill ok' : 'pill bad';
+}
+
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('SW registration failed', err));
+  }
+}
+
+$('saveOrderBtn').addEventListener('click', saveCurrentOrder);
+$('resetOrderBtn').addEventListener('click', () => {
+  cart = [];
+  renderCart();
+  clearCustomerForm(true);
+});
+$('copyReceiptBtn').addEventListener('click', async () => {
+  const text = $('receiptBox').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    showSaveMessage('success', 'WhatsApp text copied。');
+  } catch {
+    showSaveMessage('error', 'Copy 唔成功；可以手動 highlight 複製。');
+  }
+});
+$('syncAllBtn').addEventListener('click', syncAll);
+$('exportCsvBtn').addEventListener('click', exportCsv);
+$('exportJsonBtn').addEventListener('click', exportJson);
+
+window.addEventListener('online', () => { updateOnlineStatus(); if (loadSettings().syncUrl) syncAll(); });
+window.addEventListener('offline', updateOnlineStatus);
+
+(async function boot() {
+  registerSW();
+  db = await openDB();
+  setupSettingsUI();
+  initProductFilters();
+  updateOnlineStatus();
+  renderCart();
+  await refreshOrders();
+})();
+</script>
+</body>
+</html>
