@@ -114,12 +114,27 @@
       gap: 14px;
     }
     main > section { min-width: 0; }
-    @media (min-width: 780px) {
+    @media (min-width: 1120px) {
+      html, body {
+        height: 100%;
+        overflow: hidden;
+      }
       main {
         grid-template-columns: minmax(0, 1fr) minmax(340px, .82fr);
         align-items: start;
+        height: calc(100vh - 74px);
+        overflow: hidden;
       }
-      .right-sticky { position: sticky; top: 86px; }
+      main > section {
+        height: 100%;
+        overflow-y: auto;
+        min-height: 0;
+        padding-right: 4px;
+      }
+      .right-sticky {
+        position: static;
+        top: auto;
+      }
       body { padding-bottom: 0; }
     }
     .card {
@@ -245,10 +260,47 @@
       top: 76px;
       z-index: 12;
     }
+    .search-card .grid.three {
+      grid-template-columns: minmax(190px, 1.45fr) minmax(130px, .8fr) minmax(130px, .8fr);
+      gap: 8px;
+      align-items: end;
+    }
+    .search-card label {
+      font-size: 11px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .search-card input,
+    .search-card select {
+      min-height: 38px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    .search-input-with-action {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .search-input-with-action button {
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .search-card p.small {
+      margin: 8px 0 0;
+      font-size: 11px;
+      line-height: 1.3;
+    }
     @media (max-width: 899px) {
       .search-card { top: 73px; }
     }
-    @media (max-width: 1049px) {
+    @media (max-width: 559px) {
       .search-card .grid.three { grid-template-columns: 1fr; }
     }
     .product-list {
@@ -259,6 +311,15 @@
       overflow:auto;
       padding-right: 2px;
       min-width: 0;
+    }
+    @media (min-width: 660px) and (max-width: 1023px) {
+      .product-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .product {
+        height: 100%;
+      }
     }
     .product.inactive {
       opacity: .58;
@@ -306,11 +367,21 @@
       letter-spacing: 0;
       box-shadow: 0 8px 14px rgba(16, 24, 40, .10);
     }
+    .product-top .sku-badge {
+      display: none;
+    }
     .product-title {
       font-weight: 800;
       line-height: 1.25;
       white-space: pre-line;
       color: var(--ink);
+    }
+    .product-subtitle {
+      margin-top: 4px;
+      color: #888888;
+      font-size: 11px;
+      line-height: 1.35;
+      white-space: pre-line;
     }
     .product-meta {
       font-size: 12px;
@@ -324,6 +395,27 @@
       border:1px solid #d9e4f6;
       border-radius:999px;
       padding:3px 7px;
+    }
+    .packaging-tag {
+      display:inline-flex;
+      align-items:center;
+      gap: 5px;
+    }
+    .series-tag {
+      display:inline-flex;
+      align-items:center;
+      gap: 5px;
+      background:#fff;
+      font-weight: 850;
+      color: var(--ink);
+    }
+    .series-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--series-color, #6B7A90);
+      box-shadow: inset 0 0 0 1px rgba(16,24,40,.12);
+      flex: 0 0 auto;
     }
     .series-legend {
       display:flex;
@@ -354,14 +446,13 @@
     }
     .product-actions {
       display:grid;
-      grid-template-columns: 72px minmax(120px, 1fr) minmax(96px, auto) minmax(96px, auto);
+      grid-template-columns: 1fr;
       gap: 8px;
-      align-items:end;
+      align-items: stretch;
       min-width: 0;
     }
     .product-actions > * { min-width: 0; }
     @media (max-width: 560px) {
-      .product-actions { grid-template-columns: 64px minmax(0, 1fr) minmax(76px, auto) 68px; }
       .product-actions label { font-size: 11px; }
       .product-actions button { padding-left: 8px; padding-right: 8px; }
     }
@@ -419,6 +510,45 @@
       border-radius: var(--radius);
       font-size: 13px;
       line-height: 1.4;
+    }
+    .empty-state {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border:1px solid #c9d9fa;
+      background:#f7faff;
+      color:#30425f;
+      border-radius: var(--radius);
+    }
+    .empty-state-copy {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+    .empty-state strong {
+      color: var(--ink);
+      font-size: 14px;
+      display:block;
+    }
+    .empty-state .small {
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    .empty-state .btns {
+      flex: 0 0 auto;
+      display:flex;
+      align-items:center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .empty-state button {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 12px;
     }
     .success {
       padding: 10px 12px;
@@ -512,25 +642,26 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 8px;
+      gap: 6px;
       width: min(265px, calc(100vw - 20px));
-      padding: 8px;
+      padding: 5px 6px;
       border-radius: var(--radius);
       background: rgba(16, 24, 40, .96);
       color: #fff;
       box-shadow: 0 18px 40px rgba(16,24,40,.25);
     }
     .mobile-cart-bar span { display:block; font-size: 11px; color: #d7def0; }
-    .mobile-cart-bar strong { display:block; font-size: 16px; }
+    .mobile-cart-bar strong { display:block; font-size: 14px; line-height: 1.05; }
     .mobile-cart-bar a {
-      min-height: 40px;
+      min-height: 28px;
       display:flex;
       align-items:center;
-      padding: 0 11px;
+      padding: 0 9px;
       border-radius: var(--radius);
       background: var(--brand);
       color: #10203e;
       font-weight: 850;
+      font-size: 11px;
       text-decoration:none;
     }
     @media (min-width: 780px) {
@@ -603,10 +734,16 @@
     }
     .admin-products {
       display:grid;
-      gap: 7px;
+      gap: 8px;
       max-height: 500px;
       overflow:auto;
       padding-right: 2px;
+    }
+    @media (min-width: 660px) {
+      .admin-products {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
     }
     .admin-product-row {
       border: 1px solid #d9e4f6;
@@ -615,27 +752,157 @@
       background: #fff;
       display:grid;
       gap: 5px;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .admin-product-row:hover,
+    .admin-product-row.selected {
+      border-color: #87a9f6;
+      background: #f7faff;
     }
     .admin-product-row.inactive { opacity: .55; background:#f7f9fd; }
-    .admin-product-row strong { color: var(--ink); }
+    .admin-product-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 10px;
+    }
+    .admin-product-row strong {
+      color: var(--ink);
+      min-width: 0;
+      overflow-wrap:anywhere;
+      line-height: 1.25;
+    }
+    .admin-product-row .pill { flex: 0 0 auto; padding: 4px 8px; font-size: 11px; }
+    .admin-product-name {
+      color: var(--ink);
+      line-height: 1.3;
+      overflow-wrap:anywhere;
+    }
     .admin-form-grid { display:grid; grid-template-columns: 1fr; gap: 10px; }
     @media (min-width: 620px) { .admin-form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .admin-login { border: 1px solid #d9e4f6; background:#f7faff; padding: 10px; border-radius: var(--radius); margin-top: 10px; }
+    .admin-search-card {
+      border: 1px solid #d9e4f6;
+      background:#f8fbff;
+      border-radius: var(--radius);
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .admin-search-card label {
+      margin-bottom: 4px;
+    }
     .logo { cursor: pointer; }
 
-    .quick-actions { display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
-    .quick-actions button { padding: 10px 6px; min-height: 44px; font-size: 13px; }
-    .quick-actions button.minus { background:#fff; color: var(--bad); border: 1px solid #ffc9c2; }
-    .quick-actions button.plus { background: var(--brand-dark); }
-    .box-actions { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 7px; }
-    .box-actions button { min-height: 44px; }
+    .quick-actions,
+    .box-actions { display:grid; gap: 4px; }
+    .quick-actions.has-box { grid-template-columns: minmax(0, .82fr) minmax(0, .62fr) minmax(116px, 1.28fr) minmax(0, .62fr) minmax(0, .82fr); }
+    .quick-actions.no-box { grid-template-columns: minmax(0, .74fr) minmax(116px, 1.28fr) minmax(0, .74fr); }
+    .box-actions { grid-template-columns: minmax(0, 1fr) minmax(116px, .8fr) minmax(0, 1fr); margin-top: 7px; }
+    .quick-actions button,
+    .box-actions button {
+      padding: 4px 4px;
+      min-height: 30px;
+      font-size: 9px;
+      line-height: 1;
+      border-radius: 10px;
+      white-space: nowrap;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .quick-actions button.minus,
+    .box-actions button.minus { background:#fff; color: var(--bad); border: 1px solid #ffc9c2; }
+    .quick-actions button.plus,
+    .box-actions button.plus { background: var(--brand-dark); }
+    .product-qty-controls {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 30px;
+      border:1px solid #c9d9fa;
+      background:#f7faff;
+      border-radius: var(--radius);
+      overflow:hidden;
+    }
+    .product-qty-controls button {
+      flex: 0 0 34px;
+      min-height: 30px;
+      border-radius: 0;
+      background:#fff;
+      color: var(--brand-dark);
+      border:0;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .product-qty-controls button:first-child {
+      color: var(--bad);
+      border-right:1px dashed #c9d9fa;
+    }
+    .product-qty-controls button:last-child {
+      border-left:1px dashed #c9d9fa;
+    }
+    .product-qty-controls span {
+      flex: 1 1 auto;
+      min-width: 46px;
+      text-align:center;
+      font-weight: 900;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1;
+    }
+    .product-qty-readout {
+      min-height: 24px;
+      border:1px solid #c9d9fa;
+      background:#f7faff;
+      border-radius: var(--radius);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color: var(--ink);
+      font-weight: 900;
+      line-height: 1.15;
+      padding: 2px 4px;
+    }
+    .product-qty-readout span {
+      display:block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+    }
+    .product-shortcut-line {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      margin-top: 3px;
+    }
+    .product-card-summary {
+      display:flex;
+      justify-content:space-between;
+      gap: 8px;
+      flex-wrap:wrap;
+      border: 1px solid #d9e4f6;
+      background: rgba(255,255,255,.72);
+      border-radius: 9px;
+      padding: 4px 7px;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 850;
+      width: 100%;
+    }
+    .product-card-summary span {
+      color: var(--muted);
+      font-weight: 750;
+    }
     .hot-card-label { font-size: 12px; color: var(--muted); font-weight: 750; margin: 2px 0 6px; }
     .cart-qty-controls { display:flex; gap: 4px; align-items:center; justify-content:flex-end; }
     .cart-qty-controls button { min-height: 32px; padding: 4px 8px; border-radius: 8px; }
     .cart-qty-controls span { min-width: 24px; text-align:center; font-weight: 800; }
     @media (max-width: 560px) {
-      .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .product-actions { display:block; }
+      .product-actions { display:grid; grid-template-columns: 1fr; }
     }
 
 
@@ -673,12 +940,142 @@
       margin-top: 12px;
     }
     .customer-actions button { width: 100%; }
-    .product-actions {
-      grid-template-columns: 1fr;
+    .handoff-actions {
+      display: grid;
+      grid-template-columns: 1.25fr .9fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .handoff-actions button { width: 100%; }
+    .handoff-primary {
+      min-height: 52px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #123f91 0%, #2f5fb8 100%);
+      box-shadow: 0 12px 24px rgba(47, 95, 184, .22);
+    }
+    .handoff-note {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .customer-mode-shell {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #c9d9fa;
+      background: linear-gradient(180deg, #f7faff 0%, #ffffff 100%);
+      border-radius: var(--radius);
+      padding: 12px;
+      gap: 10px;
+    }
+    .customer-mode-shell.active {
+      display: grid;
+    }
+    .customer-mode-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .customer-mode-head h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+    .customer-mode-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .customer-mode-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
-    .quick-actions button.plus { font-size: 15px; }
-    .quick-actions button.minus { font-size: 12px; opacity: .92; }
+    .customer-mode-stat {
+      border: 1px solid #d9e4f6;
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 10px;
+    }
+    .customer-mode-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .customer-mode-stat strong {
+      display: block;
+      color: var(--ink);
+      font-size: 18px;
+      margin-top: 4px;
+      line-height: 1.1;
+    }
+    .customer-mode-shell .customer-actions {
+      margin-top: 0;
+    }
+    body.customer-entry-mode .app-hero,
+    body.customer-entry-mode .settings-card,
+    body.customer-entry-mode .search-card,
+    body.customer-entry-mode #productList,
+    body.customer-entry-mode #packingAppPanel,
+    body.customer-entry-mode #checkoutPanel > .card:first-child,
+    body.customer-entry-mode #checkoutPanel > .card:last-child,
+    body.customer-entry-mode .mobile-cart-bar {
+      display: none !important;
+    }
+    body.customer-entry-mode main {
+      grid-template-columns: 1fr !important;
+      max-width: 860px;
+      height: auto !important;
+      overflow: visible !important;
+    }
+    body.customer-entry-mode #checkoutPanel {
+      position: static;
+      top: auto;
+    }
+    body.customer-entry-mode,
+    body.customer-entry-mode html {
+      overflow: auto !important;
+      height: auto !important;
+    }
+    body.customer-entry-mode main > section {
+      height: auto !important;
+      overflow: visible !important;
+      padding-right: 0 !important;
+    }
+    body.customer-entry-mode #checkoutPanel > .card:nth-child(2) {
+      display: none !important;
+    }
+    body.customer-entry-mode .customer-mode-shell {
+      display: grid;
+    }
+    body.customer-entry-mode .topbar {
+      align-items: center;
+    }
+    body.customer-entry-mode .status .pill:not(:first-child) {
+      display: none;
+    }
+    body.customer-entry-mode .subtitle {
+      display: none;
+    }
+    body.customer-entry-mode #customerInfoCard {
+      border-color: #bcd1f5;
+      box-shadow: 0 20px 44px rgba(26, 45, 84, .12);
+    }
+    .product-actions {
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .quick-actions button.plus,
+    .quick-actions button.minus {
+      font-size: 9px;
+      opacity: .92;
+    }
     .box-actions button.plus { background: var(--brand-dark); }
     .box-actions button.minus { background:#fff; color: var(--bad); border: 1px solid #ffc9c2; }
     .sheet-tabs {
@@ -698,6 +1095,249 @@
       background: var(--brand-dark);
       color: #fff;
       border-color: var(--brand-dark);
+    }
+    .packing-app-card {
+      border-color: #bbf7d0;
+      background: linear-gradient(180deg, #f4fff8 0%, #ffffff 62%);
+    }
+    .packing-app-head {
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      align-items:flex-start;
+      flex-wrap: wrap;
+    }
+    .packing-app-actions {
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .packing-app-actions button {
+      min-height: 42px;
+      padding: 8px 10px;
+    }
+    .packing-stats {
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .packing-stats div {
+      border: 1px solid #bbf7d0;
+      background:#fff;
+      border-radius: var(--radius);
+      padding: 9px;
+    }
+    .packing-stats span {
+      display:block;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .packing-stats strong {
+      display:block;
+      font-size: 18px;
+      color: var(--ink);
+      margin-top: 2px;
+    }
+    .packing-app-tools {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      gap: 8px;
+      align-items:end;
+      margin-top: 10px;
+    }
+    .packing-app-tools input {
+      min-height: 42px;
+    }
+    .packing-app-tools button {
+      min-height: 42px;
+      padding: 8px 10px;
+    }
+    .packing-status-line {
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.35;
+      margin-top: 8px;
+    }
+    .packing-filter-row {
+      display:flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .packing-filter-row button {
+      min-height: 34px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #c9d9fa;
+      background:#fff;
+      color: var(--brand-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .packing-filter-row button.active {
+      background: var(--brand-dark);
+      color:#fff;
+      border-color: var(--brand-dark);
+    }
+    .packing-list-app {
+      display:grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .packing-item-card {
+      border: 1px solid #d9e4f6;
+      border-left: 7px solid var(--series-color, #5BAD6F);
+      border-radius: var(--radius);
+      background:#fff;
+      padding: 10px;
+      display:grid;
+      gap: 8px;
+    }
+    .packing-item-top {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items:start;
+    }
+    .packing-item-sku {
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+      font-weight: 900;
+      color: var(--ink);
+      overflow-wrap:anywhere;
+    }
+    .packing-item-name {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin-top: 2px;
+      overflow-wrap:anywhere;
+    }
+    .packing-item-meta {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .packing-item-meta span {
+      display:inline-flex;
+      align-items:center;
+      min-height: 28px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border:1px solid #d9e4f6;
+      background:#f7faff;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .packing-item-qty {
+      text-align:right;
+      color: var(--brand-dark);
+      font-weight: 950;
+      font-size: 24px;
+      line-height: 1;
+      white-space:nowrap;
+    }
+    .packing-item-qty span {
+      display:block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 3px;
+    }
+    .packing-order-tags {
+      display:flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .packing-order-tags span {
+      border:1px solid #d9e4f6;
+      border-radius: 999px;
+      background:#f7faff;
+      padding: 4px 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .packing-order-tags .note {
+      color:#7a4300;
+      background:#fff7e6;
+      border-color:#ffd58e;
+    }
+    .packing-order-tags .box {
+      color:#991b1b;
+      background:#fff2f0;
+      border-color:#fecaca;
+    }
+    .packing-order-tags .verified {
+      color:#166534;
+      background:#effaf6;
+      border-color:#bbf7d0;
+    }
+    .packing-order-list {
+      display:grid;
+      gap: 7px;
+    }
+    .packing-order-row {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items:start;
+      border-top: 1px dashed #d9e4f6;
+      padding-top: 8px;
+    }
+    .packing-order-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .packing-order-headline {
+      display:flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items:center;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .packing-order-headline .order-person {
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .packing-order-note {
+      margin-top: 4px;
+      color: #7a4300;
+      font-size: 12px;
+      line-height: 1.35;
+      background:#fff7e6;
+      border:1px solid #ffd58e;
+      border-radius: 10px;
+      padding: 6px 8px;
+      overflow-wrap:anywhere;
+    }
+    .packing-order-qty {
+      text-align:right;
+      color: var(--brand-dark);
+      font-size: 18px;
+      font-weight: 900;
+      white-space:nowrap;
+    }
+    .packing-order-qty span {
+      display:block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .packing-app-empty {
+      border:1px dashed #c9d9fa;
+      border-radius: var(--radius);
+      padding: 14px;
+      color: var(--muted);
+      background:#f7faff;
     }
     .sheet-filter-row {
       display:flex;
@@ -814,11 +1454,52 @@
       .sheet-tabs { grid-template-columns: 1fr; }
       .sheet-card-actions { grid-template-columns: 1fr; }
       .sheet-display { max-height: none; overflow: visible; }
+      .packing-app-actions,
+      .packing-stats,
+      .packing-app-tools {
+        grid-template-columns: 1fr;
+      }
+      .packing-filter-row {
+        overflow:auto;
+        flex-wrap: nowrap;
+        padding-bottom: 2px;
+      }
+      .packing-item-top {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .packing-item-qty {
+        text-align:left;
+        font-size: 22px;
+      }
+      .packing-order-row {
+        grid-template-columns: 1fr;
+      }
+      .packing-order-qty {
+        text-align:left;
+      }
+      .empty-state {
+        align-items:flex-start;
+        flex-direction: column;
+      }
+      .empty-state .btns {
+        width: 100%;
+      }
       .product { padding: 10px; }
       .product-top { align-items:center; }
-      .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-      .quick-actions button { min-height: 46px; }
-      .box-actions button { min-height: 46px; }
+      .search-card > .grid {
+        gap: 8px;
+      }
+      .search-input-with-action {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 6px;
+      }
+      .search-input-with-action button {
+        padding: 0 10px;
+        font-size: 11px;
+      }
+      .quick-actions { gap: 4px; }
+      .quick-actions button { min-height: 30px; }
+      .box-actions button { min-height: 30px; }
     }
 
 
@@ -849,43 +1530,46 @@
       gap: 10px;
     }
     .product-title {
-      font-size: 14px;
+      font-size: 13px;
     }
     .product-meta.compact-prices {
-      gap: 5px;
-      margin-top: 5px;
+      gap: 4px;
+      margin-top: 4px;
     }
     .product-meta.compact-prices .tag {
-      font-size: 11px;
-      padding: 3px 7px;
+      font-size: 10px;
+      padding: 2px 6px;
+      white-space: nowrap;
     }
     .product .small.product-remarks {
       margin-top: 3px;
       font-size: 11px;
       line-height: 1.25;
     }
-    .quick-actions {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+    .tag.box-saving-tag {
+      color: #b91c1c;
+      border-color: #fecaca;
+      background: #fff1f2;
+      font-weight: 900;
     }
+    .quick-actions.has-box { grid-template-columns: minmax(0, .84fr) minmax(0, .68fr) minmax(114px, .98fr) minmax(0, .68fr) minmax(0, .84fr); }
+    .quick-actions.no-box { grid-template-columns: minmax(0, .8fr) minmax(114px, 1fr) minmax(0, .8fr); }
     .quick-actions button.plus.primary-plus {
       background: #123f91;
       box-shadow: 0 8px 18px rgba(47,95,184,.18);
     }
     .box-actions button.box-plus {
-      min-height: 48px;
-      font-size: 15px;
+      min-height: 30px;
+      font-size: 9px;
     }
     .box-saving-line {
-      color: var(--ok);
-      font-size: 12px;
-      font-weight: 800;
-      margin-top: 5px;
+      display: none;
     }
     .mobile-cart-bar {
       left: 10px;
       right: 10px;
       width: auto;
-      padding: 9px 10px;
+      padding: 5px 6px;
       border-radius: 14px;
     }
     .mobile-cart-bar .cart-actions {
@@ -894,8 +1578,8 @@
       flex: 0 0 auto;
     }
     .mobile-cart-bar a {
-      min-height: 42px;
-      padding: 0 13px;
+      min-height: 28px;
+      padding: 0 9px;
       white-space: nowrap;
     }
     .mobile-cart-bar a.secondary-mobile {
@@ -999,49 +1683,163 @@
     .review-actions .back { background:#fff; color: var(--brand-dark); border:1px solid #c9d9fa; }
     .status .pill { max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
     @media (max-width: 620px) {
-      body { padding-bottom: 108px; }
-      .product-title { font-size: 13px; }
+      body { padding-bottom: 64px; }
+      .topbar {
+        gap: 8px;
+      }
+      h1 {
+        font-size: 16px;
+      }
+      .product-title { font-size: 12px; }
       .product-top { gap: 8px; }
-      .sku-badge { min-width: 48px; padding: 7px 8px; }
+      .sku-badge { min-width: 44px; padding: 6px 7px; font-size: 11px; }
+      .search-card h2,
+      .card h2 {
+        font-size: 15px;
+      }
+      .search-card .small {
+        font-size: 10px;
+      }
+      .filter-button-block {
+        margin-top: 6px;
+      }
       .product-meta.compact-prices { flex-wrap: nowrap; overflow-x: auto; scrollbar-width:none; }
       .product-meta.compact-prices::-webkit-scrollbar { display:none; }
-      .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .quick-actions button { font-size: 14px; min-height: 48px; }
-      .quick-actions button.minus { font-size: 13px; }
-      .box-actions { grid-template-columns: 1fr; }
-      .box-actions button.minus { order: 2; }
-      .box-actions button.box-plus { order: 1; min-height: 52px; font-size: 16px; }
+      .quick-actions button { font-size: 9px; min-height: 30px; padding-left: 2px; padding-right: 2px; }
+      .quick-actions button.minus,
+      .quick-actions button.plus { font-size: 9px; }
+      .product-qty-controls { min-height: 30px; }
+      .product-qty-controls button { flex: 0 0 34px; min-height: 30px; font-size: 18px; }
+      .product-qty-controls span { min-width: 46px; font-size: 15px; }
+      .box-actions { grid-template-columns: minmax(0, .9fr) minmax(96px, .78fr) minmax(0, .9fr); }
+      .box-actions button.minus { order: 1; }
+      .box-actions button.box-plus { order: 2; min-height: 30px; font-size: 9px; }
+      .quick-filter-chips { gap: 4px; }
+      .quick-filter-chips button { min-height: 26px; padding: 3px 7px; font-size: 10px; }
+      .filter-row-label { font-size: 9px; }
       .mobile-cart-bar { left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom)); }
-      .mobile-cart-bar strong { font-size: 18px; }
-      .mobile-cart-bar .cart-actions { flex-direction: column; }
-      .mobile-cart-bar a { min-height: 34px; padding: 0 10px; font-size: 12px; justify-content:center; }
+      .mobile-cart-bar strong { font-size: 14px; }
+      .mobile-cart-bar .cart-actions { flex-direction: row; }
+      .mobile-cart-bar a { min-height: 26px; padding: 0 8px; font-size: 11px; justify-content:center; }
       .review-modal { align-items: flex-end; padding: 8px; }
       .review-panel { border-radius: 18px 18px 10px 10px; max-height: 88vh; padding: 12px; }
       .review-panel h2 { font-size: 18px; }
       .review-actions { grid-template-columns: 1fr; }
       .review-actions button { min-height: 50px; }
       .sheet-order-card, .packing-card, .follow-card { padding: 12px; }
+      .handoff-actions,
+      .customer-mode-summary,
+      .customer-mode-shell .customer-actions { grid-template-columns: 1fr; }
+      .customer-mode-head h3 { font-size: 18px; }
+    }
+    @media (min-width: 621px) and (max-width: 1119px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+      .search-card {
+        position: sticky;
+        top: 74px;
+      }
+      .search-card > .grid {
+        grid-template-columns: minmax(0, 1.45fr) minmax(160px, .8fr) minmax(160px, .8fr);
+        gap: 8px;
+        align-items: end;
+      }
+      .product-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      #checkoutPanel {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      #checkoutPanel > .card:first-child,
+      #checkoutPanel > #customerInfoCard {
+        grid-column: span 1;
+      }
+      #checkoutPanel > .packing-app-card,
+      #checkoutPanel > .card:last-child {
+        grid-column: span 1;
+      }
+      .handoff-actions {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
 
     .quick-filter-chips {
       display:flex;
-      gap:7px;
+      gap:5px;
       flex-wrap:wrap;
-      margin-top:10px;
+      margin-top:8px;
+    }
+    .filter-select-state {
+      display:none;
+    }
+    .filter-button-block {
+      margin-top: 8px;
+    }
+    .filter-row-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      margin-bottom: 3px;
     }
     .quick-filter-chips button {
-      min-height:38px;
-      padding:8px 10px;
+      min-height:28px;
+      padding:4px 8px;
       background:#fff;
       color:var(--brand-dark);
       border:1px solid #c9d9fa;
-      font-size:13px;
+      border-radius:10px;
+      font-size:11px;
+      line-height:1.1;
+      white-space: nowrap;
     }
     .quick-filter-chips button.active {
       background:var(--brand-dark);
       color:#fff;
       border-color:var(--brand-dark);
+    }
+    @media (max-width: 620px) {
+      .search-card > .grid {
+        grid-template-columns: 1fr;
+      }
+      .quick-filter-chips {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        margin-top: 6px;
+        scrollbar-width: none;
+      }
+      .quick-filter-chips::-webkit-scrollbar {
+        display: none;
+      }
+      .quick-filter-chips button {
+        flex: 0 0 auto;
+      }
+      .product-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: stretch;
+      }
+      .product-card-summary {
+        justify-content: space-between;
+      }
+    }
+    @media (min-width: 621px) {
+      .product-card-summary {
+        min-width: 148px;
+      }
+    }
+    .category-filter-chips button {
+      display:inline-flex;
+      align-items:center;
+      gap: 5px;
+    }
+    .category-filter-chips button.active {
+      background:#10203e;
+      color:#fff;
     }
     .post-save-actions {
       display:grid;
@@ -1088,12 +1886,12 @@
       <div class="logo" id="brandLogo" title="Admin"><img src="./brand-logo.png" alt="CatsTaste" /></div>
       <div>
         <h1>CatsTaste Order Desk</h1>
-        <div class="subtitle">2026 HK 寵物展預訂 · 快速落單 · Event Ready UX</div>
+        <div class="subtitle">2026 HK 寵物展預訂 · 快速落單</div>
       </div>
     </div>
     <div class="status">
       <span id="onlinePill" class="pill">Checking...</span>
-      <span id="devicePill" class="pill">Device: CT-A</span>
+      <span id="devicePill" class="pill">裝置: CT-A</span>
       <span id="pendingPill" class="pill warn">未送出: 0</span>
     </div>
   </div>
@@ -1107,24 +1905,19 @@
           <h2 class="hero-title">Postal Order 快速工作台</h2>
           <p class="hero-copy">只處理已付款 / 要寄貨訂單；手機快按落單，儲存後集中送到 Google Sheet。</p>
         </div>
-        <div class="quick-stats">
-          <div class="stat"><span>Catalog</span><strong id="heroSkuCount">62 SKUs</strong></div>
-          <div class="stat"><span>Cart</span><strong id="cartItemCount">0 items</strong></div>
-          <div class="stat"><span>Total</span><strong id="cartTotalMini">HK$0</strong></div>
-        </div>
       </div>
     </div>
 
     <details class="card settings-card">
-      <summary><h2>Device & Sync Settings <span class="small">按此設定設備、同步 URL、備份</span></h2></summary>
+      <summary><h2>裝置及同步設定 <span class="small">按此設定設備、同步 URL、備份</span></h2></summary>
       <div class="settings-body">
         <div class="grid three">
           <div>
-            <label for="staffName">Staff Name / 同事名</label>
+            <label for="staffName">同事名</label>
             <input id="staffName" placeholder="例如 Vicky / Amy" autocomplete="name" />
           </div>
           <div>
-            <label for="deviceModelDisplay">Device / 裝置型號（自動）</label>
+            <label for="deviceModelDisplay">裝置型號（自動）</label>
             <input id="deviceModelDisplay" readonly title="由瀏覽器自動判斷，不能手動修改" />
           </div>
           <div>
@@ -1145,53 +1938,55 @@
           </div>
         </div>
         <div class="btns" style="margin-top:10px">
-          <button class="secondary" id="saveSettingsBtn">Save Settings</button>
+          <button class="secondary" id="saveSettingsBtn">儲存設定</button>
           <button class="secondary" id="refreshCatalogBtn">更新商品資料</button>
           <button class="secondary" id="syncAllBtn">送出未同步</button>
-          <button class="secondary" id="dailySummaryBtn">Daily Summary</button>
-          <button class="secondary" id="preEventChecklistBtn">Pre-event Checklist</button>
+          <button class="secondary" id="dailySummaryBtn">每日總結</button>
+          <button class="secondary" id="preEventChecklistBtn">展前檢查</button>
           <button class="danger" id="clearTestOrdersBtn">清空本機測試單</button>
           <button class="secondary" id="exportCsvBtn">Export CSV</button>
           <button class="secondary" id="exportJsonBtn">Export JSON Backup</button>
         </div>
         <div id="dailySummaryBox" class="notice hidden" style="margin-top:10px"></div>
         <div id="preEventChecklistBox" class="notice hidden" style="margin-top:10px"></div>
-        <p class="small">提示：填同事名；Device 會自動判斷 iPhone/iPad，同型號第二部請選 2號，避免 Order No. 撞號。商品資料不會自動更新；請有網時手動按「更新商品資料」。清空測試單只刪本機資料，不會刪 Google Sheet。</p>
+        <p class="small">提示：填同事名；裝置會自動判斷 iPhone/iPad，同型號第二部請選 2號，避免訂單編號撞號。商品資料不會自動更新；請有網時手動按「更新商品資料」。清空測試單只刪本機資料，不會刪 Google Sheet。</p>
       </div>
     </details>
 
     <div class="card search-card">
-      <h2>Products <span id="productCount" class="small"></span></h2>
-      <div class="grid three">
+      <h2>商品 <span id="productCount" class="small"></span></h2>
+      <div class="grid">
         <div>
-          <label for="searchInput">Search SKU / Name / Category</label>
-          <input id="searchInput" placeholder="例如 TSH / 吞拿魚 / 主食罐" autocomplete="off" />
+          <label for="searchInput">搜尋 SKU / 產品名 / 系列</label>
+          <div class="search-input-with-action">
+            <input id="searchInput" placeholder="例如 TSH / 吞拿魚 / 主食罐" autocomplete="off" />
+            <button type="button" class="secondary hidden" id="clearSearchBtn">取消</button>
+          </div>
         </div>
-        <div>
-          <label for="categoryFilter">Category</label>
+        <div class="filter-select-state">
+          <label for="categoryFilter">系列</label>
           <select id="categoryFilter"></select>
         </div>
-        <div>
+        <div class="filter-select-state">
           <label for="packagingFilter">包裝類型</label>
           <select id="packagingFilter"></select>
         </div>
       </div>
-      <p class="small">全部產品以 Hot Item 大按鈕顯示。全單滿 HK$120 後，單件貨品自動 9 折；原箱價不參與九折。</p>
-      <div class="quick-filter-chips" aria-label="快速類型篩選">
-        <button type="button" data-packaging="" onclick="setQuickPackagingFilter('')">全部</button>
-        <button type="button" data-packaging="罐裝" onclick="setQuickPackagingFilter('罐裝')">罐裝</button>
-        <button type="button" data-packaging="包裝" onclick="setQuickPackagingFilter('包裝')">包裝</button>
-        <button type="button" data-packaging="小食 / 肉棒" onclick="setQuickPackagingFilter('小食 / 肉棒')">小食</button>
-        <button type="button" data-packaging="福袋" onclick="setQuickPackagingFilter('福袋')">福袋</button>
-        <button type="button" data-packaging="玩具" onclick="setQuickPackagingFilter('玩具')">玩具</button>
+      <p class="small">全單滿 HK$120 後，單件貨品自動 9 折；原箱價不參與九折。</p>
+      <div class="filter-button-block">
+        <div class="filter-row-label">系列</div>
+        <div id="categoryQuickChips" class="quick-filter-chips category-filter-chips" aria-label="快速系列篩選"></div>
       </div>
-      <div class="series-legend" aria-label="Series color legend">
-        <span class="series-chip" style="--chip-color:#F5C842">Tasty</span>
-        <span class="series-chip" style="--chip-color:#5BAD6F">Healthy</span>
-        <span class="series-chip" style="--chip-color:#4A90C4">Purrfect</span>
-        <span class="series-chip" style="--chip-color:#F48FB1">Kitten</span>
-        <span class="series-chip" style="--chip-color:#9B59B6">Senior 7+</span>
-        <span class="series-chip" style="--chip-color:#F39C12">Snack</span>
+      <div class="filter-button-block">
+        <div class="filter-row-label">包裝類型</div>
+        <div class="quick-filter-chips" aria-label="快速包裝篩選">
+          <button type="button" data-packaging="" onclick="setQuickPackagingFilter('')">全部</button>
+          <button type="button" data-packaging="罐裝" onclick="setQuickPackagingFilter('罐裝')">罐裝</button>
+          <button type="button" data-packaging="包裝" onclick="setQuickPackagingFilter('包裝')">包裝</button>
+          <button type="button" data-packaging="小食 / 肉棒" onclick="setQuickPackagingFilter('小食 / 肉棒')">小食</button>
+          <button type="button" data-packaging="福袋" onclick="setQuickPackagingFilter('福袋')">福袋</button>
+          <button type="button" data-packaging="玩具" onclick="setQuickPackagingFilter('玩具')">玩具</button>
+        </div>
       </div>
     </div>
     <div id="productList" class="product-list"></div>
@@ -1199,16 +1994,16 @@
 
   <section class="right-sticky" id="checkoutPanel">
     <div class="card">
-      <h2 class="step-title"><span>Current Order <span class="small" id="cartLineCount">0 lines</span></span><span class="flow-step">Step 1 · 選貨</span></h2>
-      <div id="cartEmpty" class="notice">未加產品。每件產品都係 Hot Item，大按鈕可快速 +1 / +6 / +12。</div>
+      <h2 class="step-title"><span>目前訂單 <span class="small" id="cartLineCount">0 行</span></span><span class="flow-step">第 1 步 · 選貨</span></h2>
+      <div id="cartEmpty" class="notice">未加產品。每件產品都有大按鈕，可快速 +1 / +6 / +12。</div>
       <div id="cartWrap" class="hidden">
         <table>
           <thead>
             <tr>
-              <th>Item</th>
-              <th class="num">Qty</th>
-              <th class="num">Price</th>
-              <th class="num">Sub</th>
+              <th>商品</th>
+              <th class="num">數量</th>
+              <th class="num">價錢</th>
+              <th class="num">小計</th>
               <th></th>
             </tr>
           </thead>
@@ -1220,12 +2015,41 @@
       <div id="promoNotice" class="notice" style="margin-top:10px"></div>
       <div style="margin-top:10px">
         <label for="staffNotes">同事備註 / 部分即場取走</label>
-        <textarea id="staffNotes" placeholder="例：客人即場拎走 TSH x2；餘下貨品郵寄。會加入 WhatsApp receipt 俾客確認。"></textarea>
+        <textarea id="staffNotes" placeholder="例：客人即場拎走 TSH x2；餘下貨品郵寄。"></textarea>
+      </div>
+      <div class="handoff-actions">
+        <button type="button" id="handoffToCustomerBtn" class="handoff-primary">交俾客人填資料</button>
+        <button type="button" id="stayStaffModeBtn" class="secondary">繼續同事操作</button>
+      </div>
+      <div class="handoff-note">同事揀好貨後，按呢度切去客人表單模式，畫面只會保留客人要填嘅資料。</div>
+    </div>
+
+    <div class="customer-mode-shell" id="customerModeShell">
+      <div class="customer-mode-head">
+        <div>
+          <h3>請填寫收貨資料</h3>
+          <p>客人只需要核對金額，然後填寫姓名、WhatsApp 同送貨地址。</p>
+        </div>
+        <button type="button" class="secondary" id="backToStaffModeBtn">返回同事畫面</button>
+      </div>
+      <div class="customer-mode-summary">
+        <div class="customer-mode-stat">
+          <span>訂單行數</span>
+          <strong id="customerModeLineCount">0 行</strong>
+        </div>
+        <div class="customer-mode-stat">
+          <span>商品件數</span>
+          <strong id="customerModeItemCount">0 件</strong>
+        </div>
+        <div class="customer-mode-stat">
+          <span id="customerModeTotalLabel">優惠後應收</span>
+          <strong id="customerModeTotal">HK$0</strong>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Customer Info <span class="small">極簡忙碌模式</span></h2>
+    <div class="card" id="customerInfoCard">
+      <h2>客人資料 <span class="small">極簡忙碌模式</span></h2>
       <div class="grid two">
         <div>
           <label for="customerName">客人姓名 *</label>
@@ -1249,52 +2073,29 @@
       <input id="paymentStatus" type="hidden" value="Paid" />
       <input id="shippingMethod" type="hidden" value="SF" />
       <div class="customer-actions">
-        <button id="saveOrderBtn">Save + Send to Google Sheet</button>
-        <button class="secondary" id="resetOrderBtn">New / Clear Current</button>
+        <button id="saveOrderBtn">儲存並送到 Google Sheet</button>
+        <button class="secondary" id="resetOrderBtn">新單 / 清空目前訂單</button>
       </div>
       <div id="saveMessage" style="margin-top:10px"></div>
     </div>
 
-    <div class="card">
-      <h2>All Orders Dashboard <span class="small">本機 + Google Sheet</span></h2>
-      <div class="sync-panel">
-        <div class="sync-row">
-          <span id="localOrdersPill" class="pill">本機: 0</span>
-          <span id="localPendingPill" class="pill warn">未送出: 0</span>
-          <span id="sheetOrdersPill" class="pill info">Sheet: 未更新</span>
-        </div>
-        <div id="dashboardDetail" class="sync-detail">Save 後會先存在本機，再送到 Google Sheet。所有正式 order 請以 Google Sheet 為集中資料庫。</div>
-        <div class="btns">
-          <button class="secondary" id="refreshSheetBtn">Refresh Sheet Orders</button>
-          <button class="secondary" id="syncAllDashboardBtn">Send All to Sheet</button>
-        </div>
-        <div id="sheetDashboardBox" class="notice" style="margin-top:8px">有網時按 Refresh Sheet Orders，可查看所有機送到 Google Sheet 嘅今日總覽。</div>
-        <div id="sheetRecentOrders" class="order-list" style="margin-top:8px"></div>
+    <div class="card packing-app-card" id="packingAppPanel">
+      <h2>同事執貨後台</h2>
+      <div class="packing-app-actions">
+        <button id="openPackingPageBtn" type="button">開啟執貨後台</button>
+        <button class="secondary" id="openPackingPageNewBtn" type="button">新頁開啟</button>
       </div>
     </div>
 
     <div class="card">
-      <h2>同步狀態</h2>
+      <h2>落單台同步狀態</h2>
       <div class="sync-panel">
         <div class="sync-row">
           <span id="syncSummaryPill" class="pill warn">未送出: 0</span>
           <span id="unverifiedPill" class="pill info">待核實: 0</span>
         </div>
-        <div id="syncDetail" class="sync-detail">訂單會先存在本機；送出後請核對 Google Sheet，再標記已核實。</div>
+        <div id="syncDetail" class="sync-detail">訂單會先存在本機再送到 Google Sheet；核實、地址整理同 WhatsApp 文字請喺執貨後台處理。</div>
       </div>
-    </div>
-
-    <div class="card">
-      <h2>Receipt / WhatsApp Text</h2>
-      <div id="receiptBox" class="whatsapp-box">Save order 後會喺呢度生成 WhatsApp receipt text。</div>
-      <div class="btns" style="margin-top:10px">
-        <button class="secondary" id="copyReceiptBtn">Copy WhatsApp Text</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Saved Orders <span class="small" id="orderCount"></span></h2>
-      <div id="ordersList" class="order-list"></div>
     </div>
   </section>
 </main>
@@ -1304,20 +2105,20 @@
   <div class="admin-panel">
     <div class="admin-head">
       <div>
-        <h2 style="margin:0;color:var(--ink)">Admin · Product Catalog</h2>
-        <div class="small">PIN 由 Google Apps Script server-side 驗證；商品資料儲存到 Google Sheet Catalog。</div>
+        <h2 style="margin:0;color:var(--ink)">後台 · 商品目錄</h2>
+        <div class="small">輸入 PIN 後可管理商品；資料儲存到 Google Sheet Catalog。</div>
       </div>
-      <button class="secondary" id="adminCloseBtn" type="button">Close</button>
+      <button class="secondary" id="adminCloseBtn" type="button">關閉</button>
     </div>
 
     <div id="adminLoginBox" class="admin-login">
       <div class="grid two">
         <div>
-          <label for="adminPinInput">Admin PIN</label>
-          <input id="adminPinInput" type="password" inputmode="numeric" placeholder="Enter PIN" autocomplete="off" />
+          <label for="adminPinInput">後台 PIN</label>
+          <input id="adminPinInput" type="password" inputmode="numeric" placeholder="輸入 PIN" autocomplete="off" />
         </div>
         <div style="display:flex;align-items:end;gap:8px">
-          <button id="adminLoginBtn" type="button">Login</button>
+          <button id="adminLoginBtn" type="button">登入</button>
           <button class="secondary" id="adminRefreshCatalogBtn" type="button">只更新商品資料</button>
         </div>
       </div>
@@ -1329,31 +2130,44 @@
       <div class="admin-grid">
         <div>
           <div class="btns" style="margin:10px 0">
-            <button class="secondary" id="adminReloadBtn" type="button">Reload Catalog</button>
-            <button class="secondary" id="adminNewBtn" type="button">New Product</button>
+            <button class="secondary" id="adminReloadBtn" type="button">重新讀取商品</button>
+            <button class="secondary" id="adminNewBtn" type="button">新增商品</button>
           </div>
-          <label for="adminSearch">Search Admin Products</label>
-          <input id="adminSearch" placeholder="SKU / name / category" />
+          <div class="admin-search-card">
+            <label for="adminSearch">搜尋後台商品</label>
+            <input id="adminSearch" placeholder="SKU / 產品名 / 系列" />
+            <div class="filter-button-block">
+              <div class="filter-row-label">系列</div>
+              <div id="adminCategoryQuickChips" class="quick-filter-chips category-filter-chips" aria-label="後台快速系列篩選"></div>
+            </div>
+            <div class="filter-button-block">
+              <div class="filter-row-label">包裝類型</div>
+              <div id="adminPackagingQuickChips" class="quick-filter-chips" aria-label="後台快速包裝篩選"></div>
+            </div>
+          </div>
           <div id="adminProductList" class="admin-products" style="margin-top:10px"></div>
         </div>
-        <div>
-          <h3 style="margin:0 0 10px;color:var(--ink)">Product Form</h3>
+        <div id="adminProductFormPanel" class="hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px">
+            <h3 style="margin:0;color:var(--ink)">商品表格</h3>
+            <button class="ghost" id="adminCollapseFormBtn" type="button">收起表格</button>
+          </div>
           <div class="admin-form-grid two">
             <div><label for="adminSku">SKU *</label><input id="adminSku" /></div>
             <div><label for="adminId">ID *</label><input id="adminId" /></div>
-            <div><label for="adminCategory">系列 / Category *</label><input id="adminCategory" /></div>
-            <div><label for="adminSpec">規格 / Spec</label><input id="adminSpec" placeholder="包裝 / 罐裝 / 福袋 / Toy" /></div>
-            <div><label for="adminTexture">質地 / Texture</label><input id="adminTexture" placeholder="啫喱 / 肉汁 / 肉絲" /></div>
+            <div><label for="adminCategory">系列 *</label><input id="adminCategory" /></div>
+            <div><label for="adminSpec">規格</label><input id="adminSpec" placeholder="包裝 / 罐裝 / 福袋 / Toy" /></div>
+            <div><label for="adminTexture">質地</label><input id="adminTexture" placeholder="啫喱 / 肉汁 / 肉絲" /></div>
             <div><label for="adminUnitPrice">單件價 HK$ *</label><input id="adminUnitPrice" type="number" min="0" step="0.01" /></div>
             <div><label for="adminBoxPrice">原箱價 HK$</label><input id="adminBoxPrice" type="number" min="0" step="0.01" /></div>
-            <div style="display:flex;align-items:end;gap:8px"><label style="margin:0"><input id="adminActive" type="checkbox" style="width:auto;min-height:auto" checked /> Active / 啟用</label></div>
+            <div style="display:flex;align-items:end;gap:8px"><label style="margin:0"><input id="adminActive" type="checkbox" style="width:auto;min-height:auto" checked /> 啟用</label></div>
           </div>
           <div style="margin-top:10px"><label for="adminName">產品名 *</label><textarea id="adminName"></textarea></div>
           <div style="margin-top:10px"><label for="adminRemarks">備註</label><textarea id="adminRemarks"></textarea></div>
           <div class="btns" style="margin-top:12px">
-            <button id="adminSaveProductBtn" type="button">Save Product</button>
-            <button class="secondary" id="adminClearFormBtn" type="button">Clear Form</button>
-            <button class="danger" id="adminToggleActiveBtn" type="button">Toggle Active</button>
+            <button id="adminSaveProductBtn" type="button">儲存商品</button>
+            <button class="secondary" id="adminClearFormBtn" type="button">清空表格</button>
+            <button class="danger" id="adminToggleActiveBtn" type="button">啟用 / 停用</button>
           </div>
           <div id="adminMsg" style="margin-top:10px"></div>
         </div>
@@ -2199,7 +3013,12 @@ let products = [];
 const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec';
 const CATALOG_CACHE_KEY = 'catstaste_catalog_cache_v1';
 const CATALOG_CACHE_META_KEY = 'catstaste_catalog_cache_meta_v1';
+const PACKING_CACHE_KEY = 'catstaste_packing_dashboard_cache_v1';
+const LOCAL_ADMIN_PIN = '8888';
+const ADMIN_SESSION_KEY = 'catstaste_admin_session_v1';
 let adminPin = '';
+let adminCategoryFilter = '';
+let adminPackagingFilter = '';
 
 const DB_NAME = 'catstaste_order_db_v1';
 const DB_VERSION = 1;
@@ -2218,6 +3037,9 @@ let lastSavedOrder = null;
 let latestSheetDashboard = null;
 let sheetViewTab = 'orders';
 let sheetOrderFilter = 'all';
+let packingViewFilter = 'all';
+let packingSortMode = 'qty';
+let customerEntryMode = false;
 
 const $ = (id) => document.getElementById(id);
 const money = (n) => 'HK$' + (Number(n || 0)).toFixed(2).replace(/\.00$/, '');
@@ -2420,20 +3242,33 @@ function scriptUrl() {
 function jsonp(url, params={}, timeoutMs=15000) {
   return new Promise((resolve, reject) => {
     const cb = 'ct_cb_' + Date.now() + '_' + Math.random().toString(16).slice(2);
-    const qs = new URLSearchParams({ ...params, callback: cb });
+    const qs = new URLSearchParams({ ...params, callback: cb, _ts: Date.now() });
     const sep = url.includes('?') ? '&' : '?';
     const script = document.createElement('script');
+    let settled = false;
     const timer = setTimeout(() => {
       cleanup();
-      reject(new Error('Request timeout'));
+      reject(new Error(`Request timeout (${Math.round(timeoutMs / 1000)}s). 請檢查 Apps Script Web App 是否已部署為 Anyone、已完成授權，並使用最新 /exec URL。`));
     }, timeoutMs);
     function cleanup() {
       clearTimeout(timer);
       delete window[cb];
       script.remove();
     }
-    window[cb] = (data) => { cleanup(); resolve(data); };
-    script.onerror = () => { cleanup(); reject(new Error('Network or script load failed')); };
+    window[cb] = (data) => {
+      settled = true;
+      cleanup();
+      resolve(data);
+    };
+    script.onload = () => {
+      setTimeout(() => {
+        if (!settled) {
+          cleanup();
+          reject(new Error('Apps Script 有回應但不是 JSONP。請檢查 Web App access 是否 Anyone、是否用最新 deployment URL。'));
+        }
+      }, 250);
+    };
+    script.onerror = () => { cleanup(); reject(new Error('Network or script load failed. 請檢查網絡及 Apps Script deployment URL。')); };
     script.src = url + sep + qs.toString();
     document.body.appendChild(script);
   });
@@ -2453,7 +3288,7 @@ async function refreshCatalogFromSheet(showMessage=true) {
     initProductFilters();
     renderProducts();
     renderCart();
-    if (showMessage) showSaveMessage('success', `商品資料已更新：${clean.filter(p => p.active !== false).length} active / ${clean.length} total SKUs。`);
+    if (showMessage) showSaveMessage('success', `商品資料已更新：${clean.filter(p => p.active !== false).length} 個啟用 / ${clean.length} 個 SKU。`);
     if ($('adminProductList')) renderAdminProducts();
     return true;
   } catch (err) {
@@ -2491,6 +3326,17 @@ function productSeriesTheme(category) {
   return { color: '#6B7A90', ink: '#ffffff', soft: 'rgba(107, 122, 144, .10)' };
 }
 
+function productSeriesLabel(category) {
+  const text = String(category || '');
+  if (text.includes('Tasty')) return 'Tasty';
+  if (text.includes('Healthy')) return 'Healthy';
+  if (text.includes('Purrfect') || text.includes('主食罐')) return 'Purrfect';
+  if (text.includes('Kitten')) return 'Kitten';
+  if (text.includes('Senior')) return 'Senior 7+';
+  if (text.includes('Snack')) return 'Snack';
+  return text || 'Other';
+}
+
 function initProductFilters() {
   const currentCategory = $('categoryFilter').value || '';
   const currentPackaging = $('packagingFilter').value || '';
@@ -2500,40 +3346,139 @@ function initProductFilters() {
     const ia = order.indexOf(a), ib = order.indexOf(b);
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b, 'zh-Hant');
   });
-  $('categoryFilter').innerHTML = '<option value="">All categories</option>' + categories.map(c => `<option value="${htmlEscape(c)}">${htmlEscape(c)}</option>`).join('');
-  $('packagingFilter').innerHTML = '<option value="">All packaging types</option>' + packagingTypes.map(t => `<option value="${htmlEscape(t)}">${htmlEscape(t)}</option>`).join('');
-  $('productCount').textContent = `${visibleProducts().length} active / ${products.length} total SKUs`;
+  $('categoryFilter').innerHTML = '<option value="">全部系列</option>' + categories.map(c => `<option value="${htmlEscape(c)}">${htmlEscape(c)}</option>`).join('');
+  $('packagingFilter').innerHTML = '<option value="">全部包裝類型</option>' + packagingTypes.map(t => `<option value="${htmlEscape(t)}">${htmlEscape(t)}</option>`).join('');
+  if ($('categoryQuickChips')) {
+    $('categoryQuickChips').innerHTML = [
+      `<button type="button" data-category="" onclick="setQuickCategoryFilter('')">全部</button>`,
+      ...categories.map(category => {
+        const theme = productSeriesTheme(category);
+        return `<button type="button" data-category="${htmlEscape(category)}" onclick="setQuickCategoryFilter('${jsString(category)}')" style="border-color:${theme.color};color:${theme.color}">${htmlEscape(productSeriesLabel(category))}</button>`;
+      })
+    ].join('');
+  }
+  $('productCount').textContent = `${visibleProducts().length} 個啟用 / ${products.length} 個 SKU`;
   if ($('heroSkuCount')) $('heroSkuCount').textContent = `${visibleProducts().length} SKUs`;
   if ([...$('categoryFilter').options].some(o => o.value === currentCategory)) $('categoryFilter').value = currentCategory;
   if ([...$('packagingFilter').options].some(o => o.value === currentPackaging)) $('packagingFilter').value = currentPackaging;
   if (!$('searchInput').dataset.bound) {
-    $('searchInput').addEventListener('input', renderProducts);
-    $('categoryFilter').addEventListener('change', renderProducts);
-    $('packagingFilter').addEventListener('change', renderProducts);
+    $('searchInput').addEventListener('input', () => {
+      updateSearchClearButton();
+      renderProducts({ scrollTop: true });
+    });
+    $('categoryFilter').addEventListener('change', () => renderProducts({ scrollTop: true }));
+    $('packagingFilter').addEventListener('change', () => renderProducts({ scrollTop: true }));
+    $('clearSearchBtn').addEventListener('click', () => {
+      $('searchInput').value = '';
+      updateSearchClearButton();
+      renderProducts({ scrollTop: true });
+      $('searchInput').focus();
+    });
     $('searchInput').dataset.bound = '1';
   }
+  updateSearchClearButton();
   renderProducts();
 }
 
 function updateQuickFilterChips() {
+  const selectedCategory = $('categoryFilter') ? $('categoryFilter').value : '';
+  document.querySelectorAll('.quick-filter-chips button[data-category]').forEach(btn => {
+    const active = String(btn.dataset.category || '') === String(selectedCategory || '');
+    btn.classList.toggle('active', active);
+    if (active && btn.dataset.category) {
+      const theme = productSeriesTheme(btn.dataset.category);
+      btn.style.background = theme.color;
+      btn.style.color = theme.ink;
+      btn.style.borderColor = theme.color;
+    } else if (btn.dataset.category) {
+      const theme = productSeriesTheme(btn.dataset.category);
+      btn.style.background = '#fff';
+      btn.style.color = theme.color;
+      btn.style.borderColor = theme.color;
+    } else {
+      btn.style.background = active ? 'var(--brand-dark)' : '#fff';
+      btn.style.color = active ? '#fff' : 'var(--brand-dark)';
+      btn.style.borderColor = active ? 'var(--brand-dark)' : '#c9d9fa';
+    }
+  });
   const selected = $('packagingFilter') ? $('packagingFilter').value : '';
   document.querySelectorAll('.quick-filter-chips button[data-packaging]').forEach(btn => {
     btn.classList.toggle('active', String(btn.dataset.packaging || '') === String(selected || ''));
   });
 }
 
+window.setQuickCategoryFilter = function(value) {
+  if (!$('categoryFilter')) return;
+  $('categoryFilter').value = value || '';
+  updateQuickFilterChips();
+  renderProducts({ scrollTop: true });
+};
+
 window.setQuickPackagingFilter = function(value) {
   if (!$('packagingFilter')) return;
   $('packagingFilter').value = value || '';
   updateQuickFilterChips();
-  renderProducts();
+  renderProducts({ scrollTop: true });
+};
+
+window.resetProductFilters = function() {
+  if ($('searchInput')) $('searchInput').value = '';
+  if ($('categoryFilter')) $('categoryFilter').value = '';
+  if ($('packagingFilter')) $('packagingFilter').value = '';
+  updateSearchClearButton();
+  updateQuickFilterChips();
+  renderProducts({ scrollTop: true });
 };
 
 function htmlEscape(s) {
   return String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 
-function renderProducts() {
+function productCartQty(sku, mode='') {
+  return cart
+    .filter(x => x.sku === sku && (!mode || x.priceMode === mode))
+    .reduce((sum, x) => sum + Number(x.qty || 0), 0);
+}
+
+function productQtyControlsHtml(product, mode, qty) {
+  const disabled = product.active === false ? 'disabled' : '';
+  const sku = jsString(product.sku);
+  return `<div class="product-qty-controls" aria-label="${htmlEscape(mode === 'box' ? '原箱數量' : '單件數量')}">
+    <button type="button" ${disabled} onclick="adjustProduct('${sku}', -1, '${mode}')">-</button>
+    <span>${Number(qty || 0)}</span>
+    <button type="button" ${disabled} onclick="adjustProduct('${sku}', 1, '${mode}')">+</button>
+  </div>`;
+}
+
+function scrollToProductResults() {
+  const card = document.querySelector('.search-card');
+  if (!card) return;
+  const top = Math.max(0, window.scrollY + card.getBoundingClientRect().top - 78);
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+function productCardSummaryHtml(product, unitQty, boxQty) {
+  const boxPieces = productBoxQty(product);
+  const totalPieces = Number(unitQty || 0) + Number(boxQty || 0) * Number(boxPieces || 1);
+  const subtotal = round2(Number(unitQty || 0) * Number(product.unitPrice || 0) + Number(boxQty || 0) * Number(product.boxPrice || 0));
+  const boxPart = Number(boxQty || 0) ? `｜原箱 ${boxQty} 箱` : '';
+  return `<div class="product-card-summary"><div>已選 ${totalPieces} 件${boxPart}</div><div><span>小計</span> ${money(subtotal)}</div></div>`;
+}
+
+function productDisplayParts(product) {
+  const rawName = String(product.name || '').replace(/\r/g, '').trim();
+  const packagingType = productPackagingType(product);
+  if (packagingType !== '福袋' || !rawName.includes('\n')) {
+    return { title: rawName, subtitle: '' };
+  }
+  const lines = rawName.split('\n').map(line => line.trim()).filter(Boolean);
+  return {
+    title: lines[0] || rawName,
+    subtitle: lines.slice(1).join('\n')
+  };
+}
+
+function renderProducts(options={}) {
   updateQuickFilterChips();
   const q = $('searchInput').value.trim().toLowerCase();
   const cat = $('categoryFilter').value;
@@ -2548,15 +3493,21 @@ function renderProducts() {
     const hasBox = p.boxPrice !== null && p.boxPrice !== undefined && p.boxPrice !== '';
     const theme = productSeriesTheme(p.category);
     const boxSaving = Math.max(0, productBoxSavings(p));
+    const unitQty = productCartQty(p.sku, 'unit');
+    const boxQty = productCartQty(p.sku, 'box');
+    const display = productDisplayParts(p);
     return `
       <div class="product ${p.active === false ? 'inactive' : ''}" style="--series-color:${theme.color}; --series-ink:${theme.ink}; --series-soft:${theme.soft}">
         <div class="product-top">
           <div>
-            <div class="product-title">${htmlEscape(p.name)}</div>
+            <div class="product-title">${htmlEscape(display.title)}</div>
+            ${display.subtitle ? `<div class="product-subtitle">${htmlEscape(display.subtitle)}</div>` : ''}
             <div class="product-meta compact-prices">
+              <span class="tag series-tag"><span class="series-dot" aria-hidden="true"></span>${htmlEscape(productSeriesLabel(p.category))}</span>
+              ${hasBox ? `<span class="tag box-saving-tag">原箱優惠 - ${money(boxSaving)}</span>` : ''}
               <span class="tag">單件 ${money(p.unitPrice)}</span>
               ${hasBox ? `<span class="tag">原箱 ${money(p.boxPrice)}</span>` : ''}
-              <span class="tag">${htmlEscape(productPackagingType(p))}</span>
+              <span class="tag packaging-tag">${htmlEscape(productPackagingType(p))}</span>
               ${p.active === false ? `<span class="tag" style="color:var(--bad);border-color:#ffc9c2;background:#fff2f0">暫停接單</span>` : ''}
             </div>
           </div>
@@ -2564,19 +3515,29 @@ function renderProducts() {
         </div>
         ${p.remarks ? `<div class="small product-remarks">${htmlEscape(p.remarks)}</div>` : ''}
         <div class="product-actions">
-          <div class="quick-actions" aria-label="單件快速加減">
-            <button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -12, 'unit')">-12</button>
+          <div class="quick-actions ${hasBox ? 'has-box' : 'no-box'}" aria-label="商品快速加減">
+            ${hasBox ? `<button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -1, 'box')">原箱 -1</button>` : ''}
             <button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -6, 'unit')">-6</button>
-            <button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -1, 'unit')">-1</button>
-            <button type="button" class="plus primary-plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 1, 'unit')">+1</button>
+            ${productQtyControlsHtml(p, 'unit', unitQty)}
             <button type="button" class="plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 6, 'unit')">+6</button>
-            <button type="button" class="plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 12, 'unit')">+12</button>
+            ${hasBox ? `<button type="button" class="plus box-plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 1, 'box')">原箱 +1</button>` : ''}
           </div>
-          ${hasBox ? `<div class="box-saving-line">原箱優惠 ${money(boxSaving)}</div><div class="box-actions"><button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -1, 'box')">原箱 -1</button><button type="button" class="plus box-plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 1, 'box')">原箱 +1</button></div>` : ''}
+          ${productCardSummaryHtml(p, unitQty, boxQty)}
         </div>
       </div>
     `;
-  }).join('') || '<div class="notice">搵唔到產品，試下用 SKU / 中文產品名搜尋。停用商品會顯示「暫停接單」但不能加貨。</div>';
+  }).join('') || `
+    <div class="empty-state">
+      <div class="empty-state-copy">
+        <strong>搵唔到呢件產品</strong>
+        <div class="small">你而家揀嘅系列、包裝類型或者搜尋字眼冇對應商品。</div>
+      </div>
+      <div class="btns">
+        <button type="button" onclick="resetProductFilters()">清除篩選</button>
+        <button type="button" class="secondary" onclick="document.getElementById('searchInput')?.focus()">重新搜尋</button>
+      </div>
+    </div>`;
+  if (options.scrollTop) setTimeout(scrollToProductResults, 0);
 }
 
 function cssId(s) {
@@ -2585,6 +3546,45 @@ function cssId(s) {
 
 function jsString(s) {
   return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function updateSearchClearButton() {
+  const input = $('searchInput');
+  const button = $('clearSearchBtn');
+  if (!input || !button) return;
+  button.classList.toggle('hidden', !input.value.trim());
+}
+
+function setCustomerEntryMode(enabled) {
+  customerEntryMode = !!enabled;
+  document.body.classList.toggle('customer-entry-mode', customerEntryMode);
+  const shell = $('customerModeShell');
+  if (shell) shell.classList.toggle('active', customerEntryMode);
+  const handoffBtn = $('handoffToCustomerBtn');
+  if (handoffBtn) handoffBtn.disabled = !cart.length;
+  const step = document.querySelector('.flow-step');
+  if (step) step.textContent = customerEntryMode ? '第 2 步 · 客人填資料' : '第 1 步 · 選貨';
+  updateCustomerModeSummary();
+  if (customerEntryMode) {
+    setTimeout(() => $('customerName')?.focus(), 80);
+  }
+}
+
+function updateCustomerModeSummary(t = calculateTotals()) {
+  const itemCount = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  const lineCount = cart.length;
+  if ($('customerModeLineCount')) $('customerModeLineCount').textContent = `${lineCount} 行`;
+  if ($('customerModeItemCount')) $('customerModeItemCount').textContent = `${itemCount} 件`;
+  if ($('customerModeTotal')) $('customerModeTotal').textContent = money(t.total);
+  if ($('customerModeTotalLabel')) $('customerModeTotalLabel').textContent = totalAmountLabel(t);
+}
+
+function hasAnyDiscount(totals) {
+  return Number(totals && totals.totalDiscountAmount || 0) > 0;
+}
+
+function totalAmountLabel(totals) {
+  return hasAnyDiscount(totals) ? '優惠後應收' : '應收總額';
 }
 
 function productInputQty(sku) {
@@ -2637,6 +3637,7 @@ function setProductQtyInCart(sku, mode, delta) {
     if (existing.qty <= 0) {
       cart = cart.filter(x => x !== existing);
       renderCart();
+      renderProducts();
       return;
     }
     existing.lineSubtotal = round2(existing.qty * existing.unitPrice);
@@ -2670,6 +3671,7 @@ function setProductQtyInCart(sku, mode, delta) {
     });
   }
   renderCart();
+  renderProducts();
 }
 
 window.adjustProduct = function(sku, delta, mode='unit') {
@@ -2687,6 +3689,7 @@ window.removeLine = function(lineId) {
   if (!ok) return;
   cart = cart.filter(x => x.lineId !== lineId);
   renderCart();
+  renderProducts();
 };
 
 window.adjustCartLine = function(lineId, delta) {
@@ -2705,6 +3708,7 @@ window.adjustCartLine = function(lineId, delta) {
     }
   }
   renderCart();
+  renderProducts();
 };
 
 function calculateTotals() {
@@ -2736,11 +3740,11 @@ function renderCart() {
   $('cartWrap').classList.toggle('hidden', !has);
   $('cartBody').innerHTML = cart.map(x => `
     <tr>
-      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? `原箱價 / 不參與九折｜原箱優惠 ${money(x.boxSavings || 0)}` : '單件價 / 滿 HK$120 後可享九折'}</span></td>
+      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? `原箱價 / 不參與九折｜原箱優惠 - ${money(x.boxSavings || 0)}` : '單件價 / 滿 HK$120 後可享九折'}</span></td>
       <td class="num"><div class="cart-qty-controls"><button class="ghost" onclick="adjustCartLine('${x.lineId}', -1)">-</button><span>${x.qty}</span><button class="ghost" onclick="adjustCartLine('${x.lineId}', 1)">+</button></div></td>
       <td class="num">${money(x.unitPrice)}</td>
       <td class="num">${money(x.qty*x.unitPrice)}</td>
-      <td class="num"><button class="ghost cart-remove-btn" onclick="removeLine('${x.lineId}')">Remove</button></td>
+      <td class="num"><button class="ghost cart-remove-btn" onclick="removeLine('${x.lineId}')">移除</button></td>
     </tr>
   `).join('');
   renderSummary();
@@ -2748,15 +3752,16 @@ function renderCart() {
 
 function renderSummary() {
   const t = calculateTotals();
+  const finalTotalLabel = totalAmountLabel(t);
   $('summary').innerHTML = `
     <div class="summary-row"><span>商品總數</span><span>${money(t.retailSubtotal)}</span></div>
     <div class="summary-row"><span>原箱優惠</span><span>-${money(t.boxDiscountAmount)}</span></div>
     <div class="summary-row"><span>滿 HK$120 九折優惠</span><span>-${money(t.discountAmount)}</span></div>
     <div class="summary-row"><span>總優惠</span><span>-${money(t.totalDiscountAmount)}</span></div>
-    <div class="summary-row total-row"><span><strong>優惠後應收</strong></span><span><strong>${money(t.total)}</strong></span></div>
+    <div class="summary-row total-row"><span><strong>${finalTotalLabel}</strong></span><span><strong>${money(t.total)}</strong></span></div>
   `;
   let notes = [];
-  if (t.boxDiscountAmount > 0) notes.push(`📦 原箱優惠已扣減 ${money(t.boxDiscountAmount)}。`);
+  if (t.boxDiscountAmount > 0) notes.push(`📦 原箱優惠 - ${money(t.boxDiscountAmount)}。`);
   if (t.discountTriggered && t.eligibleSubtotal > 0) {
     notes.push('✅ 全單已滿 HK$120，所有單件貨品已套用 9 折。');
   } else if (t.discountTriggered) {
@@ -2768,6 +3773,7 @@ function renderSummary() {
   notes.push(`<strong>即場收款：${money(t.total)}</strong>`);
   $('promoNotice').innerHTML = notes.join('<br>');
   updateCartSummaryUI(t);
+  updateCustomerModeSummary(t);
 }
 
 function updateCartSummaryUI(t = calculateTotals()) {
@@ -2814,8 +3820,8 @@ function shippingLabel(v) {
 
 function buildWhatsAppText(order) {
   const lines = order.items.map((x, i) => {
-    const boxText = x.priceMode === 'box' ? `（原箱｜原箱優惠 ${money(x.boxSavings || 0)}）` : '';
-    const itemName = String(x.name || x.sku || '').replace(/\n/g, ' ');
+    const boxText = x.priceMode === 'box' ? `（原箱｜原箱優惠 - ${money(x.boxSavings || 0)}）` : '';
+    const itemName = String(x.name || '產品').replace(/\n/g, ' ');
     return `${i+1}. ${itemName} x ${x.qty}${x.priceMode === 'box' ? ' 原箱' : ''} = ${money(x.qty*x.unitPrice)}${boxText}`;
   });
   const giftText = order.giftEligible ? '\n🎁 已達滿 HK$150 送玩具' : '';
@@ -2824,6 +3830,7 @@ function buildWhatsAppText(order) {
   if (order.notes) noteLines.push(`客人備註: ${order.notes}`);
   if (order.staffNotes) noteLines.push(`取貨 / 出貨備註: ${order.staffNotes}`);
   const notesText = noteLines.length ? `\n\n備註:\n${noteLines.join('\n')}` : '';
+  const finalTotalLabel = totalAmountLabel(order);
   return `Hi ${order.customerName}，以下係你嘅 2026 HK寵物展預訂單：
 
 Order No: ${order.orderId}
@@ -2833,10 +3840,10 @@ Items:
 ${lines.join('\n')}
 
 商品總數: ${money(order.retailSubtotal || order.subtotal)}
-原箱優惠: -${money(order.boxDiscountAmount || 0)}
+原箱優惠 - ${money(order.boxDiscountAmount || 0)}
 滿 HK$120 九折優惠: -${money(order.discountAmount)}
 總優惠: -${money(order.totalDiscountAmount || ((order.boxDiscountAmount || 0) + (order.discountAmount || 0)))}
-優惠後應收: ${money(order.total)}${giftText}
+${finalTotalLabel}: ${money(order.total)}${giftText}
 
 送貨方式: ${shipText}
 地址: ${order.address}
@@ -2856,7 +3863,7 @@ function buildOrderReviewText(totals) {
   const itemCount = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
   const itemLines = cart.slice(0, 8).map(x => `• ${x.sku} ${x.priceMode === 'box' ? '原箱' : '單件'} x ${x.qty} = ${money(x.qty * x.unitPrice)}`);
   const more = cart.length > 8 ? `\n• ...另有 ${cart.length - 8} 行` : '';
-  return `請核對訂單資料：\n\n客人：${$('customerName').value.trim()}\nWhatsApp：${$('phone').value.trim()}\n地址：${$('address').value.trim()}\n\nItems：${itemCount} 件 / ${cart.length} 行\n${itemLines.join('\n')}${more}\n\n商品總數：${money(totals.retailSubtotal)}\n原箱優惠：-${money(totals.boxDiscountAmount)}\n九折優惠：-${money(totals.discountAmount)}\n總優惠：-${money(totals.totalDiscountAmount)}\n優惠後應收：${money(totals.total)}\n\n確認儲存？`;
+  return `請核對訂單資料：\n\n客人：${$('customerName').value.trim()}\nWhatsApp：${$('phone').value.trim()}\n地址：${$('address').value.trim()}\n\nItems：${itemCount} 件 / ${cart.length} 行\n${itemLines.join('\n')}${more}\n\n商品總數：${money(totals.retailSubtotal)}\n原箱優惠 - ${money(totals.boxDiscountAmount)}\n九折優惠：-${money(totals.discountAmount)}\n總優惠：-${money(totals.totalDiscountAmount)}\n${totalAmountLabel(totals)}：${money(totals.total)}\n\n確認儲存？`;
 }
 
 function addressWarningMessage(address) {
@@ -2894,7 +3901,7 @@ function buildOrderReviewHtml(totals) {
       <div class="summary-row"><span>滿 HK$120 九折優惠</span><span>-${money(totals.discountAmount)}</span></div>
       <div class="summary-row"><span>總優惠</span><span>-${money(totals.totalDiscountAmount)}</span></div>
     </div>
-    <div class="review-total"><span>優惠後應收</span><span>${money(totals.total)}</span></div>`;
+    <div class="review-total"><span>${totalAmountLabel(totals)}</span><span>${money(totals.total)}</span></div>`;
 }
 
 function showOrderReviewModal(totals) {
@@ -3029,10 +4036,10 @@ async function saveCurrentOrder() {
   order.whatsappText = buildWhatsAppText(order);
   await putOrder(order);
   lastSavedOrder = order;
-  $('receiptBox').textContent = order.whatsappText;
   cart = [];
   renderCart();
   clearCustomerForm(false);
+  setCustomerEntryMode(false);
   await refreshOrders();
   showSaveMessage('notice', `✅ 本機已保存：<strong>${order.orderId}</strong><br>正在送到雲端...`);
   if (navigator.onLine) {
@@ -3048,7 +4055,6 @@ function clearCustomerForm(clearReceipt=true) {
   $('paymentMethod').value = 'Cash';
   $('paymentStatus').value = 'Paid';
   $('shippingMethod').value = 'SF';
-  if (clearReceipt) $('receiptBox').textContent = 'Save order 後會喺呢度生成 WhatsApp receipt text。';
   if (clearReceipt) showSaveMessage('', '');
   renderSummary();
 }
@@ -3066,27 +4072,16 @@ function postSaveActionHtml(orderId, sent=false) {
     : '✅ 本機已保存<br>⚠️ 未送出到雲端，請有網時再送出';
   return `<div><strong>${htmlEscape(orderId || '')}</strong><br>${statusLine}</div>
     <div class="post-save-actions">
-      <button type="button" class="secondary" onclick="copyLatestReceipt()">Copy WhatsApp</button>
       <button type="button" onclick="startNewOrderFromPostSave()">New Order</button>
-      <button type="button" class="secondary" onclick="refreshSheetDashboard(true); document.getElementById('sheetDashboardBox')?.scrollIntoView({behavior:'smooth', block:'start'});">View Sheet Orders</button>
+      <button type="button" class="secondary" onclick="location.href='./packing.html'">去同事執貨後台</button>
     </div>`;
 }
-
-window.copyLatestReceipt = async function() {
-  const text = $('receiptBox') ? $('receiptBox').textContent : '';
-  if (!text || text.includes('Save order')) return showSaveMessage('error', '未有 receipt text 可複製。');
-  try {
-    await navigator.clipboard.writeText(text);
-    showSaveMessage('success', 'WhatsApp text copied。');
-  } catch {
-    showSaveMessage('error', 'Copy 唔成功；可以手動 highlight 複製。');
-  }
-};
 
 window.startNewOrderFromPostSave = function() {
   cart = [];
   renderCart();
   clearCustomerForm(false);
+  setCustomerEntryMode(false);
   showSaveMessage('success', '已準備新訂單。');
   const productCard = document.querySelector('.search-card');
   if (productCard) productCard.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -3123,19 +4118,8 @@ async function refreshOrders() {
   const toSend = orders.filter(o => needsSend(o.syncStatus)).length;
   const unverified = orders.filter(o => o.syncStatus === 'sent_unverified').length;
   const verified = orders.filter(o => isVerifiedStatus(o.syncStatus)).length;
-  const today = (() => { const p = hkDateParts(); return `${p.year}-${p.month}-${p.day}`; })();
-  const todayOrders = orders.filter(o => String(o.createdAt || '').slice(0, 10) === today);
-  const todayTotal = todayOrders.reduce((s,o) => s + Number(o.total || 0), 0);
   $('pendingPill').textContent = unverified ? `待核實: ${unverified}` : `未送出: ${toSend}`;
   $('pendingPill').className = toSend ? 'pill warn' : unverified ? 'pill info' : 'pill ok';
-  if ($('localOrdersPill')) $('localOrdersPill').textContent = `本機: ${orders.length}`;
-  if ($('localPendingPill')) {
-    $('localPendingPill').textContent = `未送出: ${toSend}`;
-    $('localPendingPill').className = toSend ? 'pill warn' : 'pill ok';
-  }
-  if ($('dashboardDetail')) {
-    $('dashboardDetail').textContent = `本機今日 ${todayOrders.length} 張 / ${money(todayTotal)}；未送出 ${toSend}，待核實 ${unverified}，已核實 ${verified}。正式資料請以 Google Sheet 為集中資料庫。`;
-  }
   if ($('syncSummaryPill')) {
     $('syncSummaryPill').textContent = `未送出: ${toSend}`;
     $('syncSummaryPill').className = toSend ? 'pill warn' : 'pill ok';
@@ -3145,47 +4129,7 @@ async function refreshOrders() {
     $('unverifiedPill').className = unverified ? 'pill info' : 'pill ok';
   }
   if ($('syncDetail')) {
-    $('syncDetail').textContent = `本機共 ${orders.length} 張單；未送出 ${toSend} 張，待核實 ${unverified} 張，已核實 ${verified} 張。所有 order 應送到 Google Sheet，不能只留在個別裝置。`;
-  }
-  $('orderCount').textContent = `${orders.length} orders`;
-  $('ordersList').innerHTML = orders.slice(0, 40).map(o => {
-    const itemCount = (o.items || []).reduce((sum, item) => sum + Number(item.qty || 0), 0);
-    const cls = isVerifiedStatus(o.syncStatus) ? 'verified' : o.syncStatus === 'sent_unverified' ? 'sent-check' : 'needs-send';
-    const addressShort = String(o.address || '').length > 42 ? String(o.address || '').slice(0, 42) + '…' : String(o.address || '');
-    return `
-    <div class="order-card ${cls}">
-      <div class="row">
-        <strong>${htmlEscape(o.orderId)}</strong>
-        <span class="${syncPillClass(o.syncStatus)}">${htmlEscape(syncStatusLabel(o.syncStatus))}</span>
-      </div>
-      <div class="small">${htmlEscape(o.createdAt || '')} · ${htmlEscape(o.staffName || '')} · ${htmlEscape(o.deviceId || '')}</div>
-      <div><strong>${htmlEscape(o.customerName || '')}</strong>｜${htmlEscape(o.phone || '')}</div>
-      <div class="small">${htmlEscape(addressShort)}</div>
-      <div class="row" style="margin-top:6px">
-        <span>Total: <strong>${money(o.total)}</strong></span>
-        <span>${itemCount} items / ${(o.items || []).length} lines</span>
-      </div>
-      ${o.staffNotes ? `<div class="notice" style="margin-top:8px">同事備註：${htmlEscape(o.staffNotes)}</div>` : ''}
-      <div class="btns" style="margin-top:8px">
-        <button class="secondary" onclick="loadReceipt('${o.orderId}')">Receipt</button>
-        ${!isVerifiedStatus(o.syncStatus) ? `<button class="secondary" onclick="sendOrder('${o.orderId}').then(refreshOrders)">${o.syncStatus === 'sent_unverified' ? 'Resend to Sheet' : 'Send to Sheet'}</button>` : ''}
-        ${o.syncStatus === 'sent_unverified' ? `<button onclick="markOrderVerified('${o.orderId}')">Mark Verified</button>` : ''}
-        <button class="ghost" onclick="duplicateOrder('${o.orderId}')">Duplicate</button>
-        <button class="danger" onclick="deleteLocalOrder('${o.orderId}')">Delete Local</button>
-      </div>
-      ${needsSend(o.syncStatus) ? `<div class="error" style="margin-top:8px">⚠️ 呢張單未送到 Google Sheet，唔好只留喺本機。</div>` : ''}
-      ${o.lastSyncError ? `<div class="small" style="color:#991b1b">Sync error: ${htmlEscape(o.lastSyncError)}</div>` : ''}
-    </div>`;
-  }).join('') || '<div class="notice">暫時未有 saved orders。</div>';
-}
-
-
-window.loadReceipt = async function(orderId) {
-  const o = await getOrder(orderId);
-  if (o) {
-    $('receiptBox').textContent = o.whatsappText || buildWhatsAppText(o);
-    lastSavedOrder = o;
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    $('syncDetail').textContent = `本機共 ${orders.length} 張單；未送出 ${toSend} 張，待核實 ${unverified} 張，已核實 ${verified} 張。收據、地址同核實請喺同事執貨後台處理。`;
   }
 };
 
@@ -3279,7 +4223,9 @@ async function sendOrder(orderId) {
 
 function renderSheetDashboard(data) {
   latestSheetDashboard = data;
+  savePackingDashboardCache(data);
   renderSheetDashboardView();
+  renderPackingApp();
 }
 
 function setSheetViewTab(tab) {
@@ -3290,6 +4236,115 @@ function setSheetViewTab(tab) {
 function setSheetOrderFilter(filter) {
   sheetOrderFilter = filter;
   renderSheetDashboardView();
+}
+
+function loadPackingDashboardCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PACKING_CACHE_KEY) || 'null');
+    if (cached && cached.ok) {
+      latestSheetDashboard = cached;
+      renderSheetDashboardView();
+      renderPackingApp();
+      return true;
+    }
+  } catch (err) {
+    console.warn('Packing cache load failed', err);
+  }
+  return false;
+}
+
+function savePackingDashboardCache(data) {
+  if (!data || !data.ok) return;
+  try {
+    localStorage.setItem(PACKING_CACHE_KEY, JSON.stringify({ ...data, cachedAt: nowHK() }));
+  } catch (err) {
+    console.warn('Packing cache save failed', err);
+  }
+}
+
+function packingDashboardAgeText(data) {
+  if (!data) return '未更新';
+  const when = data.cachedAt || data.serverTime || '';
+  if (!when) return '已快取';
+  return `最後更新 ${String(when).replace('T', ' ').slice(0, 16)}`;
+}
+
+function productThemeForSku(sku) {
+  const p = products.find(x => String(x.sku || '').toUpperCase() === String(sku || '').toUpperCase());
+  return productSeriesTheme(p && p.category);
+}
+
+function buildPackingRowsForApp(data) {
+  const map = {};
+  const orders = (data && data.todayOrderCards) || [];
+  orders.forEach(order => {
+    (order.items || []).forEach(item => {
+      const sku = String(item.sku || '').toUpperCase();
+      if (!sku) return;
+      const mode = item.priceMode === 'box' ? '原箱' : '單件';
+      const key = `${sku}|${mode}`;
+      if (!map[key]) {
+        map[key] = {
+          sku,
+          mode,
+          product: item.name || '',
+          qty: 0,
+          amount: 0,
+          orderCount: 0,
+          noteCount: 0,
+          unverifiedCount: 0,
+          orders: []
+        };
+      }
+      const qty = Number(item.qty || 0);
+      map[key].qty += qty;
+      map[key].amount += Number(item.lineSubtotal || 0);
+      map[key].orderCount += 1;
+      if ([order.notes, order.staffNotes].filter(Boolean).join(' / ')) map[key].noteCount += 1;
+      if (!isVerifiedStatus(order.syncStatus)) map[key].unverifiedCount += 1;
+      map[key].orders.push({
+        orderId: order.orderId || '',
+        customerName: order.customerName || '',
+        qty,
+        mode,
+        status: order.syncStatus || '',
+        notes: [order.notes, order.staffNotes].filter(Boolean).join(' / ')
+      });
+    });
+  });
+  return Object.values(map);
+}
+
+function matchesPackingFilter(row) {
+  if (packingViewFilter === 'box') return row.mode === '原箱';
+  if (packingViewFilter === 'unit') return row.mode === '單件';
+  if (packingViewFilter === 'note') return row.noteCount > 0;
+  if (packingViewFilter === 'unverified') return row.unverifiedCount > 0;
+  return true;
+}
+
+function sortPackingRows(rows) {
+  const copy = rows.slice();
+  if (packingSortMode === 'sku') {
+    return copy.sort((a, b) => String(a.sku).localeCompare(String(b.sku)) || String(a.mode).localeCompare(String(b.mode)));
+  }
+  return copy.sort((a, b) => {
+    if (Number(b.qty || 0) !== Number(a.qty || 0)) return Number(b.qty || 0) - Number(a.qty || 0);
+    return String(a.sku).localeCompare(String(b.sku)) || String(a.mode).localeCompare(String(b.mode));
+  });
+}
+
+function syncPackingFilterButtons() {
+  document.querySelectorAll('#packingFilterRow button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.packingFilter === packingViewFilter);
+  });
+  if ($('packingSortBtn')) $('packingSortBtn').textContent = packingSortMode === 'qty' ? '數量優先' : 'SKU 排序';
+}
+
+function renderPackingApp() {
+  if ($('packingOnlinePill')) $('packingOnlinePill').className = 'pill info';
+  if ($('packingCachePill')) $('packingCachePill').textContent = '獨立版面';
+  if ($('packingStatusLine')) $('packingStatusLine').textContent = '按上面掣會去另一個執貨版面；有網時更新，冇網時可用快取。';
 }
 
 function sheetOrderNeedsFollowUp(o) {
@@ -3309,7 +4364,7 @@ function buildSheetReceiptText(o) {
   const itemText = (o.items && o.items.length)
     ? o.items.map(i => `- ${String(i.name || i.sku || '').replace(/\n/g, ' ')} x ${Number(i.qty || 0)}${i.priceMode === 'box' ? ' 原箱' : ''} = ${money(i.lineSubtotal || 0)}`).join('\n')
     : (o.itemsText || '');
-  return `Hi ${o.customerName || ''}，以下係你嘅 2026 HK寵物展預訂單：\n\nOrder No: ${o.orderId || ''}\n\n${itemText}\n\n優惠後應收：${money(o.total || 0)}\n\n送貨地址：${o.address || ''}\n\nPlease confirm, and send us "Yes", 我哋會稍後確認付款及送貨安排，多謝！`;
+  return `Hi ${o.customerName || ''}，以下係你嘅 2026 HK寵物展預訂單：\n\nOrder No: ${o.orderId || ''}\n\n${itemText}\n\n${totalAmountLabel(o)}：${money(o.total || 0)}\n\n送貨地址：${o.address || ''}\n\nPlease confirm, and send us "Yes", 我哋會稍後確認付款及送貨安排，多謝！`;
 }
 
 async function copySheetReceipt(orderId) {
@@ -3414,7 +4469,8 @@ function renderSheetDashboardView() {
 async function refreshSheetDashboard(showMessage=true) {
   if (!scriptUrl()) return;
   if (!navigator.onLine) {
-    if (showMessage) showSaveMessage('error', '目前離線，不能讀取 Google Sheet Dashboard。');
+    loadPackingDashboardCache();
+    if (showMessage) showSaveMessage('error', '目前離線，不能讀取 Google Sheet；已改用最後一次執貨快取。');
     return;
   }
   try {
@@ -3425,12 +4481,13 @@ async function refreshSheetDashboard(showMessage=true) {
     const data = await jsonp(scriptUrl(), { action: 'sheetSummary' }, 22000);
     if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Invalid sheet summary response');
     renderSheetDashboard(data);
-    if (showMessage) showSaveMessage('success', 'Google Sheet Dashboard 已更新。');
+    if (showMessage) showSaveMessage('success', '今日執貨清單 / Google Sheet Dashboard 已更新並已離線快取。');
   } catch (err) {
     if ($('sheetDashboardBox')) {
       $('sheetDashboardBox').className = 'error';
       $('sheetDashboardBox').textContent = '讀取 Google Sheet Dashboard 失敗：' + String(err && err.message ? err.message : err);
     }
+    loadPackingDashboardCache();
     if (showMessage) showSaveMessage('error', '讀取 Sheet Dashboard 失敗：' + String(err && err.message ? err.message : err));
   }
 }
@@ -3506,9 +4563,42 @@ function setAdminLoginMessage(type, msg) {
   el.innerHTML = msg;
 }
 
+function saveAdminSession(pin) {
+  try {
+    localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
+      pin: String(pin || ''),
+      loggedInAt: nowHK()
+    }));
+  } catch {}
+}
+
+function loadAdminSession() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || 'null');
+    if (!saved || !saved.pin) return '';
+    return String(saved.pin || '');
+  } catch {
+    return '';
+  }
+}
+
+function clearAdminSession() {
+  adminPin = '';
+  try { localStorage.removeItem(ADMIN_SESSION_KEY); } catch {}
+}
+
 function openAdmin() {
   $('adminModal').classList.remove('hidden');
-  $('adminPinInput').focus();
+  const savedPin = loadAdminSession();
+  if (savedPin === LOCAL_ADMIN_PIN) {
+    adminPin = savedPin;
+    $('adminPinInput').value = savedPin;
+    $('adminBody').classList.remove('hidden');
+    setAdminLoginMessage('success', 'Admin 已登入。');
+  } else {
+    $('adminBody').classList.add('hidden');
+    $('adminPinInput').focus();
+  }
   renderAdminProducts();
 }
 
@@ -3520,36 +4610,115 @@ function closeAdmin() {
 async function verifyAdminPin() {
   const pin = $('adminPinInput').value.trim();
   if (!pin) { setAdminLoginMessage('error', '請輸入 PIN。'); return; }
-  try {
-    const data = await jsonp(scriptUrl(), { action: 'verifyAdmin', pin });
-    if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'PIN incorrect');
-    adminPin = pin;
-    $('adminBody').classList.remove('hidden');
-    setAdminLoginMessage('success', 'Admin login OK。');
-    await refreshCatalogFromSheet(false);
-    renderAdminProducts();
-  } catch (err) {
-    adminPin = '';
+  if (pin !== LOCAL_ADMIN_PIN) {
+    clearAdminSession();
     $('adminBody').classList.add('hidden');
-    setAdminLoginMessage('error', 'Admin login failed：' + String(err && err.message ? err.message : err));
+    setAdminLoginMessage('error', 'Admin login failed：PIN incorrect。');
+    return;
+  }
+  adminPin = pin;
+  saveAdminSession(pin);
+  $('adminBody').classList.remove('hidden');
+  setAdminLoginMessage('success', 'Admin login OK。');
+  try {
+    await refreshCatalogFromSheet(false);
+  } catch (err) {
+    setAdminMessage('notice', '已登入。暫時未能連線更新 Catalog，會先用本機商品資料。');
+  }
+  renderAdminProducts();
+}
+
+function restoreAdminSessionOnBoot() {
+  const savedPin = loadAdminSession();
+  if (savedPin === LOCAL_ADMIN_PIN) {
+    adminPin = savedPin;
+    if ($('adminPinInput')) $('adminPinInput').value = savedPin;
+    if ($('adminBody')) $('adminBody').classList.remove('hidden');
+    setAdminLoginMessage('success', 'Admin 已登入。');
   }
 }
 
+function renderAdminQuickFilters() {
+  const categoryHost = $('adminCategoryQuickChips');
+  const packagingHost = $('adminPackagingQuickChips');
+  if (!categoryHost || !packagingHost) return;
+  const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+  const packagingTypes = [...new Set(products.map(productPackagingType).filter(Boolean))].sort((a,b) => {
+    const order = ['包裝', '罐裝', '小食 / 肉棒', '福袋', '玩具', '其他'];
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b, 'zh-Hant');
+  });
+  categoryHost.innerHTML = [
+    `<button type="button" data-admin-category="" onclick="setAdminQuickCategoryFilter('')">全部</button>`,
+    ...categories.map(category => {
+      const theme = productSeriesTheme(category);
+      return `<button type="button" data-admin-category="${htmlEscape(category)}" onclick="setAdminQuickCategoryFilter('${jsString(category)}')" style="border-color:${theme.color};color:${theme.color}">${htmlEscape(productSeriesLabel(category))}</button>`;
+    })
+  ].join('');
+  packagingHost.innerHTML = [
+    `<button type="button" data-admin-packaging="" onclick="setAdminQuickPackagingFilter('')">全部</button>`,
+    ...packagingTypes.map(packaging => `<button type="button" data-admin-packaging="${htmlEscape(packaging)}" onclick="setAdminQuickPackagingFilter('${jsString(packaging)}')">${htmlEscape(packaging === '小食 / 肉棒' ? '小食' : packaging)}</button>`)
+  ].join('');
+  updateAdminQuickFilterChips();
+}
+
+function updateAdminQuickFilterChips() {
+  document.querySelectorAll('#adminCategoryQuickChips button[data-admin-category]').forEach(btn => {
+    const active = String(btn.dataset.adminCategory || '') === String(adminCategoryFilter || '');
+    btn.classList.toggle('active', active);
+    if (active && btn.dataset.adminCategory) {
+      const theme = productSeriesTheme(btn.dataset.adminCategory);
+      btn.style.background = theme.color;
+      btn.style.color = theme.ink;
+      btn.style.borderColor = theme.color;
+    } else if (btn.dataset.adminCategory) {
+      const theme = productSeriesTheme(btn.dataset.adminCategory);
+      btn.style.background = '#fff';
+      btn.style.color = theme.color;
+      btn.style.borderColor = theme.color;
+    } else {
+      btn.style.background = active ? 'var(--brand-dark)' : '#fff';
+      btn.style.color = active ? '#fff' : 'var(--brand-dark)';
+      btn.style.borderColor = active ? 'var(--brand-dark)' : '#c9d9fa';
+    }
+  });
+  document.querySelectorAll('#adminPackagingQuickChips button[data-admin-packaging]').forEach(btn => {
+    btn.classList.toggle('active', String(btn.dataset.adminPackaging || '') === String(adminPackagingFilter || ''));
+  });
+}
+
+window.setAdminQuickCategoryFilter = function(value) {
+  adminCategoryFilter = value || '';
+  updateAdminQuickFilterChips();
+  renderAdminProducts();
+};
+
+window.setAdminQuickPackagingFilter = function(value) {
+  adminPackagingFilter = value || '';
+  updateAdminQuickFilterChips();
+  renderAdminProducts();
+};
+
 function renderAdminProducts() {
   if (!$('adminProductList')) return;
+  renderAdminQuickFilters();
   const q = ($('adminSearch') && $('adminSearch').value || '').trim().toLowerCase();
+  const currentSku = $('adminSku') ? $('adminSku').value.trim().toUpperCase() : '';
   const list = products.filter(p => {
     const text = `${p.sku} ${p.id} ${p.category} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
-    return !q || text.includes(q);
+    const packagingType = productPackagingType(p);
+    return (!adminCategoryFilter || p.category === adminCategoryFilter)
+      && (!adminPackagingFilter || packagingType === adminPackagingFilter)
+      && (!q || text.includes(q));
   }).sort((a,b) => String(a.sku).localeCompare(String(b.sku)));
   $('adminProductList').innerHTML = list.map(p => `
-    <div class="admin-product-row ${p.active === false ? 'inactive' : ''}">
-      <div class="row"><strong>${htmlEscape(p.sku)}</strong><span class="pill ${p.active === false ? 'bad' : 'ok'}">${p.active === false ? 'inactive' : 'active'}</span></div>
-      <div>${htmlEscape(p.name)}</div>
-      <div class="small">${htmlEscape(p.category)} · ${htmlEscape(p.spec)} · ${htmlEscape(p.texture)} · ${money(p.unitPrice)}${p.boxPrice ? ' · box ' + money(p.boxPrice) : ''}</div>
-      <div class="btns"><button class="secondary" type="button" onclick="adminEditProduct('${jsString(p.sku)}')">Edit</button><button class="ghost" type="button" onclick="adminToggleProduct('${jsString(p.sku)}')">${p.active === false ? 'Activate' : 'Deactivate'}</button></div>
+    <div class="admin-product-row ${p.active === false ? 'inactive' : ''} ${String(p.sku).toUpperCase() === currentSku ? 'selected' : ''}" onclick="adminEditProduct('${jsString(p.sku)}', true)">
+      <div class="admin-product-head"><strong>${htmlEscape(p.sku)}</strong><span class="pill ${p.active === false ? 'bad' : 'ok'}">${p.active === false ? '停用' : '啟用'}</span></div>
+      <div class="admin-product-name">${htmlEscape(p.name)}</div>
+      <div class="small">${htmlEscape(p.category)} · ${htmlEscape(p.spec)} · ${htmlEscape(p.texture)} · ${money(p.unitPrice)}${p.boxPrice ? ' · 原箱 ' + money(p.boxPrice) : ''}</div>
+      <div class="btns"><button class="secondary" type="button" onclick="event.stopPropagation(); adminEditProduct('${jsString(p.sku)}', true)">編輯</button><button class="ghost" type="button" onclick="event.stopPropagation(); adminToggleProduct('${jsString(p.sku)}')">${p.active === false ? '啟用' : '停用'}</button></div>
     </div>
-  `).join('') || '<div class="notice">No products found.</div>';
+  `).join('') || '<div class="notice">搵唔到商品。</div>';
 }
 
 function clearAdminForm() {
@@ -3558,7 +4727,16 @@ function clearAdminForm() {
   setAdminMessage('', '');
 }
 
-window.adminEditProduct = function(sku) {
+function setAdminFormVisible(visible, scrollToForm=false) {
+  const panel = $('adminProductFormPanel');
+  if (!panel) return;
+  panel.classList.toggle('hidden', !visible);
+  if (visible && scrollToForm) {
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+  }
+}
+
+window.adminEditProduct = function(sku, scrollToForm=false) {
   const p = products.find(x => x.sku === sku);
   if (!p) return;
   $('adminSku').value = p.sku || '';
@@ -3571,7 +4749,10 @@ window.adminEditProduct = function(sku) {
   $('adminBoxPrice').value = p.boxPrice ?? '';
   $('adminRemarks').value = p.remarks || '';
   $('adminActive').checked = p.active !== false;
-  setAdminMessage('notice', 'Editing ' + htmlEscape(p.sku));
+  setAdminFormVisible(true, false);
+  renderAdminProducts();
+  setAdminMessage('notice', '正在編輯 ' + htmlEscape(p.sku));
+  if (scrollToForm) setAdminFormVisible(true, true);
 };
 
 function collectAdminProduct() {
@@ -3700,8 +4881,13 @@ function setupAdminUI() {
   $('adminPinInput').addEventListener('keydown', e => { if (e.key === 'Enter') verifyAdminPin(); });
   $('adminRefreshCatalogBtn').addEventListener('click', () => refreshCatalogFromSheet(true));
   $('adminReloadBtn').addEventListener('click', async () => { await refreshCatalogFromSheet(false); renderAdminProducts(); setAdminMessage('success', 'Catalog reloaded.'); });
-  $('adminNewBtn').addEventListener('click', clearAdminForm);
+  $('adminNewBtn').addEventListener('click', () => {
+    clearAdminForm();
+    setAdminFormVisible(true, true);
+    setAdminMessage('notice', '新增商品模式。');
+  });
   $('adminClearFormBtn').addEventListener('click', clearAdminForm);
+  $('adminCollapseFormBtn').addEventListener('click', () => setAdminFormVisible(false));
   $('adminSaveProductBtn').addEventListener('click', adminSaveProduct);
   $('adminToggleActiveBtn').addEventListener('click', adminToggleCurrentProduct);
   $('adminSearch').addEventListener('input', renderAdminProducts);
@@ -3717,25 +4903,28 @@ function registerSW() {
 
 $('saveOrderBtn').addEventListener('click', saveCurrentOrder);
 $('resetOrderBtn').addEventListener('click', () => {
-  const ok = doubleConfirm('Clear Current Order', '將會清空目前購物車、客人資料同 receipt text。');
+  const ok = doubleConfirm('Clear Current Order', '將會清空目前購物車同客人資料。');
   if (!ok) return;
   cart = [];
   renderCart();
   clearCustomerForm(true);
+  setCustomerEntryMode(false);
 });
-$('copyReceiptBtn').addEventListener('click', async () => {
-  const text = $('receiptBox').textContent;
-  try {
-    await navigator.clipboard.writeText(text);
-    showSaveMessage('success', 'WhatsApp text copied。');
-  } catch {
-    showSaveMessage('error', 'Copy 唔成功；可以手動 highlight 複製。');
+if ($('handoffToCustomerBtn')) $('handoffToCustomerBtn').addEventListener('click', () => {
+  if (!cart.length) {
+    showSaveMessage('notice', '請先揀貨，再交俾客人填資料。');
+    return;
   }
+  setCustomerEntryMode(true);
 });
+if ($('stayStaffModeBtn')) $('stayStaffModeBtn').addEventListener('click', () => setCustomerEntryMode(false));
+if ($('backToStaffModeBtn')) $('backToStaffModeBtn').addEventListener('click', () => setCustomerEntryMode(false));
 $('refreshCatalogBtn').addEventListener('click', () => refreshCatalogFromSheet(true));
 $('syncAllBtn').addEventListener('click', syncAll);
 if ($('syncAllDashboardBtn')) $('syncAllDashboardBtn').addEventListener('click', syncAll);
 if ($('refreshSheetBtn')) $('refreshSheetBtn').addEventListener('click', () => refreshSheetDashboard(true));
+if ($('openPackingPageBtn')) $('openPackingPageBtn').addEventListener('click', () => { location.href = './packing.html'; });
+if ($('openPackingPageNewBtn')) $('openPackingPageNewBtn').addEventListener('click', () => { window.open('./packing.html', '_blank'); });
 $('dailySummaryBtn').addEventListener('click', showDailySummary);
 $('preEventChecklistBtn').addEventListener('click', showPreEventChecklist);
 $('clearTestOrdersBtn').addEventListener('click', clearLocalTestOrders);
@@ -3751,10 +4940,13 @@ window.addEventListener('offline', updateOnlineStatus);
   loadCatalogFromCache();
   setupSettingsUI();
   setupAdminUI();
+  restoreAdminSessionOnBoot();
   initProductFilters();
   updateOnlineStatus();
+  setCustomerEntryMode(false);
   renderCart();
   await refreshOrders();
+  loadPackingDashboardCache();
   if (navigator.onLine) refreshSheetDashboard(false);
 })();
 </script>

@@ -890,6 +890,10 @@ function doPost(e) {
       return json_({ ok: true, action: 'toggleProduct', sku: payload.sku, active: payload.active });
     }
 
+    if (action === 'markVerifiedOrder') {
+      return markVerifiedOrder_(ss, payload);
+    }
+
     return saveOrder_(ss, payload);
   } catch (err) {
     return json_({ ok: false, error: String(err && err.message ? err.message : err) });
@@ -919,6 +923,34 @@ function saveOrder_(ss, order) {
   }
   rebuildHelperSheets_(ss);
   return json_({ ok: true, action, orderId: order.orderId });
+}
+
+function markVerifiedOrder_(ss, order) {
+  const sheet = getOrCreateSheet_(ss);
+  const orderId = String(order && order.orderId || '').trim();
+  if (!orderId) throw new Error('Missing orderId');
+  const existingRow = findOrderRow_(sheet, orderId);
+  if (!existingRow) throw new Error('Order not found: ' + orderId);
+
+  const current = readOrders_(ss).find(o => String(o.orderId) === orderId);
+  if (!current) throw new Error('Order not found: ' + orderId);
+
+  const merged = Object.assign({}, current, order, {
+    orderId,
+    syncStatus: 'verified',
+    syncedAt: new Date().toISOString(),
+    lastSyncError: ''
+  });
+
+  const row = HEADERS.map(h => {
+    if (h === 'itemsJson') return JSON.stringify(merged.items || []);
+    if (h === 'serverReceivedAt') return new Date().toISOString();
+    return merged[h] === undefined || merged[h] === null ? '' : merged[h];
+  });
+
+  sheet.getRange(existingRow, 1, 1, HEADERS.length).setValues([row]);
+  rebuildHelperSheets_(ss);
+  return json_({ ok: true, action: 'markVerifiedOrder', orderId });
 }
 
 function getOrCreateSheet_(ss) {

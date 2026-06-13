@@ -2,6 +2,14 @@
   "name": "CatsTaste Pet Expo Offline Order",
   "short_name": "CatsTaste Order",
   "start_url": "./index.html",
+  "shortcuts": [
+    {
+      "name": "執貨後台",
+      "short_name": "執貨",
+      "url": "./packing.html",
+      "description": "直接開啟今日執貨清單"
+    }
+  ],
   "display": "standalone",
   "background_color": "#f5f7fb",
   "theme_color": "#87a9f6",

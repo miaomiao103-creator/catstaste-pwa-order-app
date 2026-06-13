@@ -2,6 +2,7 @@ const CACHE_NAME = 'catstaste-order-app-v18';
 const ASSETS = [
   './',
   './index.html',
+  './packing.html',
   './manifest.webmanifest',
   './brand-logo.png',
   './apple-touch-icon.png',

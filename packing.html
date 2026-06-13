@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CatsTaste 執貨後台</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon-192.png" type="image/png" />
+  <style>
+    :root {
+      --bg: #eef4fb;
+      --panel: #ffffff;
+      --line: #d8e3f2;
+      --ink: #1e2c43;
+      --muted: #5f7392;
+      --brand: #2151a2;
+      --brand-soft: #dcebff;
+      --ok: #13795b;
+      --ok-soft: #eafaf2;
+      --warn: #9a5800;
+      --warn-soft: #fff5e3;
+      --bad: #b42318;
+      --bad-soft: #fff3f2;
+      --radius: 18px;
+      --shadow: 0 12px 32px rgba(39, 72, 122, 0.10);
+      --tasty: #F5C842;
+      --healthy: #5BAD6F;
+      --purrfect: #4A90C4;
+      --kitten: #F48FB1;
+      --senior: #9B59B6;
+      --snack: #F39C12;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: linear-gradient(180deg, #f6fbff 0%, var(--bg) 100%); color: var(--ink); font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif; }
+    body { min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button {
+      border: 0;
+      border-radius: 14px;
+      min-height: 44px;
+      padding: 0 14px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--brand);
+      border: 1px solid #bfd4f3;
+    }
+    button.ghost {
+      background: transparent;
+      color: var(--brand);
+      border: 1px dashed #bfd4f3;
+    }
+    input {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid #cddcf2;
+      padding: 0 14px;
+      background: #fff;
+      color: var(--ink);
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(246, 251, 255, 0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ffffff 0%, #d8e7ff 100%);
+      border: 1px solid #cadcf6;
+      display:grid;
+      place-items:center;
+      box-shadow: 0 8px 20px rgba(62, 99, 165, 0.14);
+      flex: 0 0 auto;
+    }
+    .logo img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 32px);
+      line-height: 1.05;
+    }
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .status {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #c8d9ef;
+      background: #fff;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .pill.ok { color: var(--ok); background: var(--ok-soft); border-color: #bde7d1; }
+    .pill.warn { color: var(--warn); background: var(--warn-soft); border-color: #ffd79d; }
+    .pill.bad { color: var(--bad); background: var(--bad-soft); border-color: #ffcfc9; }
+    .pill.info { color: var(--brand); background: #eef5ff; border-color: #c9d9fa; }
+    main {
+      width: min(1180px, calc(100vw - 24px));
+      margin: 18px auto 28px;
+      display:grid;
+      gap: 16px;
+    }
+    .hero {
+      display:grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid #cde0f8;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(74, 144, 196, .15), transparent 36%),
+        radial-gradient(circle at left bottom, rgba(91, 173, 111, .14), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+      box-shadow: var(--shadow);
+    }
+    .hero-head {
+      display:flex;
+      justify-content:space-between;
+      gap: 14px;
+      align-items:flex-start;
+      flex-wrap: wrap;
+    }
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 38px);
+      line-height: 1;
+    }
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+      max-width: 70ch;
+    }
+    .hero-actions {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .stats {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid #d6e4f5;
+      background: rgba(255,255,255,.96);
+    }
+    .stat span {
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .stat strong {
+      display:block;
+      margin-top: 6px;
+      font-size: clamp(24px, 4vw, 32px);
+      line-height: 1;
+    }
+    .card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid #d6e4f5;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .filter-row {
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .filter-row button {
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--brand);
+      border: 1px solid #bfd4f3;
+      font-size: 13px;
+    }
+    .filter-row button.active {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+    .status-line {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .packing-list {
+      display:grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .packing-item {
+      border: 1px solid #d9e4f6;
+      border-left: 8px solid var(--series-color, #6B7A90);
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, var(--series-soft, #f8fbff) 100%);
+      padding: 14px;
+      display:grid;
+      gap: 12px;
+    }
+    .packing-top {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items:start;
+    }
+    .packing-sku {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items:center;
+      font-weight: 900;
+      font-size: 18px;
+    }
+    .packing-badge {
+      display:inline-flex;
+      align-items:center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid #d7e3f3;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .packing-name {
+      margin-top: 6px;
+      color: var(--muted);
+      line-height: 1.4;
+      font-size: 14px;
+    }
+    .packing-qty {
+      text-align:right;
+      color: var(--brand);
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .packing-qty span {
+      display:block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .packing-meta {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+    }
+    .packing-meta span {
+      display:inline-flex;
+      align-items:center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border:1px solid #d7e3f3;
+      background:#fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .order-list {
+      display:grid;
+      gap: 8px;
+    }
+    .view-switch {
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .view-switch button {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--brand);
+      border: 1px solid #bfd4f3;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .view-switch button.active {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+    }
+    .order-row {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      border-top: 1px dashed #d7e3f3;
+      padding-top: 10px;
+    }
+    .order-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .order-head {
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      align-items:center;
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .order-head .person {
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .order-note {
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid #ffd89c;
+      background: #fff7e6;
+      color: #8b4c00;
+      font-size: 12px;
+      line-height: 1.4;
+      overflow-wrap:anywhere;
+    }
+    .order-qty {
+      text-align:right;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--brand);
+      white-space: nowrap;
+    }
+    .order-qty span {
+      display:block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .orders-board {
+      display:grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .order-card {
+      border: 1px solid #d9e4f6;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 14px;
+      display:grid;
+      gap: 10px;
+    }
+    .order-card.needs-send {
+      border-color: #ffd79d;
+      box-shadow: inset 0 0 0 1px rgba(154, 88, 0, 0.08);
+    }
+    .order-card.sent-check {
+      border-color: #c9d9fa;
+    }
+    .order-card.verified {
+      border-color: #bde7d1;
+    }
+    .order-card-top {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items:start;
+    }
+    .order-card-head {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items:center;
+    }
+    .order-card-head strong {
+      font-size: 18px;
+    }
+    .order-card-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .order-card-total {
+      text-align:right;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--brand);
+      white-space: nowrap;
+    }
+    .order-card-total span {
+      display:block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .order-contact {
+      display:grid;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid #d9e4f6;
+      background: #fff;
+    }
+    .order-contact strong {
+      font-size: 16px;
+    }
+    .order-address {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap:anywhere;
+    }
+    .order-items {
+      display:grid;
+      gap: 6px;
+    }
+    .order-item-line {
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #e1e8f5;
+      font-size: 13px;
+    }
+    .order-item-line strong {
+      display:block;
+      font-size: 13px;
+    }
+    .order-item-line span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .order-notes {
+      display:grid;
+      gap: 8px;
+    }
+    .order-note-block {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid #ffd89c;
+      background: #fff7e6;
+      color: #8b4c00;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap:anywhere;
+    }
+    .order-actions {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .order-actions button {
+      min-height: 40px;
+      padding: 0 10px;
+      font-size: 13px;
+    }
+    .empty {
+      padding: 20px;
+      border: 1px dashed #bfd4f3;
+      border-radius: 18px;
+      background: #f7fbff;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+    }
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .topbar { padding: 12px; }
+      .brand { gap: 10px; }
+      .logo { width: 48px; height: 48px; border-radius: 14px; }
+      .logo img { width: 36px; height: 36px; }
+      .subtitle { font-size: 13px; }
+      main { width: min(100vw - 14px, 100%); margin: 10px auto 20px; }
+      .hero, .card { padding: 14px; border-radius: 18px; }
+      .stats { grid-template-columns: 1fr; }
+      .filter-row {
+        overflow:auto;
+        flex-wrap: nowrap;
+        padding-bottom: 2px;
+      }
+      .packing-top,
+      .order-row,
+      .order-card-top { grid-template-columns: 1fr; }
+      .packing-qty,
+      .order-qty,
+      .order-card-total { text-align:left; }
+      .order-actions { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a class="logo" href="./index.html"><img src="./brand-logo.png" alt="CatsTaste" /></a>
+      <div>
+        <h1>CatsTaste 執貨後台</h1>
+        <div class="subtitle">同事專用 · 只睇要執咩貨 · 有網更新，冇網用快取</div>
+      </div>
+    </div>
+    <div class="status">
+      <span id="onlinePill" class="pill">準備中</span>
+      <span id="cachePill" class="pill info">未更新</span>
+      <a class="pill" href="./index.html">返回落單</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-head">
+        <div>
+          <h2>今日要執嘅貨</h2>
+          <p>同事只需要開呢頁，就可以睇今日 Google Sheet 訂單要執邊啲 SKU、幾多件、屬於邊張單。入到收唔到網位置都可以用最後一次快取。</p>
+        </div>
+        <div class="hero-actions">
+          <button id="refreshBtn" type="button">更新今日執貨清單</button>
+          <button id="useCacheBtn" class="secondary" type="button">使用離線快取</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>今日訂單</span><strong id="orderCount">0</strong></div>
+        <div class="stat"><span>要執 SKU</span><strong id="skuCount">0</strong></div>
+        <div class="stat"><span>待核實</span><strong id="followCount">0</strong></div>
+        <div class="stat"><span>快取時間</span><strong id="cacheTime">-</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="view-switch" id="viewSwitch">
+        <button type="button" class="active" data-view="packing">執貨清單</button>
+        <button type="button" data-view="orders">訂單處理</button>
+      </div>
+      <div class="filter-row" id="filterRow">
+        <button type="button" class="active" data-filter="all">全部</button>
+        <button type="button" data-filter="box">原箱</button>
+        <button type="button" data-filter="unit">單件</button>
+        <button type="button" data-filter="note">有備註</button>
+        <button type="button" data-filter="unverified">待核實</button>
+      </div>
+      <div id="statusLine" class="status-line">未下載資料。請有網時按「更新今日執貨清單」。</div>
+      <div id="packingList" class="packing-list"></div>
+      <div id="ordersBoard" class="orders-board" hidden></div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec';
+    const SETTINGS_KEY = 'catstaste_order_settings_v1';
+    const PACKING_CACHE_KEY = 'catstaste_packing_dashboard_cache_v1';
+    const money = (n) => 'HK$' + (Number(n || 0)).toFixed(2).replace(/\\.00$/, '');
+    let latestSheetDashboard = null;
+    let currentView = 'packing';
+    let packingViewFilter = 'all';
+    let packingSortMode = 'qty';
+
+    function htmlEscape(s) {
+      return String(s ?? '').replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]));
+    }
+
+    function loadSettings() {
+      const defaults = { syncUrl: DEFAULT_SCRIPT_URL };
+      try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+        return { ...defaults, ...saved, syncUrl: DEFAULT_SCRIPT_URL };
+      } catch {
+        return defaults;
+      }
+    }
+
+    function scriptUrl() {
+      return (loadSettings().syncUrl || DEFAULT_SCRIPT_URL).trim();
+    }
+
+    function jsonp(url, params={}, timeoutMs=15000) {
+      return new Promise((resolve, reject) => {
+        const cb = 'ct_pack_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        const qs = new URLSearchParams({ ...params, callback: cb, _ts: Date.now() });
+        const sep = url.includes('?') ? '&' : '?';
+        const script = document.createElement('script');
+        let settled = false;
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('讀取逾時，請檢查 Google Apps Script。'));
+        }, timeoutMs);
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[cb];
+          script.remove();
+        }
+        window[cb] = (data) => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve(data);
+        };
+        script.onerror = () => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          reject(new Error('網絡或 Script 載入失敗。'));
+        };
+        script.src = url + sep + qs.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function productSeriesTheme(category) {
+      const text = String(category || '');
+      if (text.includes('Tasty')) return { color: '#F5C842', ink: '#2f2400', soft: 'rgba(245, 200, 66, .13)' };
+      if (text.includes('Healthy')) return { color: '#5BAD6F', ink: '#ffffff', soft: 'rgba(91, 173, 111, .12)' };
+      if (text.includes('Purrfect') || text.includes('主食罐')) return { color: '#4A90C4', ink: '#ffffff', soft: 'rgba(74, 144, 196, .12)' };
+      if (text.includes('Kitten')) return { color: '#F48FB1', ink: '#401124', soft: 'rgba(244, 143, 177, .14)' };
+      if (text.includes('Senior')) return { color: '#9B59B6', ink: '#ffffff', soft: 'rgba(155, 89, 182, .12)' };
+      if (text.includes('Snack')) return { color: '#F39C12', ink: '#2d1800', soft: 'rgba(243, 156, 18, .14)' };
+      return { color: '#6B7A90', ink: '#ffffff', soft: 'rgba(107, 122, 144, .10)' };
+    }
+
+    function productSeriesLabel(category) {
+      const text = String(category || '');
+      if (text.includes('Tasty')) return 'Tasty';
+      if (text.includes('Healthy')) return 'Healthy';
+      if (text.includes('Purrfect') || text.includes('主食罐')) return 'Purrfect';
+      if (text.includes('Kitten')) return 'Kitten';
+      if (text.includes('Senior')) return 'Senior 7+';
+      if (text.includes('Snack')) return 'Snack';
+      return text || '其他';
+    }
+
+    function isVerifiedStatus(status) {
+      return status === 'verified' || status === 'synced';
+    }
+
+    function syncStatusLabel(status) {
+      return {
+        pending: '未同步',
+        syncing: '送出中',
+        failed: '送出失敗',
+        sent_unverified: '已送出未核實',
+        verified: '已核實',
+        synced: '已核實'
+      }[status] || status || '未同步';
+    }
+
+    function syncPillClass(status) {
+      if (isVerifiedStatus(status)) return 'pill ok';
+      if (status === 'sent_unverified') return 'pill info';
+      if (status === 'failed') return 'pill bad';
+      return 'pill warn';
+    }
+
+    function savePackingDashboardCache(data) {
+      if (!data || !data.ok) return;
+      try {
+        localStorage.setItem(PACKING_CACHE_KEY, JSON.stringify({ ...data, cachedAt: new Date().toLocaleString('sv-SE', { hour12: false, timeZone: 'Asia/Hong_Kong' }) }));
+      } catch (err) {
+        console.warn('cache save failed', err);
+      }
+    }
+
+    function loadPackingDashboardCache() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(PACKING_CACHE_KEY) || 'null');
+        if (cached && cached.ok) {
+          latestSheetDashboard = cached;
+          renderPackingPage();
+          return true;
+        }
+      } catch (err) {
+        console.warn('cache load failed', err);
+      }
+      return false;
+    }
+
+    function packingDashboardAgeText(data) {
+      if (!data) return '未更新';
+      const when = data.cachedAt || data.serverTime || '';
+      if (!when) return '已快取';
+      return String(when).replace('T', ' ').slice(0, 16);
+    }
+
+    function buildPackingRowsForApp(data) {
+      const map = {};
+      const orders = (data && data.todayOrderCards) || [];
+      orders.forEach(order => {
+        (order.items || []).forEach(item => {
+          const sku = String(item.sku || '').toUpperCase();
+          if (!sku) return;
+          const mode = item.priceMode === 'box' ? '原箱' : '單件';
+          const key = `${sku}|${mode}`;
+          if (!map[key]) {
+            map[key] = {
+              sku,
+              mode,
+              product: item.name || '',
+              qty: 0,
+              amount: 0,
+              orderCount: 0,
+              noteCount: 0,
+              unverifiedCount: 0,
+              category: item.category || '',
+              orders: []
+            };
+          }
+          const qty = Number(item.qty || 0);
+          const noteText = [order.notes, order.staffNotes].filter(Boolean).join(' / ');
+          map[key].qty += qty;
+          map[key].amount += Number(item.lineSubtotal || 0);
+          map[key].orderCount += 1;
+          if (noteText) map[key].noteCount += 1;
+          if (!isVerifiedStatus(order.syncStatus)) map[key].unverifiedCount += 1;
+          map[key].orders.push({
+            orderId: order.orderId || '',
+            customerName: order.customerName || '',
+            qty,
+            status: order.syncStatus || '',
+            notes: noteText
+          });
+        });
+      });
+      return Object.values(map);
+    }
+
+    function matchesPackingFilter(row) {
+      if (packingViewFilter === 'box') return row.mode === '原箱';
+      if (packingViewFilter === 'unit') return row.mode === '單件';
+      if (packingViewFilter === 'note') return row.noteCount > 0;
+      if (packingViewFilter === 'unverified') return row.unverifiedCount > 0;
+      return true;
+    }
+
+    function sortPackingRows(rows) {
+      const copy = rows.slice();
+      if (packingSortMode === 'sku') {
+        return copy.sort((a, b) => String(a.sku).localeCompare(String(b.sku)) || String(a.mode).localeCompare(String(b.mode)));
+      }
+      return copy.sort((a, b) => {
+        if (Number(b.qty || 0) !== Number(a.qty || 0)) return Number(b.qty || 0) - Number(a.qty || 0);
+        return String(a.sku).localeCompare(String(b.sku)) || String(a.mode).localeCompare(String(b.mode));
+      });
+    }
+
+    function syncFilterButtons() {
+      document.querySelectorAll('#filterRow button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === packingViewFilter);
+      });
+      $('sortBtn').textContent = packingSortMode === 'qty' ? '數量優先' : 'SKU 排序';
+    }
+
+    function syncViewButtons() {
+      document.querySelectorAll('#viewSwitch button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === currentView);
+      });
+      const packingMode = currentView === 'packing';
+      $('packingList').hidden = !packingMode;
+      $('ordersBoard').hidden = packingMode;
+      $('filterRow').style.display = packingMode ? 'flex' : 'none';
+      $('sortBtn').style.display = packingMode ? '' : 'none';
+    }
+
+    function buildSheetReceiptText(order) {
+      if (order.whatsappText) return order.whatsappText;
+      const itemText = (order.items || []).map(item => {
+        const mode = item.priceMode === 'box' ? '原箱' : '單件';
+        return `- ${item.name || item.sku || ''} (${item.sku || ''}) ${mode} x${Number(item.qty || 0)}`;
+      }).join('\n');
+      return `Hi ${order.customerName || ''}，以下係你嘅預訂單：\n\nOrder No: ${order.orderId || ''}\n\n${itemText}\n\n優惠後應收：${money(order.total || 0)}\n\n送貨地址：${order.address || ''}\n\n請核對資料，多謝。`;
+    }
+
+    async function copyText(text, successMessage) {
+      try {
+        await navigator.clipboard.writeText(text || '');
+        $('statusLine').textContent = successMessage;
+      } catch {
+        $('statusLine').textContent = '複製失敗，請手動選取文字。';
+      }
+    }
+
+    async function markVerifiedOnServer(order) {
+      const payload = { ...order, action: 'markVerifiedOrder' };
+      const res = await fetch(scriptUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data || !data.ok) throw new Error((data && data.error) || '更新失敗');
+      return data;
+    }
+
+    async function handleOrderAction(action, orderId) {
+      const data = latestSheetDashboard;
+      const order = ((data && data.todayOrderCards) || []).find(o => String(o.orderId) === String(orderId));
+      if (!order) return;
+      if (action === 'copyWhatsapp') return copyText(buildSheetReceiptText(order), `已複製 ${orderId} 嘅 WhatsApp 文字。`);
+      if (action === 'copyAddress') return copyText(`${order.customerName || ''}\n${order.phone || ''}\n${order.address || ''}`.trim(), `已複製 ${orderId} 嘅地址資料。`);
+      if (action === 'copyOrder') return copyText(`${order.orderId}\n${order.itemsText || ''}\n總額：${money(order.total || 0)}`, `已複製 ${orderId} 嘅訂單摘要。`);
+      if (action === 'markVerified') {
+        if (String(order.syncStatus || '') === 'verified' || String(order.syncStatus || '') === 'synced') {
+          $('statusLine').textContent = `${orderId} 已經係已核實。`;
+          return;
+        }
+        if (!navigator.onLine) {
+          $('statusLine').textContent = '目前離線，未能更新核實狀態。';
+          return;
+        }
+        try {
+          $('statusLine').textContent = `正在更新 ${orderId} 為已核實...`;
+          await markVerifiedOnServer(order);
+          await refreshSheetDashboard(false);
+          $('statusLine').textContent = `${orderId} 已更新為已核實。`;
+        } catch (err) {
+          $('statusLine').textContent = `更新 ${orderId} 失敗：${String(err && err.message ? err.message : err)}`;
+        }
+      }
+    }
+
+    function renderOrdersBoard(data, filteredOrders) {
+      $('ordersBoard').innerHTML = filteredOrders.map(order => {
+        const itemRows = (order.items || []).map(item => {
+          const mode = item.priceMode === 'box' ? '原箱' : '單件';
+          return `<div class="order-item-line">
+            <div>
+              <strong>${htmlEscape(item.name || item.sku || '')}</strong>
+              <span>${htmlEscape(item.sku || '')} · ${htmlEscape(mode)}</span>
+            </div>
+            <div>x ${Number(item.qty || 0)}</div>
+          </div>`;
+        }).join('') || '<div class="empty">呢張單未有商品。</div>';
+        const notes = [
+          order.notes ? `<div class="order-note-block"><strong>客人備註</strong><br>${htmlEscape(order.notes)}</div>` : '',
+          order.staffNotes ? `<div class="order-note-block"><strong>同事備註</strong><br>${htmlEscape(order.staffNotes)}</div>` : ''
+        ].join('');
+        const cls = isVerifiedStatus(order.syncStatus) ? 'verified' : order.syncStatus === 'sent_unverified' ? 'sent-check' : 'needs-send';
+        return `<div class="order-card ${cls}">
+          <div class="order-card-top">
+            <div>
+              <div class="order-card-head">
+                <strong>${htmlEscape(order.orderId || '')}</strong>
+                <span class="${syncPillClass(order.syncStatus)}">${htmlEscape(syncStatusLabel(order.syncStatus))}</span>
+              </div>
+              <div class="order-card-meta">${htmlEscape(order.createdAt || '')} · ${htmlEscape(order.staffName || '')} · ${htmlEscape(order.deviceId || '')}</div>
+            </div>
+            <div class="order-card-total">${money(order.total || 0)}<span>${Number(order.itemCount || 0)} 件</span></div>
+          </div>
+          <div class="order-contact">
+            <strong>${htmlEscape(order.customerName || '未填客人')}</strong>
+            <div>${htmlEscape(order.phone || '未填 WhatsApp')}</div>
+            <div class="order-address">${htmlEscape(order.address || '未填地址')}</div>
+          </div>
+          <div class="order-items">${itemRows}</div>
+          ${notes ? `<div class="order-notes">${notes}</div>` : ''}
+          <div class="order-actions">
+            <button type="button" class="secondary" onclick="handlePackingOrderAction('copyWhatsapp','${htmlEscape(order.orderId || '')}')">複製 WhatsApp</button>
+            <button type="button" class="secondary" onclick="handlePackingOrderAction('copyAddress','${htmlEscape(order.orderId || '')}')">複製地址</button>
+            <button type="button" class="secondary" onclick="handlePackingOrderAction('copyOrder','${htmlEscape(order.orderId || '')}')">複製摘要</button>
+            <button type="button" onclick="handlePackingOrderAction('markVerified','${htmlEscape(order.orderId || '')}')">${isVerifiedStatus(order.syncStatus) ? '已核實' : '標記已核實'}</button>
+          </div>
+        </div>`;
+      }).join('') || '<div class="empty">搵唔到符合條件嘅訂單。</div>';
+    }
+
+    function renderPackingPage() {
+      const data = latestSheetDashboard;
+      const online = navigator.onLine;
+      $('onlinePill').textContent = online ? 'Online' : '離線';
+      $('onlinePill').className = online ? 'pill ok' : 'pill warn';
+      $('cachePill').textContent = data ? `快取 ${packingDashboardAgeText(data)}` : '未更新';
+      $('cacheTime').textContent = data ? packingDashboardAgeText(data).slice(11, 16) || '已更新' : '-';
+      syncViewButtons();
+      if (!data || !data.ok) {
+        $('orderCount').textContent = '0';
+        $('skuCount').textContent = '0';
+        $('followCount').textContent = '0';
+        $('statusLine').textContent = '未下載資料。請有網時按「更新今日執貨清單」，之後冇網都可以開呢頁用最後一次快取。';
+        $('packingList').innerHTML = '<div class="empty">未有執貨資料。</div>';
+        $('ordersBoard').innerHTML = '<div class="empty">未有訂單資料。</div>';
+        return;
+      }
+
+      const rows = sortPackingRows(buildPackingRowsForApp(data));
+      const orders = ((data && data.todayOrderCards) || []).slice();
+      const filtered = rows.filter(row => {
+        if (!matchesPackingFilter(row)) return false;
+        return true;
+      });
+      $('orderCount').textContent = Number(data.todayOrders || 0);
+      $('skuCount').textContent = rows.length;
+      $('followCount').textContent = Number(data.followUpCount || 0);
+      const filterLabel = packingViewFilter === 'all' ? '全部' : packingViewFilter === 'box' ? '原箱' : packingViewFilter === 'unit' ? '單件' : packingViewFilter === 'note' ? '有備註' : '待核實';
+      $('statusLine').textContent = currentView === 'packing'
+        ? `${packingDashboardAgeText(data)} · ${online ? '可更新最新資料' : '目前離線，正使用快取'} · ${filterLabel} · 顯示 ${filtered.length}/${rows.length} 個執貨項目`
+        : `${packingDashboardAgeText(data)} · ${online ? '可更新最新資料' : '目前離線，正使用快取'} · 顯示 ${orders.length}/${Number(data.todayOrders || 0)} 張訂單`;
+      syncFilterButtons();
+
+      $('packingList').innerHTML = filtered.map(row => {
+        const theme = productSeriesTheme(row.category);
+        const orderRows = row.orders.slice().sort((a, b) => String(a.orderId).localeCompare(String(b.orderId))).map(order => `
+          <div class="order-row">
+            <div>
+              <div class="order-head">
+                <span>${htmlEscape(order.orderId)}</span>
+                ${order.customerName ? `<span class="person">${htmlEscape(order.customerName)}</span>` : ''}
+                <span class="${syncPillClass(order.status)}">${htmlEscape(syncStatusLabel(order.status))}</span>
+              </div>
+              ${order.notes ? `<div class="order-note">${htmlEscape(order.notes)}</div>` : ''}
+            </div>
+            <div class="order-qty">x ${Number(order.qty || 0)}<span>${row.mode}</span></div>
+          </div>
+        `).join('');
+        return `
+          <div class="packing-item" style="--series-color:${theme.color};--series-soft:${theme.soft}">
+            <div class="packing-top">
+              <div>
+                <div class="packing-sku">
+                  <span>${htmlEscape(row.sku)}</span>
+                  <span class="packing-badge">${htmlEscape(row.mode)}</span>
+                </div>
+                <div class="packing-name">${htmlEscape(row.product || '')}</div>
+              </div>
+              <div class="packing-qty">x ${Number(row.qty || 0)}<span>${money(row.amount || 0)}</span></div>
+            </div>
+            <div class="packing-meta">
+              <span>${htmlEscape(productSeriesLabel(row.category || ''))}</span>
+              <span>${row.orderCount} 張單</span>
+              ${row.noteCount ? `<span>備註 ${row.noteCount}</span>` : ''}
+              ${row.unverifiedCount ? `<span>待核實 ${row.unverifiedCount}</span>` : '<span>全部已核實</span>'}
+            </div>
+            <div class="order-list">${orderRows}</div>
+          </div>
+        `;
+      }).join('') || '<div class="empty">搵唔到符合條件嘅執貨項目。</div>';
+      renderOrdersBoard(data, orders);
+    }
+
+    async function refreshSheetDashboard(showMessage = true) {
+      if (!scriptUrl()) return;
+      if (!navigator.onLine) {
+        loadPackingDashboardCache();
+        return;
+      }
+      try {
+        $('statusLine').textContent = '正在讀取 Google Sheet 今日執貨資料...';
+        const data = await jsonp(scriptUrl(), { action: 'sheetSummary' }, 22000);
+        if (!data || !data.ok) throw new Error('讀取資料失敗');
+        latestSheetDashboard = data;
+        savePackingDashboardCache(data);
+        renderPackingPage();
+      } catch (err) {
+        loadPackingDashboardCache();
+        $('statusLine').textContent = '讀取 Google Sheet 失敗，已改用最後一次快取。';
+      }
+    }
+
+    function registerSW() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      }
+    }
+
+    $('refreshBtn').addEventListener('click', () => refreshSheetDashboard(true));
+    $('useCacheBtn').addEventListener('click', () => loadPackingDashboardCache());
+    $('sortBtn').addEventListener('click', () => {
+      packingSortMode = packingSortMode === 'qty' ? 'sku' : 'qty';
+      renderPackingPage();
+    });
+    document.querySelectorAll('#filterRow button').forEach(btn => btn.addEventListener('click', () => {
+      packingViewFilter = btn.dataset.filter || 'all';
+      renderPackingPage();
+    }));
+    document.querySelectorAll('#viewSwitch button').forEach(btn => btn.addEventListener('click', () => {
+      currentView = btn.dataset.view || 'packing';
+      renderPackingPage();
+    }));
+    window.addEventListener('online', renderPackingPage);
+    window.addEventListener('offline', renderPackingPage);
+    window.handlePackingOrderAction = handleOrderAction;
+
+    (async function boot() {
+      registerSW();
+      loadPackingDashboardCache();
+      renderPackingPage();
+      if (navigator.onLine) refreshSheetDashboard(false);
+    })();
+  </script>
+</body>
+</html>
