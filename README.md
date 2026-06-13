@@ -1,96 +1,92 @@
-# CatsTaste Offline-first PWA Order App v18
+# CatsTaste PWA v19 入口 / 落單 / 執貨
 
-All-in-one postal order app for the 2026 HK Pet Expo, with v18 bug fixes and UX polish, sticky cart bar, larger review modal, and in-app Google Sheet display.
+呢個版本將 app 分成 3 個頁面，方便 iPhone / iPad / Android 手機現場使用：
 
+- `index.html`：入口首頁  
+  先輸入 `名字` 同 `設備名稱`，兩個欄位只接受英文字母或數字。
+- `order.html`：落單台  
+  同事只負責揀貨、睇目前訂單、交俾客人填收貨資料。
+- `packing.html`：執貨後台  
+  集中處理 `核實賬單 / 收據 / WhatsApp文字` 同埋今日執貨清單。
+- `assets/css/*.css`：各頁面樣式
+- `assets/data/catalog-data.js`：本機 fallback 商品資料
+- `assets/js/*.js`：各頁面互動邏輯
 
-## v18 fixes
+## 主要流程
 
-- Sticky mobile cart bar across the bottom with quick jump buttons.
-- Hot item product cards are cleaner and more compact for busy staff.
-- Checkout flow has clearer step labels: 選貨 / 客人資料 / 確認並送出.
-- Save review is now a large mobile-friendly modal instead of a tiny browser confirm.
-- Sheet orders remain in app tabs: 今日訂單 / 執貨 / 跟進.
-- Status colors stay consistent: pending red, sent-unverified blue/yellow, verified green.
+1. 開 app 先到 `index.html`
+2. 輸入名字 + 設備名稱
+3. 按 `新送貨單` 進入 `order.html`
+4. 揀貨後按 `結帳`，切入客人填資料模式
+5. 儲存後訂單先寫入本機，再嘗試送去 Google Sheet
+6. 同事喺 `packing.html` 核實賬單，之後按 `確認已寄出`
 
-## Main idea
+## 本機設定
 
-- Every order is saved locally first, so weak network will not lose an order.
-- After local save, the app immediately attempts to send the order to Google Sheet.
-- Google Sheet is the central database for all devices.
-- Local storage is only backup / queue, not the final source of truth.
+儲存在 `localStorage`：
 
-## Staff-facing app features
+- `staffName`
+- `deviceName`
+- `syncUrl`
 
-- Busy Hot Item mode: all products show quick buttons `-12 / -6 / -1 / +1 / +6 / +12`.
-- Same SKU + same price mode merges into one cart line.
-- Simple postal order customer form: 客人姓名, WhatsApp, 地址, 備註.
-- Save + Send to Google Sheet button.
-- Local dashboard: local orders, pending sends, unverified, verified, today's local total.
-- Sheet dashboard: all devices' Google Sheet summary, recent orders, top items.
-- Double confirmation for dangerous actions: clear current order, delete local order, mark verified, clear local test orders.
-- Disabled products stay visible as 暫停接單 but cannot be added.
-
-## Google Sheet tabs created by Apps Script
-
-- `Orders`: raw synced order data.
-- `Orders_View`: easy staff order view.
-- `Packing_List`: total item quantity for packing.
-- `Follow_Up`: missing / unverified / notes orders.
-- `Daily_Summary`: daily totals and top items.
-- `Catalog`: product source for admin catalog.
-
-## Deployment
-
-Upload these files to GitHub Pages root:
-
-- `index.html`
-- `service-worker.js`
-- `manifest.webmanifest`
-- `README.md`
-- `google_apps_script.gs`
-
-Then update Apps Script with `google_apps_script.gs` and deploy a new Web App version.
-
-Test URL:
+`staffName` 同 `deviceName` 驗證規則：
 
 ```text
-https://miaomiao103-creator.github.io/catstaste-pwa-order-app/?v=18
+/^[A-Za-z0-9]+$/
 ```
 
-## Important event workflow
+## 訂單狀態
 
-1. Open PWA on each device while online.
-2. Add to Home Screen.
-3. Set Staff Name and Device copy number.
-4. Update Product Catalog manually before event.
-5. Save + Send each postal order.
-6. If order stays red / pending, press Send All to Sheet when online.
-7. Spot-check Google Sheet and Mark Verified.
-8. Use Packing_List for fulfillment.
+### `syncStatus`
+技術同步狀態，用嚟表示本機訂單有冇成功送到 Google Sheet。
 
+常見值：
 
-## v17 Event Ready UX changes
+- `pending`
+- `syncing`
+- `sent_unverified`
+- `verified`
+- `failed`
 
-- Save result now shows clear next-step actions: Copy WhatsApp, New Order, View Sheet Orders.
-- Success status copy uses: 本機已保存 / 已送出到雲端，請核實.
-- Product quick filter chips added: 全部 / 罐裝 / 包裝 / 小食 / 福袋 / 玩具.
-- Cart item Remove now uses double confirmation.
-- Address short-warning appears in review popup without blocking save.
-- WhatsApp receipt displays full product names and quantities, not only SKU.
-- Pre-event Checklist added in Settings.
+### `fulfillmentStatus`
+出貨狀態，俾執貨後台主流程使用。
 
+- `pending` = 未寄出
+- `shipped` = 已寄出
 
-## v18 bug fixes
+兩者分開處理，互不覆蓋。
 
-- Fixed product render error caused by missing `updateQuickFilterChips()` / quick chip handlers.
-- Added PNG logo/app icon files referenced by HTML, manifest, and service worker.
-- Admin save/toggle no longer shows success after a blind `no-cors` POST only; it reloads Catalog and verifies all edited fields or active status before showing success.
-- Service worker cache bumped to v18.
+## Google Apps Script
 
+今版新增 / 使用：
 
-## v18 bug fixes
+- `markOrderShipped`
 
-- Fixed product render error caused by missing `updateQuickFilterChips()` and quick filter handlers.
-- Added PNG logo/app icon files referenced by HTML, manifest, and service worker.
-- Admin save/toggle no longer shows success after a blind `no-cors` POST only; it reloads Catalog and verifies all edited fields or active status before showing success.
-- Service worker cache bumped to v18.
+執貨後台按 `確認已寄出` 會更新 Google Sheet 內對應訂單嘅 `fulfillmentStatus`。
+
+## PWA / 離線
+
+- `manifest.webmanifest` 入口係 `index.html`
+- `service-worker.js` 會快取：
+  - `index.html`
+  - `order.html`
+  - `packing.html`
+  - manifest / icon / logo
+- 冇網時：
+  - 落單台可照用本機已快取頁面同本機訂單
+  - 執貨後台可用最後一次 `sheetSummary` 快取
+
+## 部署時記得帶上
+
+- `index.html`
+- `order.html`
+- `packing.html`
+- `service-worker.js`
+- `manifest.webmanifest`
+- `google_apps_script.gs`
+- `assets/css/`
+- `assets/data/`
+- `assets/js/`
+- `brand-logo.png`
+- `icon-192.png`
+- `icon-512.png`

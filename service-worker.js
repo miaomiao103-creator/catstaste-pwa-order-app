@@ -1,11 +1,18 @@
-const CACHE_NAME = 'catstaste-order-app-v18';
+const CACHE_NAME = 'catstaste-order-app-v21-catalog-data';
 const ASSETS = [
   './',
   './index.html',
+  './order.html',
   './packing.html',
   './manifest.webmanifest',
+  './assets/data/catalog-data.js',
+  './assets/css/index.css',
+  './assets/css/order.css',
+  './assets/css/packing.css',
+  './assets/js/index.js',
+  './assets/js/order.js',
+  './assets/js/packing.js',
   './brand-logo.png',
-  './apple-touch-icon.png',
   './icon-192.png',
   './icon-512.png'
 ];

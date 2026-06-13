@@ -1,0 +1,322 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#87a9f6" />
+  <title>CatsTaste 落單台</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="stylesheet" href="./assets/css/order.css" />
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" id="brandLogo" title="Admin"><img src="./brand-logo.png" alt="CatsTaste" /></div>
+      <div>
+        <h1>CatsTaste 落單台</h1>
+        <div class="subtitle">2026 HK 寵物展預訂 · 快速落單</div>
+      </div>
+    </div>
+    <div class="status">
+      <button type="button" id="reloadPageBtn" class="pill">重新整理</button>
+      <span id="onlinePill" class="pill">連線檢查中</span>
+      <span id="devicePill" class="pill">設備: CT-A</span>
+      <span id="pendingPill" class="pill warn">未送出: 0</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="app-hero">
+      <div class="hero-grid">
+        <div>
+          <h2 class="hero-title">送貨單快速工作台</h2>
+          <p class="hero-copy">只處理已付款 / 要寄貨訂單；手機快按落單，儲存後集中送到 Google Sheet。</p>
+        </div>
+      </div>
+    </div>
+
+    <details class="card settings-card">
+      <summary><h2>裝置及同步設定 <span class="small">查看目前同事 / 設備、更新商品、送出未同步訂單</span></h2></summary>
+      <div class="settings-body">
+        <div class="grid three">
+          <div>
+            <label for="staffNameDisplay">名字</label>
+            <input id="staffNameDisplay" readonly />
+          </div>
+          <div>
+            <label for="deviceNameDisplay">設備名稱</label>
+            <input id="deviceNameDisplay" readonly />
+          </div>
+          <div>
+            <label for="deviceModelDisplay">裝置型號</label>
+            <input id="deviceModelDisplay" readonly title="由瀏覽器自動判斷" />
+          </div>
+        </div>
+        <div class="grid" style="margin-top:10px">
+          <div>
+            <label for="syncUrl">Google Apps Script Web App URL</label>
+            <input id="syncUrl" readonly value="https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec" title="Only admin/code owner can change this endpoint" />
+          </div>
+        </div>
+        <div class="btns" style="margin-top:10px">
+          <button class="secondary" id="refreshCatalogBtn">更新商品資料</button>
+          <button class="secondary" id="syncAllBtn">送出未同步</button>
+          <button class="secondary" id="dailySummaryBtn">每日總結</button>
+          <button class="secondary" id="preEventChecklistBtn">展前檢查</button>
+          <button class="danger" id="clearTestOrdersBtn">清空本機測試單</button>
+          <button class="secondary" id="exportCsvBtn">匯出 CSV</button>
+          <button class="secondary" id="exportJsonBtn">匯出 JSON 備份</button>
+        </div>
+        <div id="dailySummaryBox" class="notice hidden" style="margin-top:10px"></div>
+        <div id="preEventChecklistBox" class="notice hidden" style="margin-top:10px"></div>
+        <p class="small">名字同設備名稱請先喺首頁輸入。商品資料不會自動更新；請有網時手動按「更新商品資料」。清空測試單只刪本機資料，不會刪 Google Sheet。</p>
+      </div>
+    </details>
+
+    <div class="card search-card">
+      <h2><span class="search-card-title-text">商品</span> <span id="productCount" class="small"></span></h2>
+      <div class="grid">
+        <div>
+          <label for="searchInput"><span class="search-label-default">搜尋 SKU / 產品名 / 系列</span><span class="search-label-landscape">商品搜尋 SKU / 產品名 / 系列</span></label>
+          <div class="search-input-with-action">
+            <input id="searchInput" placeholder="例如 TSH / 吞拿魚 / 主食罐" autocomplete="off" />
+            <button type="button" class="secondary hidden" id="clearSearchBtn">取消</button>
+          </div>
+        </div>
+        <div class="filter-select-state">
+          <label for="categoryFilter">系列</label>
+          <select id="categoryFilter"></select>
+        </div>
+        <div class="filter-select-state">
+          <label for="packagingFilter">包裝類型</label>
+          <select id="packagingFilter"></select>
+        </div>
+      </div>
+      <p class="small">全單滿 HK$120 後，單件貨品自動 9 折；原箱價不參與九折。</p>
+      <div class="filter-button-block">
+        <div class="filter-row-label">系列</div>
+        <div id="categoryQuickChips" class="quick-filter-chips category-filter-chips" aria-label="快速系列篩選"></div>
+      </div>
+      <div class="filter-button-block">
+        <div class="filter-row-label">包裝類型</div>
+        <div class="quick-filter-chips" aria-label="快速包裝篩選">
+          <button type="button" data-packaging="" onclick="setQuickPackagingFilter('')">全部</button>
+          <button type="button" data-packaging="罐裝" onclick="setQuickPackagingFilter('罐裝')">罐裝</button>
+          <button type="button" data-packaging="包裝" onclick="setQuickPackagingFilter('包裝')">包裝</button>
+          <button type="button" data-packaging="小食 / 肉棒" onclick="setQuickPackagingFilter('小食 / 肉棒')">小食</button>
+          <button type="button" data-packaging="福袋" onclick="setQuickPackagingFilter('福袋')">福袋</button>
+          <button type="button" data-packaging="玩具" onclick="setQuickPackagingFilter('玩具')">玩具</button>
+        </div>
+      </div>
+    </div>
+    <div id="productList" class="product-list"></div>
+  </section>
+
+  <section class="right-sticky" id="checkoutPanel">
+    <div class="card">
+      <h2 class="step-title"><span>目前訂單 <span class="small" id="cartLineCount">0 項</span></span><span class="flow-step">第 1 步 · 選貨</span></h2>
+      <div id="cartEmpty" class="notice">未加產品。每件產品都有大按鈕，可快速加減數量。</div>
+      <div id="cartWrap" class="hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>商品</th>
+              <th class="num">數量</th>
+              <th class="num">價錢</th>
+              <th class="num">小計</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cartBody"></tbody>
+        </table>
+      </div>
+      <div class="hr"></div>
+      <div id="summary"></div>
+      <div id="promoNotice" class="notice" style="margin-top:10px"></div>
+      <div style="margin-top:10px">
+        <label for="staffNotes">同事備註 / 部分即場取走</label>
+        <textarea id="staffNotes" placeholder="例：客人即場拎走 TSH x2；餘下貨品郵寄。"></textarea>
+      </div>
+      <div class="handoff-actions">
+        <button type="button" id="handoffToCustomerBtn" class="handoff-primary">交俾客人填資料</button>
+      </div>
+      <div class="handoff-note">同事揀好貨後，按結帳交俾客人填收貨資料。</div>
+    </div>
+
+    <div class="customer-mode-shell" id="customerModeShell">
+      <div class="customer-mode-head">
+        <div>
+          <h3>感謝您的支持🍀請填寫收貨資料</h3>
+          <p>客人只需要核對金額，然後填寫姓名、WhatsApp 同送貨地址。</p>
+        </div>
+        <button type="button" class="secondary" id="backToStaffModeBtn">回上一頁</button>
+      </div>
+      <div class="customer-mode-summary">
+        <div class="customer-mode-stat">
+          <span>商品件數</span>
+          <strong id="customerModeItemCount">0 件</strong>
+        </div>
+        <div class="customer-mode-stat">
+          <span id="customerModeTotalLabel">優惠後應收</span>
+          <strong id="customerModeTotal">HK$0</strong>
+        </div>
+      </div>
+      <div class="customer-mode-items" id="customerModeItems"></div>
+    </div>
+
+    <div class="card" id="customerInfoCard">
+      <h2>感謝您的支持🍀請填寫收貨資料</h2>
+      <div class="grid two">
+        <div>
+          <label for="customerName">客人姓名 *</label>
+          <input id="customerName" autocomplete="name" placeholder="客人姓名" />
+        </div>
+        <div>
+          <label for="phone">WhatsApp *</label>
+          <input id="phone" inputmode="tel" autocomplete="tel" placeholder="WhatsApp / 電話" />
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <label for="address">地址 *</label>
+        <textarea id="address" autocomplete="street-address" placeholder="送貨地址"></textarea>
+      </div>
+      <div style="margin-top:10px">
+        <label for="notes">備註（可選）</label>
+        <textarea id="notes" placeholder="例如送貨時間、付款備註、特別要求"></textarea>
+      </div>
+      <input id="email" type="hidden" value="" />
+      <input id="paymentMethod" type="hidden" value="Cash" />
+      <input id="paymentStatus" type="hidden" value="Paid" />
+      <input id="shippingMethod" type="hidden" value="SF" />
+      <div class="customer-actions">
+        <button id="saveOrderBtn">確定</button>
+      </div>
+      <div id="saveMessage" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card packing-app-card" id="packingAppPanel">
+      <h2>同事執貨後台</h2>
+      <div class="packing-app-actions">
+        <button id="openPackingPageBtn" type="button">開啟執貨後台</button>
+        <button class="secondary" id="openPackingPageNewBtn" type="button">新頁開啟</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>落單台同步狀態</h2>
+      <div class="sync-panel">
+        <div class="sync-row">
+          <span id="syncSummaryPill" class="pill warn">未送出: 0</span>
+          <span id="unverifiedPill" class="pill info">已送雲端: 0</span>
+        </div>
+        <div id="syncDetail" class="sync-detail">訂單會先存在本機再送到 Google Sheet；核實賬單、收據同 WhatsApp 文字請喺執貨後台處理。</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<div id="adminModal" class="admin-modal hidden" role="dialog" aria-modal="true" aria-label="Admin product manager">
+  <div class="admin-panel">
+    <div class="admin-head">
+      <div>
+        <h2 style="margin:0;color:var(--ink)">後台 · 商品目錄</h2>
+        <div class="small">輸入 PIN 後可管理商品；資料儲存到 Google Sheet Catalog。</div>
+      </div>
+      <button class="secondary" id="adminCloseBtn" type="button">關閉</button>
+    </div>
+
+    <div id="adminLoginBox" class="admin-login">
+      <div class="grid two">
+        <div>
+          <label for="adminPinInput">後台 PIN</label>
+          <input id="adminPinInput" type="password" inputmode="numeric" placeholder="輸入 PIN" autocomplete="off" />
+        </div>
+        <div style="display:flex;align-items:end;gap:8px">
+          <button id="adminLoginBtn" type="button">登入</button>
+          <button class="secondary" id="adminRefreshCatalogBtn" type="button">只更新商品資料</button>
+        </div>
+      </div>
+      <div id="adminLoginMsg" class="small" style="margin-top:8px">提示：可連續點擊 logo 5 次，或網址加 <code>#admin</code> 開啟。</div>
+    </div>
+
+    <div id="adminBody" class="hidden">
+      <div class="notice">商品更新後會寫入 Google Sheet 的 Catalog sheet。前台不會自動改價；請回前台按「更新商品資料」才會拉新 catalog。</div>
+      <div class="admin-grid">
+        <div>
+          <div class="btns" style="margin:10px 0">
+            <button class="secondary" id="adminReloadBtn" type="button">重新讀取商品</button>
+            <button class="secondary" id="adminNewBtn" type="button">新增商品</button>
+          </div>
+          <div class="admin-search-card">
+            <label for="adminSearch">搜尋後台商品</label>
+            <input id="adminSearch" placeholder="SKU / 產品名 / 系列" />
+            <div class="filter-button-block">
+              <div class="filter-row-label">系列</div>
+              <div id="adminCategoryQuickChips" class="quick-filter-chips category-filter-chips" aria-label="後台快速系列篩選"></div>
+            </div>
+            <div class="filter-button-block">
+              <div class="filter-row-label">包裝類型</div>
+              <div id="adminPackagingQuickChips" class="quick-filter-chips" aria-label="後台快速包裝篩選"></div>
+            </div>
+          </div>
+          <div id="adminProductList" class="admin-products" style="margin-top:10px"></div>
+        </div>
+        <div id="adminProductFormPanel" class="hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px">
+            <h3 style="margin:0;color:var(--ink)">商品表格</h3>
+            <button class="ghost" id="adminCollapseFormBtn" type="button">收起表格</button>
+          </div>
+          <div class="admin-form-grid two">
+            <div><label for="adminSku">SKU *</label><input id="adminSku" /></div>
+            <div><label for="adminId">ID *</label><input id="adminId" /></div>
+            <div><label for="adminCategory">系列 *</label><input id="adminCategory" /></div>
+            <div><label for="adminSpec">規格</label><input id="adminSpec" placeholder="包裝 / 罐裝 / 福袋 / Toy" /></div>
+            <div><label for="adminTexture">質地</label><input id="adminTexture" placeholder="啫喱 / 肉汁 / 肉絲" /></div>
+            <div><label for="adminUnitPrice">單件價 HK$ *</label><input id="adminUnitPrice" type="number" min="0" step="0.01" /></div>
+            <div><label for="adminBoxPrice">原箱價 HK$</label><input id="adminBoxPrice" type="number" min="0" step="0.01" /></div>
+            <div style="display:flex;align-items:end;gap:8px"><label style="margin:0"><input id="adminActive" type="checkbox" style="width:auto;min-height:auto" checked /> 啟用</label></div>
+          </div>
+          <div style="margin-top:10px"><label for="adminName">產品名 *</label><textarea id="adminName"></textarea></div>
+          <div style="margin-top:10px"><label for="adminRemarks">備註</label><textarea id="adminRemarks"></textarea></div>
+          <div class="btns" style="margin-top:12px">
+            <button id="adminSaveProductBtn" type="button">儲存商品</button>
+            <button class="secondary" id="adminClearFormBtn" type="button">清空表格</button>
+            <button class="danger" id="adminToggleActiveBtn" type="button">啟用 / 停用</button>
+          </div>
+          <div id="adminMsg" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-cart-bar hidden">
+  <div class="cart-actions">
+    <button type="button" id="mobileCheckoutBtn">結帳</button>
+  </div>
+</div>
+
+<button type="button" id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="返回最上">↑</button>
+
+<div id="reviewModal" class="review-modal hidden" role="dialog" aria-modal="true" aria-label="確認訂單">
+  <div class="review-panel">
+    <h2>確認訂單</h2>
+    <div class="small">請核對資料，確認後會先本機保存，再嘗試送到 Google Sheet。</div>
+    <div id="reviewBody"></div>
+    <div class="review-actions">
+      <button type="button" class="back" id="reviewCancelBtn">返回修改</button>
+      <button type="button" id="reviewConfirmBtn">確認儲存並送出</button>
+    </div>
+  </div>
+</div>
+  <script src="./assets/data/catalog-data.js"></script>
+  <script src="./assets/js/order.js"></script>
+</body>
+</html>
+

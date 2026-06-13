@@ -15,10 +15,10 @@ const CATALOG_SHEET_NAME = 'Catalog';
 const ADMIN_PIN_PROPERTY = 'ADMIN_PIN';
 
 const HEADERS = [
-  'orderId','deviceId','deviceModel','deviceCopyNo','staffName','createdAt','customerName','phone','email','address','notes',
+  'orderId','deviceId','deviceName','deviceModel','deviceCopyNo','staffName','createdAt','customerName','phone','email','address','notes',
   'paymentMethod','paymentStatus','shippingMethod','retailSubtotal','subtotal','boxDiscountAmount','discountAmount',
   'discountedSubtotal','totalDiscountAmount','total','giftEligible',
-  'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText','serverReceivedAt','staffNotes'
+  'fulfillmentStatus','syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText','serverReceivedAt','staffNotes'
 ];
 
 const CATALOG_HEADERS = ["active", "id", "sku", "category", "name", "spec", "texture", "unitPrice", "boxPrice", "remarks", "updatedAt"];
@@ -893,6 +893,9 @@ function doPost(e) {
     if (action === 'markVerifiedOrder') {
       return markVerifiedOrder_(ss, payload);
     }
+    if (action === 'markOrderShipped') {
+      return markOrderShipped_(ss, payload);
+    }
 
     return saveOrder_(ss, payload);
   } catch (err) {
@@ -951,6 +954,33 @@ function markVerifiedOrder_(ss, order) {
   sheet.getRange(existingRow, 1, 1, HEADERS.length).setValues([row]);
   rebuildHelperSheets_(ss);
   return json_({ ok: true, action: 'markVerifiedOrder', orderId });
+}
+
+function markOrderShipped_(ss, order) {
+  const sheet = getOrCreateSheet_(ss);
+  const orderId = String(order && order.orderId || '').trim();
+  if (!orderId) throw new Error('Missing orderId');
+  const existingRow = findOrderRow_(sheet, orderId);
+  if (!existingRow) throw new Error('Order not found: ' + orderId);
+
+  const current = readOrders_(ss).find(o => String(o.orderId) === orderId);
+  if (!current) throw new Error('Order not found: ' + orderId);
+
+  const merged = Object.assign({}, current, order, {
+    orderId,
+    fulfillmentStatus: 'shipped',
+    lastSyncError: ''
+  });
+
+  const row = HEADERS.map(h => {
+    if (h === 'itemsJson') return JSON.stringify(merged.items || []);
+    if (h === 'serverReceivedAt') return new Date().toISOString();
+    return merged[h] === undefined || merged[h] === null ? '' : merged[h];
+  });
+
+  sheet.getRange(existingRow, 1, 1, HEADERS.length).setValues([row]);
+  rebuildHelperSheets_(ss);
+  return json_({ ok: true, action: 'markOrderShipped', orderId, fulfillmentStatus: 'shipped' });
 }
 
 function getOrCreateSheet_(ss) {
@@ -1107,9 +1137,9 @@ function rebuildHelperSheets_(ss) {
 }
 
 function writeOrdersView_(ss, orders) {
-  const headers = ['狀態','Order No','時間','同事','Device','客人','WhatsApp','地址','應收','Items','備註'];
+  const headers = ['出貨狀態','Order No','時間','同事','設備','客人','WhatsApp','地址','應收','產品','備註'];
   const rows = orders.slice().sort((a,b) => String(b.createdAt||'').localeCompare(String(a.createdAt||''))).map(o => [
-    o.syncStatus || '', o.orderId || '', o.createdAt || '', o.staffName || '', o.deviceId || '',
+    o.fulfillmentStatus === 'shipped' ? '已寄出' : '未寄出', o.orderId || '', o.createdAt || '', o.staffName || '', o.deviceId || '',
     o.customerName || '', o.phone || '', o.address || '', o.total || 0, orderItemsText_(o), o.notes || o.staffNotes || ''
   ]);
   writeSheet_(ss, ORDERS_VIEW_SHEET_NAME, headers, rows);
@@ -1131,13 +1161,13 @@ function writeFollowUp_(ss, orders) {
   const rows = [];
   orders.forEach(o => {
     const reasons = [];
-    if (!o.phone) reasons.push('Missing WhatsApp');
-    if (!o.address) reasons.push('Missing address');
-    if (String(o.syncStatus || '') !== 'verified') reasons.push('未核實');
+    if (!o.phone) reasons.push('未填 WhatsApp');
+    if (!o.address) reasons.push('未填地址');
+    if (String(o.fulfillmentStatus || 'pending') !== 'shipped') reasons.push('未寄出');
     if (o.notes || o.staffNotes) reasons.push('有備註');
     if (reasons.length) rows.push([reasons.join(', '), o.orderId || '', o.customerName || '', o.phone || '', o.address || '', o.total || 0, orderItemsText_(o), o.notes || '', o.staffNotes || '']);
   });
-  writeSheet_(ss, FOLLOW_UP_SHEET_NAME, ['原因','Order No','客人','WhatsApp','地址','應收','Items','客人備註','同事備註'], rows);
+  writeSheet_(ss, FOLLOW_UP_SHEET_NAME, ['原因','Order No','客人','WhatsApp','地址','應收','產品','客人備註','同事備註'], rows);
 }
 
 function writeDailySummary_(ss, orders) {
@@ -1148,15 +1178,17 @@ function writeDailySummary_(ss, orders) {
   const verified = todayOrders.filter(o => String(o.syncStatus || '') === 'verified' || String(o.syncStatus || '') === 'synced').length;
   const top = topItems_(todayOrders).slice(0, 10);
   const rows = [
-    ['Date', today],
-    ['Today Orders', todayOrders.length],
-    ['Today Total', total],
-    ['Sent but not verified', sentUnverified],
-    ['Verified', verified],
+    ['日期', today],
+    ['今日訂單', todayOrders.length],
+    ['今日總額', total],
+    ['已送出未核實', sentUnverified],
+    ['已核實', verified],
+    ['未寄出', todayOrders.filter(o => String(o.fulfillmentStatus || 'pending') !== 'shipped').length],
+    ['已寄出', todayOrders.filter(o => String(o.fulfillmentStatus || '') === 'shipped').length],
     ['', ''],
-    ['Top Items', 'Qty']
+    ['熱賣產品', '數量']
   ].concat(top.map(x => [x.sku + ' ' + x.name, x.qty]));
-  writeSheet_(ss, DAILY_SUMMARY_SHEET_NAME, ['Metric','Value'], rows);
+  writeSheet_(ss, DAILY_SUMMARY_SHEET_NAME, ['指標','數值'], rows);
 }
 
 function topItems_(orders) {
@@ -1176,6 +1208,7 @@ function compactOrderForApp_(o) {
     createdAt: o.createdAt || '',
     staffName: o.staffName || '',
     deviceId: o.deviceId || '',
+    deviceName: o.deviceName || '',
     customerName: o.customerName || '',
     phone: o.phone || '',
     address: o.address || '',
@@ -1183,6 +1216,7 @@ function compactOrderForApp_(o) {
     staffNotes: o.staffNotes || '',
     total: o.total || 0,
     totalDiscountAmount: o.totalDiscountAmount || 0,
+    fulfillmentStatus: o.fulfillmentStatus || 'pending',
     syncStatus: o.syncStatus || '',
     itemCount: itemCount_(o),
     itemsText: orderItemsText_(o),
@@ -1209,7 +1243,7 @@ function packingListForApp_(orders) {
 }
 
 function needsFollowUp_(o) {
-  return !o.phone || !o.address || String(o.syncStatus || '') !== 'verified' || o.notes || o.staffNotes;
+  return !o.phone || !o.address || String(o.fulfillmentStatus || 'pending') !== 'shipped' || o.notes || o.staffNotes;
 }
 
 function buildSheetSummary_(ss) {
@@ -1228,6 +1262,8 @@ function buildSheetSummary_(ss) {
     todayTotal: todayOrders.reduce((s,o) => s + Number(o.total || 0), 0),
     sentUnverified: todayOrders.filter(o => String(o.syncStatus || '') === 'sent_unverified').length,
     verified: todayOrders.filter(o => String(o.syncStatus || '') === 'verified' || String(o.syncStatus || '') === 'synced').length,
+    pendingShipment: todayOrders.filter(o => String(o.fulfillmentStatus || 'pending') !== 'shipped').length,
+    shipped: todayOrders.filter(o => String(o.fulfillmentStatus || '') === 'shipped').length,
     followUpCount: allFollowUpCount,
     topItems: topItems_(todayOrders).slice(0, 8),
     todayOrderCards: sortedToday.slice(0, 80).map(compactOrderForApp_),

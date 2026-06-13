@@ -1,6 +1,6 @@
 {
-  "name": "CatsTaste Pet Expo Offline Order",
-  "short_name": "CatsTaste Order",
+  "name": "CatsTaste 離線落單與執貨",
+  "short_name": "CatsTaste",
   "start_url": "./index.html",
   "shortcuts": [
     {
@@ -13,7 +13,7 @@
   "display": "standalone",
   "background_color": "#f5f7fb",
   "theme_color": "#87a9f6",
-  "description": "Offline-first postal order PWA with all-in-one mobile-optimized Google Sheet order cards, packing list, and follow-up dashboard.",
+  "description": "離線優先 CatsTaste PWA：入口首頁、落單台同埋執貨後台一體使用，弱網下都可照常開單與執貨。",
   "icons": [
     {
       "src": "icon-192.png",
