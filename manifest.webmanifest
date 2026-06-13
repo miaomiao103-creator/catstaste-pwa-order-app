@@ -5,7 +5,7 @@
   "display": "standalone",
   "background_color": "#f5f7fb",
   "theme_color": "#87a9f6",
-  "description": "Offline-first shipping-only pre-order desk for CatsTaste 2026 HK Pet Expo with verified sync workflow.",
+  "description": "Offline-first postal order PWA with all-in-one mobile-optimized Google Sheet order cards, packing list, and follow-up dashboard.",
   "icons": [
     {
       "src": "icon-192.png",

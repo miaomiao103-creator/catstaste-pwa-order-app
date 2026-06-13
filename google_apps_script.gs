@@ -15,13 +15,18 @@ const CATALOG_SHEET_NAME = 'Catalog';
 const ADMIN_PIN_PROPERTY = 'ADMIN_PIN';
 
 const HEADERS = [
-  'orderId','deviceId','createdAt','customerName','phone','email','address','notes',
-  'paymentMethod','paymentStatus','shippingMethod','subtotal','discountAmount',
-  'discountedSubtotal','shippingFee','total','giftEligible','freeShipping','isCod',
+  'orderId','deviceId','deviceModel','deviceCopyNo','staffName','createdAt','customerName','phone','email','address','notes',
+  'paymentMethod','paymentStatus','shippingMethod','retailSubtotal','subtotal','boxDiscountAmount','discountAmount',
+  'discountedSubtotal','totalDiscountAmount','total','giftEligible',
   'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText','serverReceivedAt','staffNotes'
 ];
 
 const CATALOG_HEADERS = ["active", "id", "sku", "category", "name", "spec", "texture", "unitPrice", "boxPrice", "remarks", "updatedAt"];
+
+const ORDERS_VIEW_SHEET_NAME = 'Orders_View';
+const PACKING_LIST_SHEET_NAME = 'Packing_List';
+const FOLLOW_UP_SHEET_NAME = 'Follow_Up';
+const DAILY_SUMMARY_SHEET_NAME = 'Daily_Summary';
 
 const INITIAL_CATALOG = [
   {
@@ -845,6 +850,16 @@ function doGet(e) {
       verifyAdminPin_(params.pin || '');
       return output_(params, { ok: true, message: 'Admin PIN OK' });
     }
+    if (action === 'sheetSummary') {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      rebuildHelperSheets_(ss);
+      return output_(params, buildSheetSummary_(ss));
+    }
+    if (action === 'rebuildReports') {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      rebuildHelperSheets_(ss);
+      return output_(params, { ok: true, message: 'Reports rebuilt' });
+    }
     return output_(params, { ok: true, message: 'CatsTaste order sync endpoint is running.' });
   } catch (err) {
     return output_(params, { ok: false, error: String(err && err.message ? err.message : err) });
@@ -894,13 +909,16 @@ function saveOrder_(ss, order) {
     return order[h] === undefined || order[h] === null ? '' : order[h];
   });
 
+  let action;
   if (existingRow) {
     sheet.getRange(existingRow, 1, 1, HEADERS.length).setValues([row]);
-    return json_({ ok: true, action: 'updated', orderId: order.orderId });
+    action = 'updated';
   } else {
     sheet.appendRow(row);
-    return json_({ ok: true, action: 'inserted', orderId: order.orderId });
+    action = 'inserted';
   }
+  rebuildHelperSheets_(ss);
+  return json_({ ok: true, action, orderId: order.orderId });
 }
 
 function getOrCreateSheet_(ss) {
@@ -1008,6 +1026,184 @@ function normalizeCatalogValue_(h, v) {
   if (h === 'active') return v === true || String(v).toLowerCase() === 'true';
   if (h === 'unitPrice' || h === 'boxPrice') return v === '' || v === null || v === undefined ? '' : Number(v || 0);
   return v === undefined || v === null ? '' : v;
+}
+
+
+function readOrders_(ss) {
+  const sheet = getOrCreateSheet_(ss);
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  const values = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  return values.map(row => {
+    const o = {};
+    HEADERS.forEach((h, i) => o[h] = row[i]);
+    try { o.items = JSON.parse(o.itemsJson || '[]'); } catch (err) { o.items = []; }
+    ['retailSubtotal','subtotal','boxDiscountAmount','discountAmount','discountedSubtotal','totalDiscountAmount','total'].forEach(k => o[k] = Number(o[k] || 0));
+    return o;
+  }).filter(o => o.orderId);
+}
+
+function todayHK_() {
+  return Utilities.formatDate(new Date(), 'Asia/Hong_Kong', 'yyyy-MM-dd');
+}
+
+function writeSheet_(ss, name, headers, rows) {
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) sheet = ss.insertSheet(name);
+  sheet.clearContents();
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  sheet.setFrozenRows(1);
+  if (rows.length) sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+  try { sheet.autoResizeColumns(1, headers.length); } catch (err) {}
+  return sheet;
+}
+
+function orderItemsText_(order) {
+  return (order.items || []).map(i => [i.sku, i.priceMode === 'box' ? '原箱' : '單件', 'x' + i.qty].join(' ')).join(', ');
+}
+
+function itemCount_(order) {
+  return (order.items || []).reduce((sum, item) => sum + Number(item.qty || 0), 0);
+}
+
+function rebuildHelperSheets_(ss) {
+  const orders = readOrders_(ss);
+  writeOrdersView_(ss, orders);
+  writePackingList_(ss, orders);
+  writeFollowUp_(ss, orders);
+  writeDailySummary_(ss, orders);
+}
+
+function writeOrdersView_(ss, orders) {
+  const headers = ['狀態','Order No','時間','同事','Device','客人','WhatsApp','地址','應收','Items','備註'];
+  const rows = orders.slice().sort((a,b) => String(b.createdAt||'').localeCompare(String(a.createdAt||''))).map(o => [
+    o.syncStatus || '', o.orderId || '', o.createdAt || '', o.staffName || '', o.deviceId || '',
+    o.customerName || '', o.phone || '', o.address || '', o.total || 0, orderItemsText_(o), o.notes || o.staffNotes || ''
+  ]);
+  writeSheet_(ss, ORDERS_VIEW_SHEET_NAME, headers, rows);
+}
+
+function writePackingList_(ss, orders) {
+  const map = {};
+  orders.forEach(o => (o.items || []).forEach(item => {
+    const key = String(item.sku || '').toUpperCase() + '|' + String(item.priceMode || 'unit');
+    if (!map[key]) map[key] = { sku: item.sku || '', product: item.name || '', mode: item.priceMode || 'unit', qty: 0, total: 0 };
+    map[key].qty += Number(item.qty || 0);
+    map[key].total += Number(item.lineSubtotal || 0);
+  }));
+  const rows = Object.values(map).sort((a,b) => String(a.sku).localeCompare(String(b.sku))).map(x => [x.sku, x.product, x.mode === 'box' ? '原箱' : '單件', x.qty, x.total]);
+  writeSheet_(ss, PACKING_LIST_SHEET_NAME, ['SKU','Product','模式','Total Qty','Amount'], rows);
+}
+
+function writeFollowUp_(ss, orders) {
+  const rows = [];
+  orders.forEach(o => {
+    const reasons = [];
+    if (!o.phone) reasons.push('Missing WhatsApp');
+    if (!o.address) reasons.push('Missing address');
+    if (String(o.syncStatus || '') !== 'verified') reasons.push('未核實');
+    if (o.notes || o.staffNotes) reasons.push('有備註');
+    if (reasons.length) rows.push([reasons.join(', '), o.orderId || '', o.customerName || '', o.phone || '', o.address || '', o.total || 0, orderItemsText_(o), o.notes || '', o.staffNotes || '']);
+  });
+  writeSheet_(ss, FOLLOW_UP_SHEET_NAME, ['原因','Order No','客人','WhatsApp','地址','應收','Items','客人備註','同事備註'], rows);
+}
+
+function writeDailySummary_(ss, orders) {
+  const today = todayHK_();
+  const todayOrders = orders.filter(o => String(o.createdAt || '').slice(0, 10) === today);
+  const total = todayOrders.reduce((s,o) => s + Number(o.total || 0), 0);
+  const sentUnverified = todayOrders.filter(o => String(o.syncStatus || '') === 'sent_unverified').length;
+  const verified = todayOrders.filter(o => String(o.syncStatus || '') === 'verified' || String(o.syncStatus || '') === 'synced').length;
+  const top = topItems_(todayOrders).slice(0, 10);
+  const rows = [
+    ['Date', today],
+    ['Today Orders', todayOrders.length],
+    ['Today Total', total],
+    ['Sent but not verified', sentUnverified],
+    ['Verified', verified],
+    ['', ''],
+    ['Top Items', 'Qty']
+  ].concat(top.map(x => [x.sku + ' ' + x.name, x.qty]));
+  writeSheet_(ss, DAILY_SUMMARY_SHEET_NAME, ['Metric','Value'], rows);
+}
+
+function topItems_(orders) {
+  const map = {};
+  orders.forEach(o => (o.items || []).forEach(item => {
+    const sku = String(item.sku || '').toUpperCase();
+    if (!sku) return;
+    if (!map[sku]) map[sku] = { sku, name: item.name || '', qty: 0 };
+    map[sku].qty += Number(item.qty || 0);
+  }));
+  return Object.values(map).sort((a,b) => b.qty - a.qty);
+}
+
+function compactOrderForApp_(o) {
+  return {
+    orderId: o.orderId || '',
+    createdAt: o.createdAt || '',
+    staffName: o.staffName || '',
+    deviceId: o.deviceId || '',
+    customerName: o.customerName || '',
+    phone: o.phone || '',
+    address: o.address || '',
+    notes: o.notes || '',
+    staffNotes: o.staffNotes || '',
+    total: o.total || 0,
+    totalDiscountAmount: o.totalDiscountAmount || 0,
+    syncStatus: o.syncStatus || '',
+    itemCount: itemCount_(o),
+    itemsText: orderItemsText_(o),
+    whatsappText: o.whatsappText || '',
+    items: (o.items || []).map(i => ({
+      sku: i.sku || '',
+      name: i.name || '',
+      qty: Number(i.qty || 0),
+      priceMode: i.priceMode || 'unit',
+      lineSubtotal: Number(i.lineSubtotal || 0)
+    }))
+  };
+}
+
+function packingListForApp_(orders) {
+  const map = {};
+  orders.forEach(o => (o.items || []).forEach(item => {
+    const key = String(item.sku || '').toUpperCase() + '|' + String(item.priceMode || 'unit');
+    if (!map[key]) map[key] = { sku: item.sku || '', product: item.name || '', mode: item.priceMode === 'box' ? '原箱' : '單件', qty: 0, amount: 0 };
+    map[key].qty += Number(item.qty || 0);
+    map[key].amount += Number(item.lineSubtotal || 0);
+  }));
+  return Object.values(map).sort((a,b) => String(a.sku).localeCompare(String(b.sku)));
+}
+
+function needsFollowUp_(o) {
+  return !o.phone || !o.address || String(o.syncStatus || '') !== 'verified' || o.notes || o.staffNotes;
+}
+
+function buildSheetSummary_(ss) {
+  const orders = readOrders_(ss);
+  const today = todayHK_();
+  const todayOrders = orders.filter(o => String(o.createdAt || '').slice(0, 10) === today);
+  const sortedToday = todayOrders.slice().sort((a,b) => String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  const followUpOrders = sortedToday.filter(needsFollowUp_).slice(0, 40).map(compactOrderForApp_);
+  const allFollowUpCount = orders.filter(needsFollowUp_).length;
+  return {
+    ok: true,
+    viewMode: 'app_cards',
+    today,
+    allOrders: orders.length,
+    todayOrders: todayOrders.length,
+    todayTotal: todayOrders.reduce((s,o) => s + Number(o.total || 0), 0),
+    sentUnverified: todayOrders.filter(o => String(o.syncStatus || '') === 'sent_unverified').length,
+    verified: todayOrders.filter(o => String(o.syncStatus || '') === 'verified' || String(o.syncStatus || '') === 'synced').length,
+    followUpCount: allFollowUpCount,
+    topItems: topItems_(todayOrders).slice(0, 8),
+    todayOrderCards: sortedToday.slice(0, 80).map(compactOrderForApp_),
+    recentOrders: sortedToday.slice(0, 12).map(compactOrderForApp_),
+    packingList: packingListForApp_(todayOrders).slice(0, 120),
+    followUpOrders,
+    serverTime: new Date().toISOString()
+  };
 }
 
 function verifyAdminPin_(pin) {

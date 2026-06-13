@@ -260,6 +260,23 @@
       padding-right: 2px;
       min-width: 0;
     }
+    .product.inactive {
+      opacity: .58;
+      filter: grayscale(.15);
+    }
+    .product.inactive::after {
+      content: "暫停接單";
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: #fff2f0;
+      border: 1px solid #ffc9c2;
+      color: var(--bad);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 850;
+    }
     .product {
       border: 1px solid #d9e4f6;
       border-left: 7px solid var(--series-color, #d9e4f6);
@@ -449,6 +466,23 @@
       padding:10px;
       background:#fff;
     }
+    .order-card.needs-send { border-color:#fca5a5; background:#fff7f7; }
+    .order-card.sent-check { border-color:#93c5fd; background:#f5f9ff; }
+    .order-card.verified { border-color:#86efac; background:#f7fff9; }
+    .sheet-mini {
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+    .sheet-mini div {
+      border: 1px solid #d9e4f6;
+      border-radius: var(--radius);
+      padding: 7px 8px;
+      background: #fff;
+    }
+    .sheet-mini strong { display:block; font-size: 16px; color: var(--ink); }
     .order-card .row {
       display:flex;
       justify-content:space-between;
@@ -589,6 +623,462 @@
     .admin-login { border: 1px solid #d9e4f6; background:#f7faff; padding: 10px; border-radius: var(--radius); margin-top: 10px; }
     .logo { cursor: pointer; }
 
+    .quick-actions { display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+    .quick-actions button { padding: 10px 6px; min-height: 44px; font-size: 13px; }
+    .quick-actions button.minus { background:#fff; color: var(--bad); border: 1px solid #ffc9c2; }
+    .quick-actions button.plus { background: var(--brand-dark); }
+    .box-actions { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 7px; }
+    .box-actions button { min-height: 44px; }
+    .hot-card-label { font-size: 12px; color: var(--muted); font-weight: 750; margin: 2px 0 6px; }
+    .cart-qty-controls { display:flex; gap: 4px; align-items:center; justify-content:flex-end; }
+    .cart-qty-controls button { min-height: 32px; padding: 4px 8px; border-radius: 8px; }
+    .cart-qty-controls span { min-width: 24px; text-align:center; font-weight: 800; }
+    @media (max-width: 560px) {
+      .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .product-actions { display:block; }
+    }
+
+
+    /* v15 mobile UX fixes */
+    .summary-row {
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+    }
+    .summary-row > span:first-child {
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow-wrap: anywhere;
+      line-height: 1.25;
+    }
+    .summary-row > span:last-child {
+      flex: 0 0 auto;
+      min-width: 96px;
+      text-align: right;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+    .summary-row.total-row {
+      margin-top: 8px;
+      border: 1px solid #c9d9fa;
+      background: #edf4ff;
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+    .summary-row.total-row > span:last-child { min-width: 112px; }
+    .customer-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .customer-actions button { width: 100%; }
+    .product-actions {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .quick-actions button.plus { font-size: 15px; }
+    .quick-actions button.minus { font-size: 12px; opacity: .92; }
+    .box-actions button.plus { background: var(--brand-dark); }
+    .box-actions button.minus { background:#fff; color: var(--bad); border: 1px solid #ffc9c2; }
+    .sheet-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      margin: 10px 0;
+    }
+    .sheet-tabs button {
+      background: #fff;
+      color: var(--brand-dark);
+      border: 1px solid #c9d9fa;
+      min-height: 42px;
+      padding: 8px 9px;
+    }
+    .sheet-tabs button.active {
+      background: var(--brand-dark);
+      color: #fff;
+      border-color: var(--brand-dark);
+    }
+    .sheet-filter-row {
+      display:flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin: 8px 0 10px;
+    }
+    .sheet-filter-row button {
+      min-height: 36px;
+      padding: 7px 10px;
+      background:#fff;
+      color: var(--brand-dark);
+      border: 1px solid #c9d9fa;
+      font-size: 12px;
+    }
+    .sheet-filter-row button.active {
+      background:#edf4ff;
+      border-color: var(--brand-dark);
+      color: var(--brand-dark);
+      box-shadow: inset 0 0 0 1px rgba(47,95,184,.18);
+    }
+    .sheet-display {
+      display:grid;
+      gap: 9px;
+      max-height: 580px;
+      overflow:auto;
+      padding-right: 2px;
+    }
+    .sheet-order-card, .packing-card, .follow-card {
+      border: 1px solid #d9e4f6;
+      border-radius: var(--radius);
+      background:#fff;
+      padding: 10px;
+      display:grid;
+      gap: 7px;
+      min-width: 0;
+    }
+    .sheet-order-card.verified { border-left: 6px solid #16a34a; }
+    .sheet-order-card.sent-check { border-left: 6px solid #3b82f6; }
+    .sheet-order-card.needs-send, .follow-card { border-left: 6px solid #f59e0b; }
+    .sheet-order-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sheet-order-head strong {
+      color: var(--ink);
+      overflow-wrap:anywhere;
+    }
+    .sheet-address, .sheet-items, .sheet-note {
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--muted);
+      overflow-wrap:anywhere;
+    }
+    .sheet-total-line {
+      display:flex;
+      justify-content:space-between;
+      gap: 8px;
+      font-weight: 850;
+      color: var(--ink);
+    }
+    .sheet-card-actions {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+    .sheet-card-actions button {
+      min-height: 38px;
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+    .packing-card {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items:center;
+    }
+    .packing-card .packing-sku {
+      font-weight: 900;
+      color: var(--ink);
+    }
+    .packing-card .packing-mode {
+      display:inline-block;
+      margin-left: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border:1px solid #d9e4f6;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .packing-card .packing-qty {
+      text-align:right;
+      font-weight: 900;
+      color: var(--brand-dark);
+      white-space: nowrap;
+    }
+    .follow-reason {
+      color:#7a4300;
+      background:#fff7e6;
+      border:1px solid #ffd58e;
+      border-radius: var(--radius);
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+    @media (max-width: 620px) {
+      .btns { display:grid; grid-template-columns: 1fr; align-items:stretch; }
+      .btns button { width: 100%; }
+      .customer-actions { grid-template-columns: 1fr; }
+      #saveMessage { margin-bottom: 10px; }
+      .summary-row { padding: 9px 0; }
+      .summary-row > span:last-child { min-width: 86px; }
+      .summary-row.total-row > span:last-child { min-width: 96px; }
+      .sheet-tabs { grid-template-columns: 1fr; }
+      .sheet-card-actions { grid-template-columns: 1fr; }
+      .sheet-display { max-height: none; overflow: visible; }
+      .product { padding: 10px; }
+      .product-top { align-items:center; }
+      .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+      .quick-actions button { min-height: 46px; }
+      .box-actions button { min-height: 46px; }
+    }
+
+
+
+    /* v16 UX polish */
+    body { padding-bottom: 96px; }
+    .flow-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: #edf4ff;
+      color: var(--brand-dark);
+      border: 1px solid #c9d9fa;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .step-title {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .product {
+      gap: 10px;
+    }
+    .product-title {
+      font-size: 14px;
+    }
+    .product-meta.compact-prices {
+      gap: 5px;
+      margin-top: 5px;
+    }
+    .product-meta.compact-prices .tag {
+      font-size: 11px;
+      padding: 3px 7px;
+    }
+    .product .small.product-remarks {
+      margin-top: 3px;
+      font-size: 11px;
+      line-height: 1.25;
+    }
+    .quick-actions {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .quick-actions button.plus.primary-plus {
+      background: #123f91;
+      box-shadow: 0 8px 18px rgba(47,95,184,.18);
+    }
+    .box-actions button.box-plus {
+      min-height: 48px;
+      font-size: 15px;
+    }
+    .box-saving-line {
+      color: var(--ok);
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 5px;
+    }
+    .mobile-cart-bar {
+      left: 10px;
+      right: 10px;
+      width: auto;
+      padding: 9px 10px;
+      border-radius: 14px;
+    }
+    .mobile-cart-bar .cart-actions {
+      display:flex;
+      gap: 7px;
+      flex: 0 0 auto;
+    }
+    .mobile-cart-bar a {
+      min-height: 42px;
+      padding: 0 13px;
+      white-space: nowrap;
+    }
+    .mobile-cart-bar a.secondary-mobile {
+      background: #ffffff;
+      color: #10203e;
+    }
+    .review-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 140;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      background: rgba(16,24,40,.56);
+      padding: 12px;
+    }
+    .review-panel {
+      width: min(640px, 100%);
+      max-height: min(86vh, 720px);
+      overflow:auto;
+      background:#fff;
+      border-radius: 18px;
+      border:1px solid #d9e4f6;
+      box-shadow: 0 24px 80px rgba(16,24,40,.32);
+      padding: 14px;
+    }
+    .review-panel h2 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 20px;
+    }
+    .review-keyline {
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 7px;
+      margin: 10px 0;
+    }
+    .review-field {
+      border: 1px solid #d9e4f6;
+      border-radius: var(--radius);
+      background:#f7faff;
+      padding: 9px 10px;
+      font-size: 14px;
+      line-height: 1.35;
+      overflow-wrap:anywhere;
+    }
+    .review-field span {
+      display:block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+      margin-bottom: 2px;
+    }
+    .review-items {
+      display:grid;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .review-item {
+      display:flex;
+      justify-content:space-between;
+      gap: 8px;
+      border-bottom: 1px dashed #d9e4f6;
+      padding: 6px 0;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .review-item strong { color: var(--ink); }
+    .review-total {
+      margin-top: 10px;
+      border: 2px solid #c9d9fa;
+      background:#edf4ff;
+      border-radius: 14px;
+      padding: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 950;
+      color: var(--ink);
+    }
+    .review-actions {
+      display:grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 8px;
+      margin-top: 12px;
+      position: sticky;
+      bottom: -14px;
+      background:#fff;
+      padding-top: 10px;
+      border-top: 1px solid #d9e4f6;
+    }
+    .review-actions button {
+      width: 100%;
+      min-height: 52px;
+      font-size: 15px;
+    }
+    .review-actions .back { background:#fff; color: var(--brand-dark); border:1px solid #c9d9fa; }
+    .status .pill { max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 620px) {
+      body { padding-bottom: 108px; }
+      .product-title { font-size: 13px; }
+      .product-top { gap: 8px; }
+      .sku-badge { min-width: 48px; padding: 7px 8px; }
+      .product-meta.compact-prices { flex-wrap: nowrap; overflow-x: auto; scrollbar-width:none; }
+      .product-meta.compact-prices::-webkit-scrollbar { display:none; }
+      .quick-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .quick-actions button { font-size: 14px; min-height: 48px; }
+      .quick-actions button.minus { font-size: 13px; }
+      .box-actions { grid-template-columns: 1fr; }
+      .box-actions button.minus { order: 2; }
+      .box-actions button.box-plus { order: 1; min-height: 52px; font-size: 16px; }
+      .mobile-cart-bar { left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom)); }
+      .mobile-cart-bar strong { font-size: 18px; }
+      .mobile-cart-bar .cart-actions { flex-direction: column; }
+      .mobile-cart-bar a { min-height: 34px; padding: 0 10px; font-size: 12px; justify-content:center; }
+      .review-modal { align-items: flex-end; padding: 8px; }
+      .review-panel { border-radius: 18px 18px 10px 10px; max-height: 88vh; padding: 12px; }
+      .review-panel h2 { font-size: 18px; }
+      .review-actions { grid-template-columns: 1fr; }
+      .review-actions button { min-height: 50px; }
+      .sheet-order-card, .packing-card, .follow-card { padding: 12px; }
+    }
+
+
+    .quick-filter-chips {
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .quick-filter-chips button {
+      min-height:38px;
+      padding:8px 10px;
+      background:#fff;
+      color:var(--brand-dark);
+      border:1px solid #c9d9fa;
+      font-size:13px;
+    }
+    .quick-filter-chips button.active {
+      background:var(--brand-dark);
+      color:#fff;
+      border-color:var(--brand-dark);
+    }
+    .post-save-actions {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-top:10px;
+    }
+    .post-save-actions button { width:100%; }
+    .address-warning {
+      margin-top:10px;
+      border:1px solid #ffd58e;
+      background:#fff7e6;
+      color:#7a4300;
+      border-radius:var(--radius);
+      padding:10px 12px;
+      font-size:13px;
+      line-height:1.35;
+    }
+    .checklist {
+      display:grid;
+      gap:7px;
+      margin-top:8px;
+    }
+    .check-item {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid #d9e4f6;
+      background:#fff;
+      border-radius:var(--radius);
+      font-size:13px;
+    }
+    .check-item.ok strong { color:var(--ok); }
+    .check-item.warn strong { color:var(--warn); }
+    .check-item.bad strong { color:var(--bad); }
+    .cart-remove-btn { color:var(--bad) !important; border-color:#ffc9c2 !important; }
   </style>
 </head>
 <body>
@@ -598,7 +1088,7 @@
       <div class="logo" id="brandLogo" title="Admin"><img src="./brand-logo.png" alt="CatsTaste" /></div>
       <div>
         <h1>CatsTaste Order Desk</h1>
-        <div class="subtitle">2026 HK 寵物展預訂 · 本機先存 · 同步需核對</div>
+        <div class="subtitle">2026 HK 寵物展預訂 · 快速落單 · Event Ready UX</div>
       </div>
     </div>
     <div class="status">
@@ -614,8 +1104,8 @@
     <div class="app-hero">
       <div class="hero-grid">
         <div>
-          <h2 class="hero-title">快速落單工作台</h2>
-          <p class="hero-copy">搜尋、加貨、即時計總數；所有訂單先存在本機，同步後再核實。</p>
+          <h2 class="hero-title">Postal Order 快速工作台</h2>
+          <p class="hero-copy">只處理已付款 / 要寄貨訂單；手機快按落單，儲存後集中送到 Google Sheet。</p>
         </div>
         <div class="quick-stats">
           <div class="stat"><span>Catalog</span><strong id="heroSkuCount">62 SKUs</strong></div>
@@ -628,39 +1118,45 @@
     <details class="card settings-card">
       <summary><h2>Device & Sync Settings <span class="small">按此設定設備、同步 URL、備份</span></h2></summary>
       <div class="settings-body">
-        <div class="grid two">
+        <div class="grid three">
           <div>
-            <label for="deviceId">Device Prefix / Staff Code</label>
-            <select id="deviceId">
-              <option value="CT-A">CT-A / Device 1</option>
-              <option value="CT-B">CT-B / Device 2</option>
-              <option value="CT-C">CT-C / Device 3</option>
-              <option value="CUSTOM">Custom...</option>
+            <label for="staffName">Staff Name / 同事名</label>
+            <input id="staffName" placeholder="例如 Vicky / Amy" autocomplete="name" />
+          </div>
+          <div>
+            <label for="deviceModelDisplay">Device / 裝置型號（自動）</label>
+            <input id="deviceModelDisplay" readonly title="由瀏覽器自動判斷，不能手動修改" />
+          </div>
+          <div>
+            <label for="deviceCopyNo">同型號第幾部</label>
+            <select id="deviceCopyNo">
+              <option value="1">1號</option>
+              <option value="2">2號</option>
+              <option value="3">3號</option>
+              <option value="4">4號</option>
+              <option value="5">5號</option>
             </select>
           </div>
-          <div id="customDeviceWrap" class="hidden">
-            <label for="customDeviceId">Custom Device Prefix</label>
-            <input id="customDeviceId" placeholder="例如 CT-D / STAFF-01" />
-          </div>
         </div>
-        <div class="grid two" style="margin-top:10px">
+        <div class="grid" style="margin-top:10px">
           <div>
             <label for="syncUrl">Google Apps Script Web App URL</label>
             <input id="syncUrl" readonly value="https://script.google.com/macros/s/AKfycbxhmQKohp7H01gnBpp4hiVYvU4l6QkB82x8EfpaQN5wMLIqX-4D0SJcjOweo195Hwe5/exec" title="Only admin/code owner can change this endpoint" />
-          </div>
-          <div>
-            <label for="defaultShippingFee">Under HK$800 prepaid shipping fee</label>
-            <input id="defaultShippingFee" type="number" inputmode="decimal" min="0" step="1" value="0" />
           </div>
         </div>
         <div class="btns" style="margin-top:10px">
           <button class="secondary" id="saveSettingsBtn">Save Settings</button>
           <button class="secondary" id="refreshCatalogBtn">更新商品資料</button>
           <button class="secondary" id="syncAllBtn">送出未同步</button>
+          <button class="secondary" id="dailySummaryBtn">Daily Summary</button>
+          <button class="secondary" id="preEventChecklistBtn">Pre-event Checklist</button>
+          <button class="danger" id="clearTestOrdersBtn">清空本機測試單</button>
           <button class="secondary" id="exportCsvBtn">Export CSV</button>
           <button class="secondary" id="exportJsonBtn">Export JSON Backup</button>
         </div>
-        <p class="small">提示：每部 iPhone/iPad 請用不同 prefix：CT-A、CT-B、CT-C，避免 Order No. 撞號。Google Apps Script URL 已固定，只有 Admin / code owner 可改。商品資料不會自動更新；請有網時手動按「更新商品資料」。</p>
+        <div id="dailySummaryBox" class="notice hidden" style="margin-top:10px"></div>
+        <div id="preEventChecklistBox" class="notice hidden" style="margin-top:10px"></div>
+        <p class="small">提示：填同事名；Device 會自動判斷 iPhone/iPad，同型號第二部請選 2號，避免 Order No. 撞號。商品資料不會自動更新；請有網時手動按「更新商品資料」。清空測試單只刪本機資料，不會刪 Google Sheet。</p>
       </div>
     </details>
 
@@ -680,7 +1176,15 @@
           <select id="packagingFilter"></select>
         </div>
       </div>
-      <p class="small">全單滿 HK$120 後，單件貨品自動 9 折；原箱價不參與九折。</p>
+      <p class="small">全部產品以 Hot Item 大按鈕顯示。全單滿 HK$120 後，單件貨品自動 9 折；原箱價不參與九折。</p>
+      <div class="quick-filter-chips" aria-label="快速類型篩選">
+        <button type="button" data-packaging="" onclick="setQuickPackagingFilter('')">全部</button>
+        <button type="button" data-packaging="罐裝" onclick="setQuickPackagingFilter('罐裝')">罐裝</button>
+        <button type="button" data-packaging="包裝" onclick="setQuickPackagingFilter('包裝')">包裝</button>
+        <button type="button" data-packaging="小食 / 肉棒" onclick="setQuickPackagingFilter('小食 / 肉棒')">小食</button>
+        <button type="button" data-packaging="福袋" onclick="setQuickPackagingFilter('福袋')">福袋</button>
+        <button type="button" data-packaging="玩具" onclick="setQuickPackagingFilter('玩具')">玩具</button>
+      </div>
       <div class="series-legend" aria-label="Series color legend">
         <span class="series-chip" style="--chip-color:#F5C842">Tasty</span>
         <span class="series-chip" style="--chip-color:#5BAD6F">Healthy</span>
@@ -695,8 +1199,8 @@
 
   <section class="right-sticky" id="checkoutPanel">
     <div class="card">
-      <h2>Current Order <span class="small" id="cartLineCount">0 lines</span></h2>
-      <div id="cartEmpty" class="notice">未加產品。先搜尋 SKU / 產品名，再按 Add。</div>
+      <h2 class="step-title"><span>Current Order <span class="small" id="cartLineCount">0 lines</span></span><span class="flow-step">Step 1 · 選貨</span></h2>
+      <div id="cartEmpty" class="notice">未加產品。每件產品都係 Hot Item，大按鈕可快速 +1 / +6 / +12。</div>
       <div id="cartWrap" class="hidden">
         <table>
           <thead>
@@ -721,67 +1225,52 @@
     </div>
 
     <div class="card">
-      <h2>Customer Info</h2>
+      <h2>Customer Info <span class="small">極簡忙碌模式</span></h2>
       <div class="grid two">
         <div>
           <label for="customerName">客人姓名 *</label>
-          <input id="customerName" autocomplete="name" />
+          <input id="customerName" autocomplete="name" placeholder="客人姓名" />
         </div>
         <div>
-          <label for="phone">電話 / WhatsApp *</label>
-          <input id="phone" inputmode="tel" autocomplete="tel" />
-        </div>
-      </div>
-      <div class="grid two" style="margin-top:10px">
-        <div>
-          <label for="email">Email（可選）</label>
-          <input id="email" inputmode="email" autocomplete="email" />
-        </div>
-        <div>
-          <label for="paymentMethod">付款方法</label>
-          <select id="paymentMethod">
-            <option>Cash</option>
-            <option>FPS</option>
-            <option>PayMe</option>
-            <option>Alipay</option>
-            <option>WeChat Pay</option>
-            <option>Deposit</option>
-          </select>
-        </div>
-      </div>
-      <div class="grid two" style="margin-top:10px">
-        <div>
-          <label for="paymentStatus">付款狀態</label>
-          <select id="paymentStatus">
-            <option>Paid</option>
-            <option>Pending confirmation</option>
-            <option>Unpaid</option>
-            <option>Deposit paid</option>
-          </select>
-        </div>
-        <div>
-          <label for="shippingMethod">送貨方式</label>
-          <select id="shippingMethod">
-            <option value="SF">順豐（滿 HK$800 Free Shipping）</option>
-            <option value="JD">京東（滿 HK$800 Free Shipping）</option>
-            <option value="SF_COD">順豐到付</option>
-            <option value="JD_COD">京東到付</option>
-          </select>
+          <label for="phone">WhatsApp *</label>
+          <input id="phone" inputmode="tel" autocomplete="tel" placeholder="WhatsApp / 電話" />
         </div>
       </div>
       <div style="margin-top:10px">
         <label for="address">地址 *</label>
-        <textarea id="address" autocomplete="street-address"></textarea>
+        <textarea id="address" autocomplete="street-address" placeholder="送貨地址"></textarea>
       </div>
       <div style="margin-top:10px">
         <label for="notes">備註（可選）</label>
         <textarea id="notes" placeholder="例如送貨時間、付款備註、特別要求"></textarea>
       </div>
-      <div class="btns" style="margin-top:12px">
-        <button id="saveOrderBtn">Save Order Locally</button>
+      <input id="email" type="hidden" value="" />
+      <input id="paymentMethod" type="hidden" value="Cash" />
+      <input id="paymentStatus" type="hidden" value="Paid" />
+      <input id="shippingMethod" type="hidden" value="SF" />
+      <div class="customer-actions">
+        <button id="saveOrderBtn">Save + Send to Google Sheet</button>
         <button class="secondary" id="resetOrderBtn">New / Clear Current</button>
       </div>
       <div id="saveMessage" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h2>All Orders Dashboard <span class="small">本機 + Google Sheet</span></h2>
+      <div class="sync-panel">
+        <div class="sync-row">
+          <span id="localOrdersPill" class="pill">本機: 0</span>
+          <span id="localPendingPill" class="pill warn">未送出: 0</span>
+          <span id="sheetOrdersPill" class="pill info">Sheet: 未更新</span>
+        </div>
+        <div id="dashboardDetail" class="sync-detail">Save 後會先存在本機，再送到 Google Sheet。所有正式 order 請以 Google Sheet 為集中資料庫。</div>
+        <div class="btns">
+          <button class="secondary" id="refreshSheetBtn">Refresh Sheet Orders</button>
+          <button class="secondary" id="syncAllDashboardBtn">Send All to Sheet</button>
+        </div>
+        <div id="sheetDashboardBox" class="notice" style="margin-top:8px">有網時按 Refresh Sheet Orders，可查看所有機送到 Google Sheet 嘅今日總覽。</div>
+        <div id="sheetRecentOrders" class="order-list" style="margin-top:8px"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -878,7 +1367,22 @@
     <span id="mobileCartText">購物車 0 件</span>
     <strong id="mobileCartTotal">HK$0</strong>
   </div>
-  <a href="#checkoutPanel">結帳</a>
+  <div class="cart-actions">
+    <a href="#checkoutPanel">結帳</a>
+    <a class="secondary-mobile" href="#customerName">填資料</a>
+  </div>
+</div>
+
+<div id="reviewModal" class="review-modal hidden" role="dialog" aria-modal="true" aria-label="確認訂單">
+  <div class="review-panel">
+    <h2>確認訂單</h2>
+    <div class="small">請核對資料，確認後會先本機保存，再嘗試送到 Google Sheet。</div>
+    <div id="reviewBody"></div>
+    <div class="review-actions">
+      <button type="button" class="back" id="reviewCancelBtn">返回修改</button>
+      <button type="button" id="reviewConfirmBtn">確認儲存並送出</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1705,13 +2209,15 @@ const SETTINGS_KEY = 'catstaste_order_settings_v1';
 const PROMOS = {
   discountThreshold: 120,
   discountRate: 0.10,
-  giftThreshold: 150,
-  freeShippingThreshold: 800
+  giftThreshold: 150
 };
 
 let db;
 let cart = [];
 let lastSavedOrder = null;
+let latestSheetDashboard = null;
+let sheetViewTab = 'orders';
+let sheetOrderFilter = 'all';
 
 const $ = (id) => document.getElementById(id);
 const money = (n) => 'HK$' + (Number(n || 0)).toFixed(2).replace(/\.00$/, '');
@@ -1799,53 +2305,70 @@ function deleteOrder(orderId) {
 }
 
 function loadSettings() {
-  const defaults = { deviceId: 'CT-A', syncUrl: DEFAULT_SCRIPT_URL, defaultShippingFee: 0 };
+  const defaults = { staffName: '', deviceCopyNo: '1', syncUrl: DEFAULT_SCRIPT_URL };
   try {
-    return { ...defaults, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')) };
+    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    // Backward compatible: old versions stored deviceId. New versions auto-detect device model.
+    return { ...defaults, ...saved, syncUrl: DEFAULT_SCRIPT_URL };
   } catch {
     return defaults;
   }
 }
 
 function saveSettings(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...loadSettings(), ...settings, syncUrl: DEFAULT_SCRIPT_URL }));
+}
+
+function detectDeviceModel() {
+  const ua = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  const maxTouch = navigator.maxTouchPoints || 0;
+  if (/iPad/i.test(ua) || (platform === 'MacIntel' && maxTouch > 1)) return 'iPad';
+  if (/iPhone/i.test(ua)) return 'iPhone';
+  if (/Android/i.test(ua)) return /Mobile/i.test(ua) ? 'Android Phone' : 'Android Tablet';
+  if (/Macintosh|Mac OS/i.test(ua)) return 'Mac';
+  if (/Windows/i.test(ua)) return 'Windows';
+  return 'Device';
+}
+
+function deviceNumberSuffix(no) {
+  const n = String(no || '1').trim();
+  return n === '1' ? '' : `${n}號`;
 }
 
 function currentDeviceId() {
   const settings = loadSettings();
-  return (settings.deviceId || 'CT-A').trim().replace(/\s+/g, '-').toUpperCase();
+  const base = detectDeviceModel();
+  const name = `${base}${deviceNumberSuffix(settings.deviceCopyNo)}`;
+  return name.replace(/\s+/g, '-');
+}
+
+function currentStaffName() {
+  return (loadSettings().staffName || '').trim();
 }
 
 function setupSettingsUI() {
   const settings = loadSettings();
-  const known = ['CT-A','CT-B','CT-C'];
-  if (known.includes(settings.deviceId)) {
-    $('deviceId').value = settings.deviceId;
-    $('customDeviceWrap').classList.add('hidden');
-  } else {
-    $('deviceId').value = 'CUSTOM';
-    $('customDeviceWrap').classList.remove('hidden');
-    $('customDeviceId').value = settings.deviceId || '';
-  }
+  if ($('staffName')) $('staffName').value = settings.staffName || '';
+  if ($('deviceModelDisplay')) $('deviceModelDisplay').value = detectDeviceModel();
+  if ($('deviceCopyNo')) $('deviceCopyNo').value = String(settings.deviceCopyNo || '1');
   $('syncUrl').value = DEFAULT_SCRIPT_URL;
-  $('defaultShippingFee').value = settings.defaultShippingFee ?? 0;
   $('devicePill').textContent = 'Device: ' + currentDeviceId();
 
-  $('deviceId').addEventListener('change', () => {
-    $('customDeviceWrap').classList.toggle('hidden', $('deviceId').value !== 'CUSTOM');
+  if ($('deviceCopyNo')) $('deviceCopyNo').addEventListener('change', () => {
+    saveSettings({ deviceCopyNo: $('deviceCopyNo').value });
+    $('devicePill').textContent = 'Device: ' + currentDeviceId();
   });
 
   $('saveSettingsBtn').addEventListener('click', () => {
-    const selected = $('deviceId').value;
-    const deviceId = selected === 'CUSTOM' ? ($('customDeviceId').value || 'CT-X') : selected;
     saveSettings({
-      deviceId,
-      syncUrl: DEFAULT_SCRIPT_URL,
-      defaultShippingFee: Number($('defaultShippingFee').value || 0)
+      staffName: $('staffName') ? $('staffName').value.trim() : '',
+      deviceCopyNo: $('deviceCopyNo') ? $('deviceCopyNo').value : '1',
+      syncUrl: DEFAULT_SCRIPT_URL
     });
     $('devicePill').textContent = 'Device: ' + currentDeviceId();
     renderSummary();
-    showSaveMessage('success', 'Settings saved。記得每部機用不同 Device Prefix。');
+    showSaveMessage('success', `Settings saved。Staff: ${htmlEscape(currentStaffName() || '未填')}｜Device: ${htmlEscape(currentDeviceId())}`);
   });
 }
 
@@ -1971,8 +2494,8 @@ function productSeriesTheme(category) {
 function initProductFilters() {
   const currentCategory = $('categoryFilter').value || '';
   const currentPackaging = $('packagingFilter').value || '';
-  const categories = [...new Set(visibleProducts().map(p => p.category).filter(Boolean))].sort();
-  const packagingTypes = [...new Set(visibleProducts().map(productPackagingType).filter(Boolean))].sort((a,b) => {
+  const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort();
+  const packagingTypes = [...new Set(products.map(productPackagingType).filter(Boolean))].sort((a,b) => {
     const order = ['包裝', '罐裝', '小食 / 肉棒', '福袋', '玩具', '其他'];
     const ia = order.indexOf(a), ib = order.indexOf(b);
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.localeCompare(b, 'zh-Hant');
@@ -1997,54 +2520,49 @@ function htmlEscape(s) {
 }
 
 function renderProducts() {
+  updateQuickFilterChips();
   const q = $('searchInput').value.trim().toLowerCase();
   const cat = $('categoryFilter').value;
   const packaging = $('packagingFilter').value;
-  const filtered = visibleProducts().filter(p => {
+  const filtered = products.filter(p => {
     const packagingType = productPackagingType(p);
     const text = `${p.sku} ${p.category} ${packagingType} ${p.name} ${p.spec} ${p.texture}`.toLowerCase();
     return (!cat || p.category === cat) && (!packaging || packagingType === packaging) && (!q || text.includes(q));
-  }).slice(0, 80);
+  }).sort((a, b) => (a.active === false) - (b.active === false) || String(a.sku).localeCompare(String(b.sku))).slice(0, 80);
 
   $('productList').innerHTML = filtered.map(p => {
     const hasBox = p.boxPrice !== null && p.boxPrice !== undefined && p.boxPrice !== '';
     const theme = productSeriesTheme(p.category);
+    const boxSaving = Math.max(0, productBoxSavings(p));
     return `
-      <div class="product" style="--series-color:${theme.color}; --series-ink:${theme.ink}; --series-soft:${theme.soft}">
+      <div class="product ${p.active === false ? 'inactive' : ''}" style="--series-color:${theme.color}; --series-ink:${theme.ink}; --series-soft:${theme.soft}">
         <div class="product-top">
           <div>
             <div class="product-title">${htmlEscape(p.name)}</div>
+            <div class="product-meta compact-prices">
+              <span class="tag">單件 ${money(p.unitPrice)}</span>
+              ${hasBox ? `<span class="tag">原箱 ${money(p.boxPrice)}</span>` : ''}
+              <span class="tag">${htmlEscape(productPackagingType(p))}</span>
+              ${p.active === false ? `<span class="tag" style="color:var(--bad);border-color:#ffc9c2;background:#fff2f0">暫停接單</span>` : ''}
+            </div>
           </div>
           <div class="sku-badge">${htmlEscape(p.sku)}</div>
         </div>
-        <div>
-          <div class="product-meta">
-            <span class="tag">單價 ${money(p.unitPrice)}</span>
-            ${hasBox ? `<span class="tag">原箱價 ${money(p.boxPrice)}</span>` : ''}
-          </div>
-          ${p.remarks ? `<div class="small">${htmlEscape(p.remarks)}</div>` : ''}
-        </div>
+        ${p.remarks ? `<div class="small product-remarks">${htmlEscape(p.remarks)}</div>` : ''}
         <div class="product-actions">
-          <div>
-            <label>Qty</label>
-            <input type="number" min="1" step="1" value="1" id="qty-${cssId(p.sku)}" oninput="updateProductSubtotal('${jsString(p.sku)}')" />
+          <div class="quick-actions" aria-label="單件快速加減">
+            <button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -12, 'unit')">-12</button>
+            <button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -6, 'unit')">-6</button>
+            <button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -1, 'unit')">-1</button>
+            <button type="button" class="plus primary-plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 1, 'unit')">+1</button>
+            <button type="button" class="plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 6, 'unit')">+6</button>
+            <button type="button" class="plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 12, 'unit')">+12</button>
           </div>
-          <div>
-            <label>模式</label>
-            <select id="mode-${cssId(p.sku)}" onchange="updateProductSubtotal('${jsString(p.sku)}')">
-              <option value="unit">單件</option>
-              ${hasBox ? `<option value="box">原箱</option>` : ''}
-            </select>
-          </div>
-          <div class="item-subtotal">
-            <span>Item subtotal</span>
-            <strong id="subtotal-${cssId(p.sku)}">${money(p.unitPrice)}</strong>
-          </div>
-          <button type="button" onclick="addProduct('${jsString(p.sku)}')">Add</button>
+          ${hasBox ? `<div class="box-saving-line">原箱優惠 ${money(boxSaving)}</div><div class="box-actions"><button type="button" class="minus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', -1, 'box')">原箱 -1</button><button type="button" class="plus box-plus" ${p.active === false ? 'disabled' : ''} onclick="adjustProduct('${jsString(p.sku)}', 1, 'box')">原箱 +1</button></div>` : ''}
         </div>
       </div>
     `;
-  }).join('') || '<div class="notice">搵唔到產品，試下用 SKU / 中文產品名搜尋。</div>';
+  }).join('') || '<div class="notice">搵唔到產品，試下用 SKU / 中文產品名搜尋。停用商品會顯示「暫停接單」但不能加貨。</div>';
 }
 
 function cssId(s) {
@@ -2070,6 +2588,24 @@ function productInputPrice(product, sku) {
   return mode === 'box' ? Number(product.boxPrice || product.unitPrice || 0) : Number(product.unitPrice || 0);
 }
 
+function productBoxQty(product) {
+  const text = `${product.remarks || ''} ${product.name || ''}`;
+  const m = text.match(/(?:1\s*)?箱\s*(\d+)\s*件/);
+  if (m) return Number(m[1]);
+  if (String(product.spec || '').includes('罐')) return 24;
+  if (product.boxPrice) return 48;
+  return 1;
+}
+
+function productBoxOriginalTotal(product, boxCount = 1) {
+  return round2(Number(product.unitPrice || 0) * productBoxQty(product) * Number(boxCount || 1));
+}
+
+function productBoxSavings(product, boxCount = 1) {
+  if (!product.boxPrice) return 0;
+  return round2(productBoxOriginalTotal(product, boxCount) - Number(product.boxPrice || 0) * Number(boxCount || 1));
+}
+
 window.updateProductSubtotal = function(sku) {
   const product = products.find(x => x.sku === sku);
   const subtotalEl = $('subtotal-' + cssId(sku));
@@ -2077,55 +2613,102 @@ window.updateProductSubtotal = function(sku) {
   subtotalEl.textContent = money(productInputQty(sku) * productInputPrice(product, sku));
 };
 
-window.addProduct = function(sku) {
+function setProductQtyInCart(sku, mode, delta) {
   const p = products.find(x => x.sku === sku);
   if (!p) return;
-  const qty = productInputQty(sku);
-  const mode = productInputMode(sku);
-  const price = productInputPrice(p, sku);
-  const lineId = `${sku}-${mode}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  cart.push({
-    lineId,
-    sku: p.sku,
-    category: p.category,
-    name: p.name,
-    spec: p.spec,
-    texture: p.texture,
-    packagingType: productPackagingType(p),
-    priceMode: mode,
-    qty,
-    unitPrice: price,
-    originalUnitPrice: p.unitPrice,
-    boxPrice: p.boxPrice,
-    lineSubtotal: qty * price,
-    discountEligible: mode !== 'box',
-    remarks: p.remarks || ''
-  });
+  const price = mode === 'box' ? Number(p.boxPrice || p.unitPrice || 0) : Number(p.unitPrice || 0);
+  const existing = cart.find(x => x.sku === p.sku && x.priceMode === mode && Number(x.unitPrice) === Number(price));
+  if (existing) {
+    existing.qty = Math.max(0, Number(existing.qty || 0) + Number(delta || 0));
+    if (existing.qty <= 0) {
+      cart = cart.filter(x => x !== existing);
+      renderCart();
+      return;
+    }
+    existing.lineSubtotal = round2(existing.qty * existing.unitPrice);
+    if (mode === 'box') {
+      existing.boxQty = productBoxQty(p);
+      existing.originalLineTotal = productBoxOriginalTotal(p, existing.qty);
+      existing.boxSavings = Math.max(0, productBoxSavings(p, existing.qty));
+    }
+  } else if (Number(delta || 0) > 0) {
+    const qty = Number(delta || 0);
+    const lineId = `${sku}-${mode}`;
+    cart.push({
+      lineId,
+      sku: p.sku,
+      category: p.category,
+      name: p.name,
+      spec: p.spec,
+      texture: p.texture,
+      packagingType: productPackagingType(p),
+      priceMode: mode,
+      qty,
+      unitPrice: price,
+      originalUnitPrice: p.unitPrice,
+      boxPrice: p.boxPrice,
+      boxQty: mode === 'box' ? productBoxQty(p) : 1,
+      originalLineTotal: mode === 'box' ? productBoxOriginalTotal(p, qty) : qty * Number(p.unitPrice || price),
+      boxSavings: mode === 'box' ? Math.max(0, productBoxSavings(p, qty)) : 0,
+      lineSubtotal: round2(qty * price),
+      discountEligible: mode !== 'box',
+      remarks: p.remarks || ''
+    });
+  }
   renderCart();
+}
+
+window.adjustProduct = function(sku, delta, mode='unit') {
+  setProductQtyInCart(sku, mode, delta);
+};
+
+window.addProduct = function(sku) {
+  setProductQtyInCart(sku, productInputMode(sku), productInputQty(sku));
 };
 
 window.removeLine = function(lineId) {
+  const line = cart.find(x => x.lineId === lineId);
+  const label = line ? `${line.sku} ${line.name || ''}` : '呢件貨';
+  const ok = doubleConfirm('Remove cart item', `將會由目前購物車移除：${label}`);
+  if (!ok) return;
   cart = cart.filter(x => x.lineId !== lineId);
+  renderCart();
+};
+
+window.adjustCartLine = function(lineId, delta) {
+  const line = cart.find(x => x.lineId === lineId);
+  if (!line) return;
+  line.qty = Math.max(0, Number(line.qty || 0) + Number(delta || 0));
+  if (line.qty <= 0) {
+    cart = cart.filter(x => x.lineId !== lineId);
+  } else {
+    line.lineSubtotal = round2(line.qty * line.unitPrice);
+    if (line.priceMode === 'box') {
+      const p = products.find(x => x.sku === line.sku) || line;
+      line.boxQty = productBoxQty(p);
+      line.originalLineTotal = productBoxOriginalTotal(p, line.qty);
+      line.boxSavings = Math.max(0, productBoxSavings(p, line.qty));
+    }
+  }
   renderCart();
 };
 
 function calculateTotals() {
   const eligibleSubtotal = cart.filter(x => x.discountEligible).reduce((s,x) => s + x.qty*x.unitPrice, 0);
   const nonEligibleSubtotal = cart.filter(x => !x.discountEligible).reduce((s,x) => s + x.qty*x.unitPrice, 0);
-  const subtotal = eligibleSubtotal + nonEligibleSubtotal;
+  const subtotal = round2(eligibleSubtotal + nonEligibleSubtotal); // actual item subtotal using chosen unit/box prices
+  const boxDiscountAmount = round2(cart.reduce((s,x) => s + Number(x.boxSavings || 0), 0));
+  const retailSubtotal = round2(subtotal + boxDiscountAmount); // before box offer + 10% discount
   const discountTriggered = subtotal >= PROMOS.discountThreshold;
   const discountAmount = discountTriggered ? round2(eligibleSubtotal * PROMOS.discountRate) : 0;
   const discountedSubtotal = round2(subtotal - discountAmount);
   const giftEligible = discountedSubtotal >= PROMOS.giftThreshold;
   const shippingMethod = $('shippingMethod') ? $('shippingMethod').value : 'SF';
-  const isCod = shippingMethod.endsWith('_COD');
-  const freeShipping = !isCod && discountedSubtotal >= PROMOS.freeShippingThreshold;
-  const settings = loadSettings();
-  const shippingFee = isCod ? 0 : (freeShipping ? 0 : Number(settings.defaultShippingFee || 0));
-  const total = round2(discountedSubtotal + shippingFee);
+  const totalDiscountAmount = round2(boxDiscountAmount + discountAmount);
+  const total = round2(discountedSubtotal);
   return {
-    eligibleSubtotal, nonEligibleSubtotal, subtotal, discountTriggered, discountAmount, discountedSubtotal,
-    giftEligible, shippingMethod, isCod, freeShipping, shippingFee, total
+    eligibleSubtotal, nonEligibleSubtotal, retailSubtotal, subtotal, boxDiscountAmount, discountTriggered, discountAmount,
+    discountedSubtotal, giftEligible, shippingMethod, totalDiscountAmount, total
   };
 }
 
@@ -2139,11 +2722,11 @@ function renderCart() {
   $('cartWrap').classList.toggle('hidden', !has);
   $('cartBody').innerHTML = cart.map(x => `
     <tr>
-      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? '原箱價 / 不參與九折' : '單件價 / 滿 HK$120 後可享九折'}</span></td>
-      <td class="num">${x.qty}</td>
+      <td class="cart-name"><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.name)}<br><span class="small">${x.priceMode === 'box' ? `原箱價 / 不參與九折｜原箱優惠 ${money(x.boxSavings || 0)}` : '單件價 / 滿 HK$120 後可享九折'}</span></td>
+      <td class="num"><div class="cart-qty-controls"><button class="ghost" onclick="adjustCartLine('${x.lineId}', -1)">-</button><span>${x.qty}</span><button class="ghost" onclick="adjustCartLine('${x.lineId}', 1)">+</button></div></td>
       <td class="num">${money(x.unitPrice)}</td>
       <td class="num">${money(x.qty*x.unitPrice)}</td>
-      <td class="num"><button class="ghost" onclick="removeLine('${x.lineId}')">✕</button></td>
+      <td class="num"><button class="ghost cart-remove-btn" onclick="removeLine('${x.lineId}')">Remove</button></td>
     </tr>
   `).join('');
   renderSummary();
@@ -2152,13 +2735,14 @@ function renderCart() {
 function renderSummary() {
   const t = calculateTotals();
   $('summary').innerHTML = `
-    <div class="summary-row"><span>Subtotal</span><span>${money(t.subtotal)}</span></div>
-    <div class="summary-row"><span>九折優惠（全單滿 HK$120，單件貨品九折）</span><span>-${money(t.discountAmount)}</span></div>
-    <div class="summary-row"><span>優惠後商品金額</span><span>${money(t.discountedSubtotal)}</span></div>
-    <div class="summary-row"><span>Shipping</span><span>${t.isCod ? '到付，不計入總額' : (t.freeShipping ? 'Free' : money(t.shippingFee))}</span></div>
+    <div class="summary-row"><span>商品總數</span><span>${money(t.retailSubtotal)}</span></div>
+    <div class="summary-row"><span>原箱優惠</span><span>-${money(t.boxDiscountAmount)}</span></div>
+    <div class="summary-row"><span>滿 HK$120 九折優惠</span><span>-${money(t.discountAmount)}</span></div>
+    <div class="summary-row"><span>總優惠</span><span>-${money(t.totalDiscountAmount)}</span></div>
     <div class="summary-row total-row"><span><strong>優惠後應收</strong></span><span><strong>${money(t.total)}</strong></span></div>
   `;
   let notes = [];
+  if (t.boxDiscountAmount > 0) notes.push(`📦 原箱優惠已扣減 ${money(t.boxDiscountAmount)}。`);
   if (t.discountTriggered && t.eligibleSubtotal > 0) {
     notes.push('✅ 全單已滿 HK$120，所有單件貨品已套用 9 折。');
   } else if (t.discountTriggered) {
@@ -2167,7 +2751,6 @@ function renderSummary() {
     notes.push(`未達滿 HK$120 9折，全單尚差 ${money(Math.max(0, PROMOS.discountThreshold - t.subtotal))}。`);
   }
   notes.push(t.giftEligible ? '🎁 已達滿 HK$150 送玩具。' : `未達滿 HK$150 送玩具，尚差 ${money(Math.max(0, PROMOS.giftThreshold - t.discountedSubtotal))}。`);
-  notes.push(t.freeShipping ? '🚚 已達滿 HK$800 Free Shipping。' : (t.isCod ? '🚚 到付單：運費由客人收貨時支付。' : `未達滿 HK$800 Free Shipping，尚差 ${money(Math.max(0, PROMOS.freeShippingThreshold - t.discountedSubtotal))}。`));
   notes.push(`<strong>即場收款：${money(t.total)}</strong>`);
   $('promoNotice').innerHTML = notes.join('<br>');
   updateCartSummaryUI(t);
@@ -2216,9 +2799,13 @@ function shippingLabel(v) {
 }
 
 function buildWhatsAppText(order) {
-  const lines = order.items.map((x, i) => `${i+1}. [${x.sku}] ${x.name.replace(/\n/g, ' ')} x ${x.qty} @ ${money(x.unitPrice)} = ${money(x.qty*x.unitPrice)}${x.priceMode === 'box' ? '（原箱）' : ''}`);
+  const lines = order.items.map((x, i) => {
+    const boxText = x.priceMode === 'box' ? `（原箱｜原箱優惠 ${money(x.boxSavings || 0)}）` : '';
+    const itemName = String(x.name || x.sku || '').replace(/\n/g, ' ');
+    return `${i+1}. ${itemName} x ${x.qty}${x.priceMode === 'box' ? ' 原箱' : ''} = ${money(x.qty*x.unitPrice)}${boxText}`;
+  });
   const giftText = order.giftEligible ? '\n🎁 已達滿 HK$150 送玩具' : '';
-  const shipText = order.isCod ? `${shippingLabel(order.shippingMethod)}（運費到付）` : `${shippingLabel(order.shippingMethod)}${order.freeShipping ? '（Free Shipping）' : ''}`;
+  const shipText = shippingLabel(order.shippingMethod);
   const noteLines = [];
   if (order.notes) noteLines.push(`客人備註: ${order.notes}`);
   if (order.staffNotes) noteLines.push(`取貨 / 出貨備註: ${order.staffNotes}`);
@@ -2226,21 +2813,156 @@ function buildWhatsAppText(order) {
   return `Hi ${order.customerName}，以下係你嘅 2026 HK寵物展預訂單：
 
 Order No: ${order.orderId}
+Staff: ${order.staffName || '-'} / ${order.deviceId}
 
 Items:
 ${lines.join('\n')}
 
-Subtotal: ${money(order.subtotal)}
-Discount: -${money(order.discountAmount)}
-Shipping: ${order.isCod ? '到付' : (order.freeShipping ? 'Free' : money(order.shippingFee))}
-Total: ${money(order.total)}${giftText}
+商品總數: ${money(order.retailSubtotal || order.subtotal)}
+原箱優惠: -${money(order.boxDiscountAmount || 0)}
+滿 HK$120 九折優惠: -${money(order.discountAmount)}
+總優惠: -${money(order.totalDiscountAmount || ((order.boxDiscountAmount || 0) + (order.discountAmount || 0)))}
+優惠後應收: ${money(order.total)}${giftText}
 
 送貨方式: ${shipText}
 地址: ${order.address}
 ${notesText}
-Payment: ${order.paymentMethod} / ${order.paymentStatus}
 
 Please confirm, and send us "Yes", 我哋會稍後確認付款及送貨安排，多謝！`;
+}
+
+
+function doubleConfirm(title, detail='') {
+  const msg1 = `${title}\n\n${detail}\n\n請先確認一次。`;
+  const msg2 = `${title}\n\n最後確認：此動作不能復原。`;
+  return window.confirm(msg1) && window.confirm(msg2);
+}
+
+function buildOrderReviewText(totals) {
+  const itemCount = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  const itemLines = cart.slice(0, 8).map(x => `• ${x.sku} ${x.priceMode === 'box' ? '原箱' : '單件'} x ${x.qty} = ${money(x.qty * x.unitPrice)}`);
+  const more = cart.length > 8 ? `\n• ...另有 ${cart.length - 8} 行` : '';
+  return `請核對訂單資料：\n\n客人：${$('customerName').value.trim()}\nWhatsApp：${$('phone').value.trim()}\n地址：${$('address').value.trim()}\n\nItems：${itemCount} 件 / ${cart.length} 行\n${itemLines.join('\n')}${more}\n\n商品總數：${money(totals.retailSubtotal)}\n原箱優惠：-${money(totals.boxDiscountAmount)}\n九折優惠：-${money(totals.discountAmount)}\n總優惠：-${money(totals.totalDiscountAmount)}\n優惠後應收：${money(totals.total)}\n\n確認儲存？`;
+}
+
+function addressWarningMessage(address) {
+  const a = String(address || '').trim();
+  if (!a) return '';
+  const compact = a.replace(/\s+/g, '');
+  const hasDigit = /\d/.test(a);
+  if (compact.length < 8 || !hasDigit) {
+    return '地址可能太短，請確認有地區 / 大廈 / 樓層 / 單位。';
+  }
+  return '';
+}
+
+function buildOrderReviewHtml(totals) {
+  const itemCount = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+  const itemLines = cart.slice(0, 10).map(x => `
+    <div class="review-item">
+      <span><strong>${htmlEscape(x.sku)}</strong> ${htmlEscape(x.priceMode === 'box' ? '原箱' : '單件')} x ${Number(x.qty || 0)}<br><span class="small">${htmlEscape(x.name || '')}</span></span>
+      <strong>${money(x.qty * x.unitPrice)}</strong>
+    </div>`).join('');
+  const more = cart.length > 10 ? `<div class="small">另有 ${cart.length - 10} 行未顯示，會照樣儲存。</div>` : '';
+  return `
+    <div class="review-keyline">
+      <div class="review-field"><span>客人</span>${htmlEscape($('customerName').value.trim())}</div>
+      <div class="review-field"><span>WhatsApp</span>${htmlEscape($('phone').value.trim())}</div>
+      <div class="review-field"><span>地址</span>${htmlEscape($('address').value.trim())}</div>
+      ${$('notes').value.trim() ? `<div class="review-field"><span>備註</span>${htmlEscape($('notes').value.trim())}</div>` : ''}
+    </div>
+    ${addressWarningMessage($('address').value.trim()) ? `<div class="address-warning">⚠️ ${htmlEscape(addressWarningMessage($('address').value.trim()))}</div>` : ''}
+    <div class="review-field"><span>Items</span>${itemCount} 件 / ${cart.length} 行</div>
+    <div class="review-items">${itemLines}${more}</div>
+    <div class="review-keyline">
+      <div class="summary-row"><span>商品總數</span><span>${money(totals.retailSubtotal)}</span></div>
+      <div class="summary-row"><span>原箱優惠</span><span>-${money(totals.boxDiscountAmount)}</span></div>
+      <div class="summary-row"><span>滿 HK$120 九折優惠</span><span>-${money(totals.discountAmount)}</span></div>
+      <div class="summary-row"><span>總優惠</span><span>-${money(totals.totalDiscountAmount)}</span></div>
+    </div>
+    <div class="review-total"><span>優惠後應收</span><span>${money(totals.total)}</span></div>`;
+}
+
+function showOrderReviewModal(totals) {
+  return new Promise(resolve => {
+    const modal = $('reviewModal');
+    $('reviewBody').innerHTML = buildOrderReviewHtml(totals);
+    modal.classList.remove('hidden');
+    const close = (value) => {
+      modal.classList.add('hidden');
+      $('reviewCancelBtn').onclick = null;
+      $('reviewConfirmBtn').onclick = null;
+      resolve(value);
+    };
+    $('reviewCancelBtn').onclick = () => close(false);
+    $('reviewConfirmBtn').onclick = () => close(true);
+  });
+}
+
+async function clearLocalTestOrders() {
+  const orders = await getAllOrders();
+  if (!orders.length) {
+    showSaveMessage('notice', '本機暫時冇 saved orders。');
+    return;
+  }
+  const ok = doubleConfirm('清空本機測試單', `將會刪除本機 ${orders.length} 張 saved orders。\n不會刪 Google Sheet 資料。\n正式展覽期間請勿使用。`);
+  if (!ok) return;
+  await Promise.all(orders.map(o => deleteOrder(o.orderId)));
+  $('receiptBox').textContent = '本機測試單已清空。';
+  showSaveMessage('success', `已清空本機 ${orders.length} 張 orders。`);
+  await refreshOrders();
+}
+
+async function showDailySummary() {
+  const orders = await getAllOrders();
+  const p = hkDateParts();
+  const today = `${p.year}-${p.month}-${p.day}`;
+  const todayOrders = orders.filter(o => String(o.createdAt || '').slice(0, 10) === today);
+  const total = todayOrders.reduce((s, o) => s + Number(o.total || 0), 0);
+  const pending = todayOrders.filter(o => needsSend(o.syncStatus)).length;
+  const unverified = todayOrders.filter(o => o.syncStatus === 'sent_unverified').length;
+  const verified = todayOrders.filter(o => isVerifiedStatus(o.syncStatus)).length;
+  const qtyBySku = {};
+  todayOrders.forEach(o => (o.items || []).forEach(item => {
+    const key = item.sku || item.name || 'Unknown';
+    qtyBySku[key] = (qtyBySku[key] || 0) + Number(item.qty || 0);
+  }));
+  const topItems = Object.entries(qtyBySku)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([sku, qty], idx) => `${idx + 1}. ${htmlEscape(sku)} x ${qty}`)
+    .join('<br>') || '未有商品資料';
+  const box = $('dailySummaryBox');
+  box.classList.remove('hidden');
+  box.innerHTML = `<strong>Daily Summary · ${today}</strong><br>
+    今日 orders：${todayOrders.length}<br>
+    今日總額：${money(total)}<br>
+    未送出：${pending}｜待核實：${unverified}｜已核實：${verified}<br>
+    <br><strong>Top items</strong><br>${topItems}`;
+}
+
+async function showPreEventChecklist() {
+  const orders = await getAllOrders();
+  let catalogMeta = null;
+  try { catalogMeta = JSON.parse(localStorage.getItem(CATALOG_CACHE_META_KEY) || 'null'); } catch {}
+  const settings = loadSettings();
+  const checks = [
+    { label: 'Sync URL 已固定', ok: !!scriptUrl(), detail: scriptUrl() ? 'OK' : '未設定' },
+    { label: '同事名已填', ok: !!currentStaffName(), detail: currentStaffName() || '未填' },
+    { label: 'Device 名稱正常', ok: !!currentDeviceId(), detail: currentDeviceId() },
+    { label: 'Catalog 已更新 / 有 fallback', ok: !!(catalogMeta && catalogMeta.count) || products.length > 0, detail: catalogMeta && catalogMeta.count ? `${catalogMeta.count} SKUs · ${catalogMeta.updatedAt || ''}` : `${products.length} fallback SKUs` },
+    { label: '本機測試單已清空', ok: orders.length === 0, warn: orders.length > 0, detail: orders.length === 0 ? '0 orders' : `${orders.length} local orders` },
+    { label: '目前網絡', ok: navigator.onLine, detail: navigator.onLine ? 'Online' : 'Offline' },
+    { label: '雲端資料已 refresh', ok: !!(latestSheetDashboard && latestSheetDashboard.ok), warn: !(latestSheetDashboard && latestSheetDashboard.ok), detail: latestSheetDashboard && latestSheetDashboard.ok ? `今日 ${latestSheetDashboard.todayOrders || 0} orders` : '未 refresh，可按 Refresh Sheet Orders' }
+  ];
+  const html = `<strong>Pre-event Checklist</strong><div class="checklist">${checks.map(c => {
+    const cls = c.ok ? 'ok' : c.warn ? 'warn' : 'bad';
+    const icon = c.ok ? '✅' : c.warn ? '⚠️' : '❌';
+    return `<div class="check-item ${cls}"><span>${icon} ${htmlEscape(c.label)}</span><strong>${htmlEscape(c.detail || '')}</strong></div>`;
+  }).join('')}</div>`;
+  const box = $('preEventChecklistBox');
+  box.classList.remove('hidden');
+  box.innerHTML = html;
 }
 
 async function saveCurrentOrder() {
@@ -2250,10 +2972,18 @@ async function saveCurrentOrder() {
     return;
   }
   const totals = calculateTotals();
+  const reviewOk = await showOrderReviewModal(totals);
+  if (!reviewOk) {
+    showSaveMessage('notice', '已取消儲存，請繼續修改訂單。');
+    return;
+  }
   const orderId = await nextOrderId();
   const order = {
     orderId,
     deviceId: currentDeviceId(),
+    deviceModel: detectDeviceModel(),
+    deviceCopyNo: loadSettings().deviceCopyNo || '1',
+    staffName: currentStaffName(),
     createdAt: nowHK(),
     customerName: $('customerName').value.trim(),
     phone: $('phone').value.trim(),
@@ -2266,17 +2996,18 @@ async function saveCurrentOrder() {
     shippingMethod: totals.shippingMethod,
     items: cart.map(x => ({
       sku: x.sku, category: x.category, packagingType: x.packagingType, name: x.name, spec: x.spec, texture: x.texture,
-      priceMode: x.priceMode, qty: x.qty, unitPrice: x.unitPrice, lineSubtotal: round2(x.qty*x.unitPrice),
-      discountEligible: x.discountEligible
+      priceMode: x.priceMode, qty: x.qty, unitPrice: x.unitPrice, originalUnitPrice: x.originalUnitPrice, boxPrice: x.boxPrice,
+      boxQty: x.boxQty, originalLineTotal: round2(x.originalLineTotal || x.qty*x.unitPrice), boxSavings: round2(x.boxSavings || 0),
+      lineSubtotal: round2(x.qty*x.unitPrice), discountEligible: x.discountEligible
     })),
+    retailSubtotal: round2(totals.retailSubtotal),
     subtotal: round2(totals.subtotal),
+    boxDiscountAmount: round2(totals.boxDiscountAmount),
     discountAmount: round2(totals.discountAmount),
     discountedSubtotal: round2(totals.discountedSubtotal),
-    shippingFee: round2(totals.shippingFee),
+    totalDiscountAmount: round2(totals.totalDiscountAmount),
     total: round2(totals.total),
     giftEligible: totals.giftEligible,
-    freeShipping: totals.freeShipping,
-    isCod: totals.isCod,
     syncStatus: 'pending',
     syncedAt: '',
     lastSyncError: ''
@@ -2285,14 +3016,16 @@ async function saveCurrentOrder() {
   await putOrder(order);
   lastSavedOrder = order;
   $('receiptBox').textContent = order.whatsappText;
-  showSaveMessage('success', `Order saved locally: <strong>${order.orderId}</strong>`);
   cart = [];
   renderCart();
   clearCustomerForm(false);
-  showSaveMessage('success', `Order saved locally: <strong>${order.orderId}</strong>`);
   await refreshOrders();
-  // Do not auto-send after saving. Event staff should manually press Send/Resend
-  // so local orders stay pending until they are intentionally submitted.
+  showSaveMessage('notice', `✅ 本機已保存：<strong>${order.orderId}</strong><br>正在送到雲端...`);
+  if (navigator.onLine) {
+    await sendOrder(order.orderId);
+  } else {
+    showSaveMessage('error', postSaveActionHtml(order.orderId, false));
+  }
 }
 
 function clearCustomerForm(clearReceipt=true) {
@@ -2312,6 +3045,38 @@ function showSaveMessage(type, msg) {
   el.className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'notice';
   el.innerHTML = msg;
 }
+
+function postSaveActionHtml(orderId, sent=false) {
+  const statusLine = sent
+    ? '✅ 本機已保存<br>🟡 已送出到雲端，請核實'
+    : '✅ 本機已保存<br>⚠️ 未送出到雲端，請有網時再送出';
+  return `<div><strong>${htmlEscape(orderId || '')}</strong><br>${statusLine}</div>
+    <div class="post-save-actions">
+      <button type="button" class="secondary" onclick="copyLatestReceipt()">Copy WhatsApp</button>
+      <button type="button" onclick="startNewOrderFromPostSave()">New Order</button>
+      <button type="button" class="secondary" onclick="refreshSheetDashboard(true); document.getElementById('sheetDashboardBox')?.scrollIntoView({behavior:'smooth', block:'start'});">View Sheet Orders</button>
+    </div>`;
+}
+
+window.copyLatestReceipt = async function() {
+  const text = $('receiptBox') ? $('receiptBox').textContent : '';
+  if (!text || text.includes('Save order')) return showSaveMessage('error', '未有 receipt text 可複製。');
+  try {
+    await navigator.clipboard.writeText(text);
+    showSaveMessage('success', 'WhatsApp text copied。');
+  } catch {
+    showSaveMessage('error', 'Copy 唔成功；可以手動 highlight 複製。');
+  }
+};
+
+window.startNewOrderFromPostSave = function() {
+  cart = [];
+  renderCart();
+  clearCustomerForm(false);
+  showSaveMessage('success', '已準備新訂單。');
+  const productCard = document.querySelector('.search-card');
+  if (productCard) productCard.scrollIntoView({ behavior:'smooth', block:'start' });
+};
 
 function isVerifiedStatus(status) {
   return status === 'verified' || status === 'synced';
@@ -2344,8 +3109,19 @@ async function refreshOrders() {
   const toSend = orders.filter(o => needsSend(o.syncStatus)).length;
   const unverified = orders.filter(o => o.syncStatus === 'sent_unverified').length;
   const verified = orders.filter(o => isVerifiedStatus(o.syncStatus)).length;
+  const today = (() => { const p = hkDateParts(); return `${p.year}-${p.month}-${p.day}`; })();
+  const todayOrders = orders.filter(o => String(o.createdAt || '').slice(0, 10) === today);
+  const todayTotal = todayOrders.reduce((s,o) => s + Number(o.total || 0), 0);
   $('pendingPill').textContent = unverified ? `待核實: ${unverified}` : `未送出: ${toSend}`;
   $('pendingPill').className = toSend ? 'pill warn' : unverified ? 'pill info' : 'pill ok';
+  if ($('localOrdersPill')) $('localOrdersPill').textContent = `本機: ${orders.length}`;
+  if ($('localPendingPill')) {
+    $('localPendingPill').textContent = `未送出: ${toSend}`;
+    $('localPendingPill').className = toSend ? 'pill warn' : 'pill ok';
+  }
+  if ($('dashboardDetail')) {
+    $('dashboardDetail').textContent = `本機今日 ${todayOrders.length} 張 / ${money(todayTotal)}；未送出 ${toSend}，待核實 ${unverified}，已核實 ${verified}。正式資料請以 Google Sheet 為集中資料庫。`;
+  }
   if ($('syncSummaryPill')) {
     $('syncSummaryPill').textContent = `未送出: ${toSend}`;
     $('syncSummaryPill').className = toSend ? 'pill warn' : 'pill ok';
@@ -2355,32 +3131,40 @@ async function refreshOrders() {
     $('unverifiedPill').className = unverified ? 'pill info' : 'pill ok';
   }
   if ($('syncDetail')) {
-    $('syncDetail').textContent = `本機共 ${orders.length} 張單；未送出 ${toSend} 張，待核實 ${unverified} 張，已核實 ${verified} 張。`;
+    $('syncDetail').textContent = `本機共 ${orders.length} 張單；未送出 ${toSend} 張，待核實 ${unverified} 張，已核實 ${verified} 張。所有 order 應送到 Google Sheet，不能只留在個別裝置。`;
   }
   $('orderCount').textContent = `${orders.length} orders`;
-  $('ordersList').innerHTML = orders.slice(0, 30).map(o => `
-    <div class="order-card">
+  $('ordersList').innerHTML = orders.slice(0, 40).map(o => {
+    const itemCount = (o.items || []).reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    const cls = isVerifiedStatus(o.syncStatus) ? 'verified' : o.syncStatus === 'sent_unverified' ? 'sent-check' : 'needs-send';
+    const addressShort = String(o.address || '').length > 42 ? String(o.address || '').slice(0, 42) + '…' : String(o.address || '');
+    return `
+    <div class="order-card ${cls}">
       <div class="row">
         <strong>${htmlEscape(o.orderId)}</strong>
         <span class="${syncPillClass(o.syncStatus)}">${htmlEscape(syncStatusLabel(o.syncStatus))}</span>
       </div>
-      <div class="small">${new Date(o.createdAt).toLocaleString()} · ${htmlEscape(o.customerName)} · ${htmlEscape(o.phone)}</div>
-      <div class="row">
+      <div class="small">${htmlEscape(o.createdAt || '')} · ${htmlEscape(o.staffName || '')} · ${htmlEscape(o.deviceId || '')}</div>
+      <div><strong>${htmlEscape(o.customerName || '')}</strong>｜${htmlEscape(o.phone || '')}</div>
+      <div class="small">${htmlEscape(addressShort)}</div>
+      <div class="row" style="margin-top:6px">
         <span>Total: <strong>${money(o.total)}</strong></span>
-        <span>${htmlEscape(shippingLabel(o.shippingMethod))}</span>
+        <span>${itemCount} items / ${(o.items || []).length} lines</span>
       </div>
       ${o.staffNotes ? `<div class="notice" style="margin-top:8px">同事備註：${htmlEscape(o.staffNotes)}</div>` : ''}
       <div class="btns" style="margin-top:8px">
-        <button class="secondary" onclick="loadReceipt('${o.orderId}')">Receipt Text</button>
-        ${!isVerifiedStatus(o.syncStatus) ? `<button class="secondary" onclick="sendOrder('${o.orderId}').then(refreshOrders)">${o.syncStatus === 'sent_unverified' ? 'Resend' : 'Send'}</button>` : ''}
+        <button class="secondary" onclick="loadReceipt('${o.orderId}')">Receipt</button>
+        ${!isVerifiedStatus(o.syncStatus) ? `<button class="secondary" onclick="sendOrder('${o.orderId}').then(refreshOrders)">${o.syncStatus === 'sent_unverified' ? 'Resend to Sheet' : 'Send to Sheet'}</button>` : ''}
         ${o.syncStatus === 'sent_unverified' ? `<button onclick="markOrderVerified('${o.orderId}')">Mark Verified</button>` : ''}
         <button class="ghost" onclick="duplicateOrder('${o.orderId}')">Duplicate</button>
         <button class="danger" onclick="deleteLocalOrder('${o.orderId}')">Delete Local</button>
       </div>
+      ${needsSend(o.syncStatus) ? `<div class="error" style="margin-top:8px">⚠️ 呢張單未送到 Google Sheet，唔好只留喺本機。</div>` : ''}
       ${o.lastSyncError ? `<div class="small" style="color:#991b1b">Sync error: ${htmlEscape(o.lastSyncError)}</div>` : ''}
-    </div>
-  `).join('') || '<div class="notice">暫時未有 saved orders。</div>';
+    </div>`;
+  }).join('') || '<div class="notice">暫時未有 saved orders。</div>';
 }
+
 
 window.loadReceipt = async function(orderId) {
   const o = await getOrder(orderId);
@@ -2418,26 +3202,45 @@ window.duplicateOrder = async function(orderId) {
 window.markOrderVerified = async function(orderId) {
   const o = await getOrder(orderId);
   if (!o) return;
+  const ok = doubleConfirm('Mark Verified', `請確認 Google Sheet 已經見到呢張單：${orderId}`);
+  if (!ok) return;
   o.syncStatus = 'verified';
   o.syncedAt = nowHK();
   o.lastSyncError = '';
   await putOrder(o);
+  showSaveMessage('notice', `已在本機標記 verified，並嘗試更新 Google Sheet：<strong>${htmlEscape(orderId)}</strong>`);
+  if (navigator.onLine) {
+    await postOrderToSheet(o, 'verified');
+  }
   showSaveMessage('success', `Order verified after Sheet check: <strong>${htmlEscape(orderId)}</strong>`);
   await refreshOrders();
+  refreshSheetDashboard(false);
 };
 
 window.deleteLocalOrder = async function(orderId) {
   const o = await getOrder(orderId);
   if (!o) return;
-  const ok = confirm(`Delete local order ${orderId}?\n\nThis only removes it from this device. If it was already sent to Google Sheet, please delete/cancel the row there too.`);
+  const ok = doubleConfirm('Delete Local Order', `將會從呢部機刪除 ${orderId}。
+如果已送到 Google Sheet，需要另行喺 Sheet 刪除 / 取消。`);
   if (!ok) return;
   await deleteOrder(orderId);
   showSaveMessage('success', `Deleted local order: <strong>${htmlEscape(orderId)}</strong>`);
   await refreshOrders();
 };
 
+async function postOrderToSheet(order, nextStatus='sent_unverified') {
+  const sentAt = nowHK();
+  const payloadOrder = { ...order, syncStatus: nextStatus, syncedAt: sentAt, lastSyncError: '' };
+  await fetch(scriptUrl(), {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payloadOrder)
+  });
+  return payloadOrder;
+}
+
 async function sendOrder(orderId) {
-  const settings = loadSettings();
   if (!scriptUrl()) {
     showSaveMessage('error', '未設定 Google Apps Script Web App URL。可先 Export CSV。');
     return;
@@ -2448,24 +3251,173 @@ async function sendOrder(orderId) {
   await putOrder(order);
   await refreshOrders();
   try {
-    // Apps Script often needs a simple request to avoid CORS preflight.
-    // no-cors responses are opaque, so this can only mean "sent", not "verified".
-    const sentAt = nowHK();
-    const payloadOrder = { ...order, syncStatus: 'sent_unverified', syncedAt: sentAt, lastSyncError: '' };
-    const payload = JSON.stringify(payloadOrder);
-    await fetch(scriptUrl(), {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: payload
-    });
+    const payloadOrder = await postOrderToSheet(order, 'sent_unverified');
     await putOrder(payloadOrder);
-    showSaveMessage('success', `Sync request sent: ${orderId}。狀態已標示為「已送出未核實」，請於 Google Sheet spot-check 後按 Mark Verified。`);
+    showSaveMessage('success', postSaveActionHtml(orderId, true));
+    refreshSheetDashboard(false);
   } catch (err) {
     order.syncStatus = 'failed';
     order.lastSyncError = String(err && err.message ? err.message : err);
     await putOrder(order);
-    showSaveMessage('error', `Sync failed: ${order.lastSyncError}`);
+    showSaveMessage('error', `送到 Google Sheet 失敗：${order.lastSyncError}`);
+  }
+}
+
+function renderSheetDashboard(data) {
+  latestSheetDashboard = data;
+  renderSheetDashboardView();
+}
+
+function setSheetViewTab(tab) {
+  sheetViewTab = tab;
+  renderSheetDashboardView();
+}
+
+function setSheetOrderFilter(filter) {
+  sheetOrderFilter = filter;
+  renderSheetDashboardView();
+}
+
+function sheetOrderNeedsFollowUp(o) {
+  return !o.phone || !o.address || String(o.syncStatus || '') !== 'verified' || o.notes || o.staffNotes;
+}
+
+function followUpReasons(o) {
+  const reasons = [];
+  if (String(o.syncStatus || '') !== 'verified') reasons.push('未核實');
+  if (!o.phone) reasons.push('漏 WhatsApp');
+  if (!o.address) reasons.push('漏地址');
+  if (o.notes || o.staffNotes) reasons.push('有備註');
+  return reasons.join(' · ') || '需要跟進';
+}
+
+function buildSheetReceiptText(o) {
+  const itemText = (o.items && o.items.length)
+    ? o.items.map(i => `- ${String(i.name || i.sku || '').replace(/\n/g, ' ')} x ${Number(i.qty || 0)}${i.priceMode === 'box' ? ' 原箱' : ''} = ${money(i.lineSubtotal || 0)}`).join('\n')
+    : (o.itemsText || '');
+  return `Hi ${o.customerName || ''}，以下係你嘅 2026 HK寵物展預訂單：\n\nOrder No: ${o.orderId || ''}\n\n${itemText}\n\n優惠後應收：${money(o.total || 0)}\n\n送貨地址：${o.address || ''}\n\nPlease confirm, and send us "Yes", 我哋會稍後確認付款及送貨安排，多謝！`;
+}
+
+async function copySheetReceipt(orderId) {
+  const orders = (latestSheetDashboard && latestSheetDashboard.todayOrderCards) || [];
+  const o = orders.find(x => x.orderId === orderId) || ((latestSheetDashboard && latestSheetDashboard.followUpOrders) || []).find(x => x.orderId === orderId);
+  if (!o) return showSaveMessage('error', '搵唔到呢張 Sheet order。');
+  try {
+    await navigator.clipboard.writeText(o.whatsappText || buildSheetReceiptText(o));
+    showSaveMessage('success', 'Sheet order receipt copied。');
+  } catch {
+    showSaveMessage('error', 'Copy 唔成功；可以手動複製。');
+  }
+}
+
+async function copySheetAddress(orderId) {
+  const orders = (latestSheetDashboard && latestSheetDashboard.todayOrderCards) || [];
+  const o = orders.find(x => x.orderId === orderId) || ((latestSheetDashboard && latestSheetDashboard.followUpOrders) || []).find(x => x.orderId === orderId);
+  if (!o) return showSaveMessage('error', '搵唔到呢張 Sheet order。');
+  try {
+    await navigator.clipboard.writeText(`${o.customerName || ''}\n${o.phone || ''}\n${o.address || ''}`.trim());
+    showSaveMessage('success', '客人資料 / 地址 copied。');
+  } catch {
+    showSaveMessage('error', 'Copy 唔成功；可以手動複製。');
+  }
+}
+
+function sheetOrderCardHtml(o, isFollow=false) {
+  const statusClass = isVerifiedStatus(o.syncStatus) ? 'verified' : o.syncStatus === 'sent_unverified' ? 'sent-check' : 'needs-send';
+  const items = (o.items && o.items.length)
+    ? o.items.map(i => `${htmlEscape(i.sku)} x ${Number(i.qty || 0)}${i.priceMode === 'box' ? ' 原箱' : ''}`).join('、')
+    : htmlEscape(o.itemsText || '');
+  return `<div class="sheet-order-card ${statusClass}">
+    <div class="sheet-order-head">
+      <strong>${htmlEscape(o.orderId || '')}</strong>
+      <span class="${syncPillClass(o.syncStatus)}">${htmlEscape(syncStatusLabel(o.syncStatus))}</span>
+    </div>
+    <div class="sheet-total-line"><span>${htmlEscape(o.customerName || '')} · ${htmlEscape(o.phone || '')}</span><span>${money(o.total || 0)}</span></div>
+    <div class="sheet-address">📍 ${htmlEscape(o.address || '未填地址')}</div>
+    <div class="sheet-items">📦 ${items || '未有 items'}</div>
+    ${(o.notes || o.staffNotes) ? `<div class="sheet-note">📝 ${htmlEscape([o.notes, o.staffNotes].filter(Boolean).join(' / '))}</div>` : ''}
+    ${isFollow ? `<div class="follow-reason">⚠️ ${htmlEscape(followUpReasons(o))}</div>` : ''}
+    <div class="sheet-card-actions">
+      <button class="secondary" type="button" onclick="copySheetReceipt('${jsString(o.orderId || '')}')">Copy Receipt</button>
+      <button class="secondary" type="button" onclick="copySheetAddress('${jsString(o.orderId || '')}')">Copy Address</button>
+    </div>
+  </div>`;
+}
+
+function renderSheetDashboardView() {
+  const box = $('sheetDashboardBox');
+  const list = $('sheetRecentOrders');
+  const data = latestSheetDashboard;
+  if (!box || !list || !data || !data.ok) return;
+  const topItems = (data.topItems || []).slice(0, 5).map(x => `${htmlEscape(x.sku)} x ${Number(x.qty || 0)}`).join('、') || '未有';
+  box.className = 'success';
+  box.innerHTML = `<strong>Google Sheet 今日總覽 · ${htmlEscape(data.today || '')}</strong>
+    <div class="sheet-mini">
+      <div><span>今日 orders</span><strong>${Number(data.todayOrders || 0)}</strong></div>
+      <div><span>今日總額</span><strong>${money(data.todayTotal || 0)}</strong></div>
+      <div><span>待核實</span><strong>${Number(data.sentUnverified || 0)}</strong></div>
+      <div><span>已核實</span><strong>${Number(data.verified || 0)}</strong></div>
+      <div><span>Follow up</span><strong>${Number(data.followUpCount || 0)}</strong></div>
+      <div><span>Sheet all</span><strong>${Number(data.allOrders || 0)}</strong></div>
+    </div>
+    <div style="margin-top:8px">Top items：${topItems}</div>`;
+  if ($('sheetOrdersPill')) {
+    $('sheetOrdersPill').textContent = `Sheet 今日: ${Number(data.todayOrders || 0)}`;
+    $('sheetOrdersPill').className = 'pill ok';
+  }
+
+  const tabButtons = `<div class="sheet-tabs">
+    <button type="button" class="${sheetViewTab === 'orders' ? 'active' : ''}" onclick="setSheetViewTab('orders')">今日訂單</button>
+    <button type="button" class="${sheetViewTab === 'packing' ? 'active' : ''}" onclick="setSheetViewTab('packing')">執貨</button>
+    <button type="button" class="${sheetViewTab === 'follow' ? 'active' : ''}" onclick="setSheetViewTab('follow')">跟進</button>
+  </div>`;
+
+  let content = '';
+  if (sheetViewTab === 'orders') {
+    let orders = data.todayOrderCards || data.recentOrders || [];
+    const followIds = new Set(((data.followUpOrders || []).map(o => o.orderId)));
+    if (sheetOrderFilter === 'unverified') orders = orders.filter(o => !isVerifiedStatus(o.syncStatus));
+    if (sheetOrderFilter === 'follow') orders = orders.filter(o => followIds.has(o.orderId) || sheetOrderNeedsFollowUp(o));
+    content = `<div class="sheet-filter-row">
+      <button type="button" class="${sheetOrderFilter === 'all' ? 'active' : ''}" onclick="setSheetOrderFilter('all')">全部</button>
+      <button type="button" class="${sheetOrderFilter === 'unverified' ? 'active' : ''}" onclick="setSheetOrderFilter('unverified')">未核實</button>
+      <button type="button" class="${sheetOrderFilter === 'follow' ? 'active' : ''}" onclick="setSheetOrderFilter('follow')">待跟進</button>
+    </div>
+    <div class="sheet-display">${orders.map(o => sheetOrderCardHtml(o)).join('') || '<div class="notice">今日暫時未有符合條件嘅 Sheet order。</div>'}</div>`;
+  } else if (sheetViewTab === 'packing') {
+    const rows = data.packingList || [];
+    content = `<div class="sheet-display">${rows.map(r => `<div class="packing-card">
+      <div><div><span class="packing-sku">${htmlEscape(r.sku || '')}</span><span class="packing-mode">${htmlEscape(r.mode || '')}</span></div><div class="small">${htmlEscape(r.product || '')}</div><div class="small">Amount ${money(r.amount || 0)}</div></div>
+      <div class="packing-qty">x ${Number(r.qty || 0)}</div>
+    </div>`).join('') || '<div class="notice">今日暫時未有 packing items。</div>'}</div>`;
+  } else {
+    const rows = data.followUpOrders || [];
+    content = `<div class="sheet-display">${rows.map(o => sheetOrderCardHtml(o, true)).join('') || '<div class="success">暫時冇需要跟進嘅 order。</div>'}</div>`;
+  }
+  list.innerHTML = tabButtons + content;
+}
+
+async function refreshSheetDashboard(showMessage=true) {
+  if (!scriptUrl()) return;
+  if (!navigator.onLine) {
+    if (showMessage) showSaveMessage('error', '目前離線，不能讀取 Google Sheet Dashboard。');
+    return;
+  }
+  try {
+    if ($('sheetDashboardBox')) {
+      $('sheetDashboardBox').className = 'notice';
+      $('sheetDashboardBox').textContent = '正在讀取 Google Sheet 今日總覽...';
+    }
+    const data = await jsonp(scriptUrl(), { action: 'sheetSummary' }, 22000);
+    if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Invalid sheet summary response');
+    renderSheetDashboard(data);
+    if (showMessage) showSaveMessage('success', 'Google Sheet Dashboard 已更新。');
+  } catch (err) {
+    if ($('sheetDashboardBox')) {
+      $('sheetDashboardBox').className = 'error';
+      $('sheetDashboardBox').textContent = '讀取 Google Sheet Dashboard 失敗：' + String(err && err.message ? err.message : err);
+    }
+    if (showMessage) showSaveMessage('error', '讀取 Sheet Dashboard 失敗：' + String(err && err.message ? err.message : err));
   }
 }
 
@@ -2486,8 +3438,8 @@ async function exportCsv() {
   const orders = await getAllOrders();
   const headers = [
     'orderId','deviceId','createdAt','customerName','phone','email','address','notes',
-    'staffNotes','paymentMethod','paymentStatus','shippingMethod','subtotal','discountAmount',
-    'discountedSubtotal','shippingFee','total','giftEligible','freeShipping','isCod',
+    'staffNotes','paymentMethod','paymentStatus','shippingMethod','retailSubtotal','subtotal','boxDiscountAmount','discountAmount',
+    'discountedSubtotal','totalDiscountAmount','total','giftEligible',
     'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText'
   ];
   const rows = orders.map(o => headers.map(h => {
@@ -2710,6 +3662,8 @@ function registerSW() {
 
 $('saveOrderBtn').addEventListener('click', saveCurrentOrder);
 $('resetOrderBtn').addEventListener('click', () => {
+  const ok = doubleConfirm('Clear Current Order', '將會清空目前購物車、客人資料同 receipt text。');
+  if (!ok) return;
   cart = [];
   renderCart();
   clearCustomerForm(true);
@@ -2725,6 +3679,11 @@ $('copyReceiptBtn').addEventListener('click', async () => {
 });
 $('refreshCatalogBtn').addEventListener('click', () => refreshCatalogFromSheet(true));
 $('syncAllBtn').addEventListener('click', syncAll);
+if ($('syncAllDashboardBtn')) $('syncAllDashboardBtn').addEventListener('click', syncAll);
+if ($('refreshSheetBtn')) $('refreshSheetBtn').addEventListener('click', () => refreshSheetDashboard(true));
+$('dailySummaryBtn').addEventListener('click', showDailySummary);
+$('preEventChecklistBtn').addEventListener('click', showPreEventChecklist);
+$('clearTestOrdersBtn').addEventListener('click', clearLocalTestOrders);
 $('exportCsvBtn').addEventListener('click', exportCsv);
 $('exportJsonBtn').addEventListener('click', exportJson);
 
@@ -2741,6 +3700,7 @@ window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
   renderCart();
   await refreshOrders();
+  if (navigator.onLine) refreshSheetDashboard(false);
 })();
 </script>
 </body>
