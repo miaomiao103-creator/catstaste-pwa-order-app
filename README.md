@@ -1,9 +1,9 @@
-# CatsTaste Offline-first PWA Order App v17
+# CatsTaste Offline-first PWA Order App v18
 
-All-in-one postal order app for the 2026 HK Pet Expo, with v17 UX polish, sticky cart bar, larger review modal, and in-app Google Sheet display.
+All-in-one postal order app for the 2026 HK Pet Expo, with v18 bug fixes and UX polish, sticky cart bar, larger review modal, and in-app Google Sheet display.
 
 
-## v17 UX polish
+## v18 fixes
 
 - Sticky mobile cart bar across the bottom with quick jump buttons.
 - Hot item product cards are cleaner and more compact for busy staff.
@@ -54,7 +54,7 @@ Then update Apps Script with `google_apps_script.gs` and deploy a new Web App ve
 Test URL:
 
 ```text
-https://miaomiao103-creator.github.io/catstaste-pwa-order-app/?v=16
+https://miaomiao103-creator.github.io/catstaste-pwa-order-app/?v=18
 ```
 
 ## Important event workflow
@@ -78,3 +78,19 @@ https://miaomiao103-creator.github.io/catstaste-pwa-order-app/?v=16
 - Address short-warning appears in review popup without blocking save.
 - WhatsApp receipt displays full product names and quantities, not only SKU.
 - Pre-event Checklist added in Settings.
+
+
+## v18 bug fixes
+
+- Fixed product render error caused by missing `updateQuickFilterChips()` / quick chip handlers.
+- Added PNG logo/app icon files referenced by HTML, manifest, and service worker.
+- Admin save/toggle no longer shows success after a blind `no-cors` POST only; it reloads Catalog and verifies all edited fields or active status before showing success.
+- Service worker cache bumped to v18.
+
+
+## v18 bug fixes
+
+- Fixed product render error caused by missing `updateQuickFilterChips()` and quick filter handlers.
+- Added PNG logo/app icon files referenced by HTML, manifest, and service worker.
+- Admin save/toggle no longer shows success after a blind `no-cors` POST only; it reloads Catalog and verifies all edited fields or active status before showing success.
+- Service worker cache bumped to v18.

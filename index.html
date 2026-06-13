@@ -2515,6 +2515,20 @@ function initProductFilters() {
   renderProducts();
 }
 
+function updateQuickFilterChips() {
+  const selected = $('packagingFilter') ? $('packagingFilter').value : '';
+  document.querySelectorAll('.quick-filter-chips button[data-packaging]').forEach(btn => {
+    btn.classList.toggle('active', String(btn.dataset.packaging || '') === String(selected || ''));
+  });
+}
+
+window.setQuickPackagingFilter = function(value) {
+  if (!$('packagingFilter')) return;
+  $('packagingFilter').value = value || '';
+  updateQuickFilterChips();
+  renderProducts();
+};
+
 function htmlEscape(s) {
   return String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -3589,19 +3603,54 @@ async function postAdminAction(action, payload) {
   });
 }
 
+function normalizeAdminCompareProduct(p) {
+  const n = normalizeProduct(p || {});
+  return {
+    active: n.active !== false,
+    id: String(n.id || '').trim().toUpperCase(),
+    sku: String(n.sku || '').trim().toUpperCase(),
+    category: String(n.category || '').trim(),
+    name: String(n.name || '').replace(/\r\n/g, '\n').trim(),
+    spec: String(n.spec || '').trim(),
+    texture: String(n.texture || '').trim(),
+    unitPrice: Number(n.unitPrice || 0),
+    boxPrice: n.boxPrice === '' || n.boxPrice === null || n.boxPrice === undefined ? null : Number(n.boxPrice || 0),
+    remarks: String(n.remarks || '').replace(/\r\n/g, '\n').trim()
+  };
+}
+
+function adminProductMismatch(saved, expected) {
+  const a = normalizeAdminCompareProduct(saved);
+  const b = normalizeAdminCompareProduct(expected);
+  const fields = ['active','id','sku','category','name','spec','texture','unitPrice','boxPrice','remarks'];
+  for (const field of fields) {
+    if (a[field] !== b[field]) return field;
+  }
+  return '';
+}
+
+async function refreshCatalogAndFindSku(sku) {
+  const ok = await refreshCatalogFromSheet(false);
+  if (!ok) throw new Error('未能重新讀取 Catalog，請檢查網絡 / Apps Script execution。');
+  const saved = products.find(p => String(p.sku || '').toUpperCase() === String(sku || '').toUpperCase());
+  if (!saved) throw new Error('儲存後未能在 Catalog 找到該 SKU，請檢查 PIN / Apps Script execution。');
+  return saved;
+}
+
 async function adminSaveProduct() {
   try {
     const product = collectAdminProduct();
-    setAdminMessage('notice', 'Saving product...');
+    setAdminMessage('notice', 'Saving product... 送出後會重新讀 Catalog 核實，未核實前不會顯示成功。');
     await postAdminAction('saveProduct', { product });
-    await new Promise(r => setTimeout(r, 900));
-    const ok = await refreshCatalogFromSheet(false);
-    const saved = products.find(p => p.sku === product.sku);
-    if (!ok || !saved) throw new Error('儲存後未能在 Catalog 找到該 SKU，請檢查 PIN / Apps Script execution。');
-    const priceOk = Number(saved.unitPrice) === Number(product.unitPrice);
-    if (!priceOk) throw new Error('Catalog 已回傳，但價格未更新，可能 Apps Script 未部署新版本。');
+    await new Promise(r => setTimeout(r, 1100));
+    const saved = await refreshCatalogAndFindSku(product.sku);
+    const mismatch = adminProductMismatch(saved, product);
+    if (mismatch) {
+      throw new Error(`已送出但 Catalog 未核實更新欄位：${mismatch}。可能 PIN 錯、Apps Script 未部署新版本，或網絡失敗。`);
+    }
     renderAdminProducts();
-    setAdminMessage('success', `已更新 ${htmlEscape(product.sku)}。前台如未見新資料，請按「更新商品資料」。`);
+    renderProducts();
+    setAdminMessage('success', `已核實更新 ${htmlEscape(product.sku)}。前台如未見新資料，請按「更新商品資料」。`);
   } catch (err) {
     setAdminMessage('error', 'Save failed：' + String(err && err.message ? err.message : err));
   }
@@ -3612,14 +3661,20 @@ window.adminToggleProduct = async function(sku) {
     const p = products.find(x => x.sku === sku);
     if (!p) return;
     const nextActive = p.active === false;
-    const okConfirm = confirm(`${nextActive ? 'Activate' : 'Deactivate'} ${sku}?\n\n商品只會 active=false 停用，不會硬刪除。`);
+    const okConfirm = confirm(`${nextActive ? 'Activate' : 'Deactivate'} ${sku}?
+
+商品只會 active=false 停用，不會硬刪除。`);
     if (!okConfirm) return;
+    setAdminMessage('notice', `${nextActive ? 'Activating' : 'Deactivating'} ${htmlEscape(sku)}... 送出後會重新讀 Catalog 核實。`);
     await postAdminAction('toggleProduct', { sku, active: nextActive });
-    await new Promise(r => setTimeout(r, 900));
-    await refreshCatalogFromSheet(false);
+    await new Promise(r => setTimeout(r, 1100));
+    const saved = await refreshCatalogAndFindSku(sku);
+    if ((saved.active !== false) !== Boolean(nextActive)) {
+      throw new Error('已送出但 Catalog active 狀態未改變，請檢查 PIN / Apps Script execution。');
+    }
     renderAdminProducts();
     renderProducts();
-    setAdminMessage('success', `${htmlEscape(sku)} 已${nextActive ? '啟用' : '停用'}。`);
+    setAdminMessage('success', `${htmlEscape(sku)} 已核實${nextActive ? '啟用' : '停用'}。`);
   } catch (err) {
     setAdminMessage('error', 'Toggle failed：' + String(err && err.message ? err.message : err));
   }
