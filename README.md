@@ -1,4 +1,4 @@
-# CatsTaste PWA v19 入口 / 落單 / 執貨
+# CatsTaste PWA v22 入口 / 落單 / 執貨
 
 呢個版本將 app 分成 3 個頁面，方便 iPhone / iPad / Android 手機現場使用：
 
@@ -11,6 +11,14 @@
 - `assets/css/*.css`：各頁面樣式
 - `assets/data/catalog-data.js`：本機 fallback 商品資料
 - `assets/js/*.js`：各頁面互動邏輯
+
+## v22 更新重點
+
+- WhatsApp 訂單確認文字已改為：已收到款項，請客人確認送貨資料及訂單內容。
+- 新增滿 HK$800 免費送貨判斷。
+- 未滿 HK$800 的快遞送貨單，系統會顯示「會安排到付」。
+- Google Sheet Orders / Orders_View 會記錄送貨安排欄位。
+- Service Worker cache name 已更新，重新部署後可迫使裝置更新快取。
 
 ## 主要流程
 
@@ -90,3 +98,11 @@
 - `brand-logo.png`
 - `icon-192.png`
 - `icon-512.png`
+
+
+## v23 更新（項目 6–8）
+
+- 落單送出後，app 會自動檢查 Google Sheet 有冇成功收到訂單。
+- 如果訂單暫時係 `sent_unverified`，系統會每 5 分鐘自動再檢查一次。
+- packing.html 主標題改為「待執貨清單」，訂單列表按時間排序。
+- 執貨後台新增：快遞公司、快遞單號、鏡頭掃描 barcode / QR code、手動輸入 fallback、WhatsApp 出貨通知複製按鈕。

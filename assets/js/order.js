@@ -1,4 +1,4 @@
-﻿const FALLBACK_PRODUCTS = Array.isArray(window.CATSTASTE_FALLBACK_PRODUCTS)
+const FALLBACK_PRODUCTS = Array.isArray(window.CATSTASTE_FALLBACK_PRODUCTS)
   ? window.CATSTASTE_FALLBACK_PRODUCTS
   : [];
 
@@ -22,7 +22,8 @@ const SETTINGS_KEY = 'catstaste_order_settings_v1';
 const PROMOS = {
   discountThreshold: 120,
   discountRate: 0.10,
-  giftThreshold: 150
+  giftThreshold: 150,
+  freeShippingThreshold: 800
 };
 
 let db;
@@ -723,9 +724,11 @@ function calculateTotals() {
   const shippingMethod = $('shippingMethod') ? $('shippingMethod').value : 'SF';
   const totalDiscountAmount = round2(boxDiscountAmount + discountAmount);
   const total = round2(discountedSubtotal);
+  const shippingFreeEligible = total >= PROMOS.freeShippingThreshold;
+  const shippingArrangement = shippingFreeEligible ? 'free' : 'cod';
   return {
     eligibleSubtotal, nonEligibleSubtotal, retailSubtotal, subtotal, boxDiscountAmount, discountTriggered, discountAmount,
-    discountedSubtotal, giftEligible, shippingMethod, totalDiscountAmount, total
+    discountedSubtotal, giftEligible, shippingMethod, totalDiscountAmount, total, shippingFreeEligible, shippingArrangement
   };
 }
 
@@ -757,6 +760,7 @@ function renderSummary() {
     t.boxDiscountAmount > 0 ? `<div class="summary-row"><span>原箱優惠</span><span>-${money(t.boxDiscountAmount)}</span></div>` : '',
     t.discountAmount > 0 ? `<div class="summary-row"><span>滿 HK$120 九折優惠</span><span>-${money(t.discountAmount)}</span></div>` : '',
     t.totalDiscountAmount > 0 ? `<div class="summary-row"><span>總優惠</span><span>-${money(t.totalDiscountAmount)}</span></div>` : '',
+    `<div class="summary-row"><span>送貨安排</span><span>${shippingArrangementShort(t)}</span></div>`,
     `<div class="summary-row total-row"><span><strong>${finalTotalLabel}</strong></span><span><strong>${money(t.total)}</strong></span></div>`
   ].filter(Boolean).join('');
   $('summary').innerHTML = `
@@ -772,6 +776,7 @@ function renderSummary() {
     notes.push(`未達滿 HK$120 9折，全單尚差 ${money(Math.max(0, PROMOS.discountThreshold - t.subtotal))}。`);
   }
   notes.push(t.giftEligible ? '🎁 已達滿 HK$150 送玩具。' : `未達滿 HK$150 送玩具，尚差 ${money(Math.max(0, PROMOS.giftThreshold - t.discountedSubtotal))}。`);
+  notes.push(t.shippingFreeEligible ? '🚚 已滿 HK$800：免費送貨。' : `🚚 未滿 HK$800：會安排到付。尚差 ${money(shippingThresholdGap(t))} 可享免費送貨。`);
   notes.push(`<strong>即場收款：${money(t.total)}</strong>`);
   $('promoNotice').innerHTML = notes.join('<br>');
   updateCartSummaryUI(t);
@@ -816,6 +821,22 @@ function shippingLabel(v) {
   }[v] || v;
 }
 
+function isFreeShipping(totals) {
+  return Number(totals && totals.total || 0) >= PROMOS.freeShippingThreshold;
+}
+
+function shippingArrangementLabel(totals) {
+  return isFreeShipping(totals) ? '滿 HK$800：免費送貨' : '未滿 HK$800：會安排到付';
+}
+
+function shippingArrangementShort(totals) {
+  return isFreeShipping(totals) ? '免費送貨' : '到付';
+}
+
+function shippingThresholdGap(totals) {
+  return Math.max(0, PROMOS.freeShippingThreshold - Number(totals && totals.total || 0));
+}
+
 function buildWhatsAppText(order) {
   const lines = order.items.map((x, i) => {
     const boxText = x.priceMode === 'box' ? `（原箱｜原箱優惠 - ${money(x.boxSavings || 0)}）` : '';
@@ -829,7 +850,8 @@ function buildWhatsAppText(order) {
   if (order.staffNotes) noteLines.push(`取貨 / 出貨備註: ${order.staffNotes}`);
   const notesText = noteLines.length ? `\n\n備註:\n${noteLines.join('\n')}` : '';
   const finalTotalLabel = totalAmountLabel(order);
-  return `Hi ${order.customerName}，以下係你嘅 2026 HK 寵物展預訂單：
+  const deliveryText = shippingArrangementLabel(order);
+  return `Hi ${order.customerName}，以下係你嘅香港貓咪博覽會 2026 快遞送貨單：
 
 訂單編號：${order.orderId}
 
@@ -843,10 +865,12 @@ ${lines.join('\n')}
 ${finalTotalLabel}: ${money(order.total)}${giftText}
 
 送貨方式: ${shipText}
+送貨安排: ${deliveryText}
 地址: ${order.address}
 ${notesText}
 
-Please confirm, and send us "Yes", 我哋會稍後確認付款及送貨安排，多謝！`;
+我哋已收到款項，請你確認以上送貨資料及訂單內容。
+確認後我哋會安排執貨及快遞配送，謝謝。`;
 }
 
 
@@ -859,7 +883,7 @@ function doubleConfirm(title, detail='') {
 function buildOrderReviewText(totals) {
   const itemLines = cart.slice(0, 8).map(x => `• ${x.name || '產品'} ${x.priceMode === 'box' ? '原箱' : '單件'} x ${x.qty} = ${money(x.qty * x.unitPrice)}`);
   const more = cart.length > 8 ? `\n• ...另有 ${cart.length - 8} 項產品` : '';
-  return `請核對訂單資料：\n\n客人：${$('customerName').value.trim()}\nWhatsApp：${$('phone').value.trim()}\n地址：${$('address').value.trim()}\n\n產品：\n${itemLines.join('\n')}${more}\n\n商品總數：${money(totals.retailSubtotal)}\n原箱優惠 - ${money(totals.boxDiscountAmount)}\n九折優惠：-${money(totals.discountAmount)}\n總優惠：-${money(totals.totalDiscountAmount)}\n${totalAmountLabel(totals)}：${money(totals.total)}\n\n確認儲存？`;
+  return `請核對訂單資料：\n\n客人：${$('customerName').value.trim()}\nWhatsApp：${$('phone').value.trim()}\n地址：${$('address').value.trim()}\n\n產品：\n${itemLines.join('\n')}${more}\n\n商品總數：${money(totals.retailSubtotal)}\n原箱優惠 - ${money(totals.boxDiscountAmount)}\n九折優惠：-${money(totals.discountAmount)}\n總優惠：-${money(totals.totalDiscountAmount)}\n${totalAmountLabel(totals)}：${money(totals.total)}\n送貨安排：${shippingArrangementLabel(totals)}\n\n確認儲存？`;
 }
 
 function addressWarningMessage(address) {
@@ -884,7 +908,8 @@ function buildOrderReviewHtml(totals) {
     `<div class="summary-row"><span>商品總數</span><span>${money(totals.retailSubtotal)}</span></div>`,
     totals.boxDiscountAmount > 0 ? `<div class="summary-row"><span>原箱優惠</span><span>-${money(totals.boxDiscountAmount)}</span></div>` : '',
     totals.discountAmount > 0 ? `<div class="summary-row"><span>滿 HK$120 九折優惠</span><span>-${money(totals.discountAmount)}</span></div>` : '',
-    totals.totalDiscountAmount > 0 ? `<div class="summary-row"><span>總優惠</span><span>-${money(totals.totalDiscountAmount)}</span></div>` : ''
+    totals.totalDiscountAmount > 0 ? `<div class="summary-row"><span>總優惠</span><span>-${money(totals.totalDiscountAmount)}</span></div>` : '',
+    `<div class="summary-row"><span>送貨安排</span><span>${shippingArrangementShort(totals)}</span></div>`
   ].filter(Boolean).join('');
   return `
     <div class="review-keyline">
@@ -1012,6 +1037,8 @@ async function saveCurrentOrder() {
     paymentMethod: $('paymentMethod').value,
     paymentStatus: $('paymentStatus').value,
     shippingMethod: totals.shippingMethod,
+    shippingFreeEligible: totals.shippingFreeEligible,
+    shippingArrangement: totals.shippingArrangement,
     items: cart.map(x => ({
       sku: x.sku, category: x.category, packagingType: x.packagingType, name: x.name, spec: x.spec, texture: x.texture,
       priceMode: x.priceMode, qty: x.qty, unitPrice: x.unitPrice, originalUnitPrice: x.originalUnitPrice, boxPrice: x.boxPrice,
@@ -1064,9 +1091,85 @@ function showSaveMessage(type, msg) {
   el.innerHTML = msg;
 }
 
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+let autoVerifySyncRunning = false;
+let autoVerifyIntervalId = null;
+
+async function verifyOrderOnServer(orderId, markVerified = true) {
+  if (!scriptUrl()) throw new Error('未設定 Google Apps Script Web App URL。');
+  return jsonp(scriptUrl(), {
+    action: 'orderStatus',
+    orderId,
+    markVerified: markVerified ? '1' : '0'
+  }, 22000);
+}
+
+async function applyVerifiedOrderStatus(orderId, remote = {}) {
+  const local = await getOrder(orderId);
+  if (!local) return false;
+  local.syncStatus = 'verified';
+  local.syncedAt = remote.syncedAt || nowHK();
+  local.lastSyncError = '';
+  await putOrder(local);
+  return true;
+}
+
+async function verifyOrderUntilConfirmed(orderId, options = {}) {
+  const attempts = Number(options.attempts || 1);
+  const delayMs = Number(options.delayMs || 0);
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const result = await verifyOrderOnServer(orderId, true);
+      if (result && result.ok && result.found) {
+        await applyVerifiedOrderStatus(orderId, result);
+        return true;
+      }
+    } catch (err) {
+      console.warn('verify order failed', orderId, err);
+    }
+    if (i < attempts - 1 && delayMs > 0) await sleep(delayMs);
+  }
+  return false;
+}
+
+async function autoVerifyUnverifiedOrders(showNotice = false) {
+  if (autoVerifySyncRunning || !navigator.onLine || !scriptUrl()) return;
+  autoVerifySyncRunning = true;
+  try {
+    const orders = await getAllOrders();
+    const pendingVerify = orders.filter(o => o.syncStatus === 'sent_unverified' || o.syncStatus === 'syncing');
+    if (!pendingVerify.length) return;
+    let verifiedCount = 0;
+    for (const order of pendingVerify) {
+      const ok = await verifyOrderUntilConfirmed(order.orderId, { attempts: 1, delayMs: 0 });
+      if (ok) verifiedCount += 1;
+    }
+    await refreshOrders();
+    if (verifiedCount > 0) {
+      refreshSheetDashboard(false);
+      if (showNotice) {
+        showSaveMessage('success', `✅ 系統已自動核實 ${verifiedCount} 張訂單，Google Sheet 已收到。`);
+      }
+    } else if (showNotice) {
+      showSaveMessage('notice', `已自動檢查 ${pendingVerify.length} 張未核實訂單，暫時未確認寫入 Google Sheet，系統會每 5 分鐘再試。`);
+    }
+  } finally {
+    autoVerifySyncRunning = false;
+  }
+}
+
+function startAutoVerifyLoop() {
+  if (autoVerifyIntervalId) clearInterval(autoVerifyIntervalId);
+  autoVerifyIntervalId = setInterval(() => {
+    autoVerifyUnverifiedOrders(false);
+    if (navigator.onLine) refreshSheetDashboard(false);
+  }, 5 * 60 * 1000);
+}
+
 function postSaveActionHtml(orderId, sent=false) {
   const statusLine = sent
-    ? '✅ 本機已保存<br>🟡 已送出到雲端，請核實'
+    ? '✅ 本機已保存<br>🟡 已送出到雲端，系統正自動核實'
     : '✅ 本機已保存<br>⚠️ 未送出到雲端，請有網時再送出';
   return `<div><strong>${htmlEscape(orderId || '')}</strong><br>${statusLine}</div>
     <div class="post-save-actions">
@@ -1209,8 +1312,17 @@ async function sendOrder(orderId) {
   try {
     const payloadOrder = await postOrderToSheet(order, 'sent_unverified');
     await putOrder(payloadOrder);
-    showSaveMessage('success', postSaveActionHtml(orderId, true));
+    showSaveMessage('success', `<div><strong>${htmlEscape(orderId || '')}</strong><br>✅ 本機已保存<br>🟡 已送出到雲端，系統正自動核實...</div><div class="post-save-actions"><button type="button" onclick="startNewOrderFromPostSave()">開始新單</button><button type="button" class="secondary" onclick="location.href='./packing.html'">前往執貨後台</button></div>`);
     refreshSheetDashboard(false);
+    const verified = await verifyOrderUntilConfirmed(orderId, { attempts: 5, delayMs: 2500 });
+    if (verified) {
+      await refreshOrders();
+      refreshSheetDashboard(false);
+      showSaveMessage('success', `<div><strong>${htmlEscape(orderId || '')}</strong><br>✅ 本機已保存<br>✅ Google Sheet 已收到並核實成功</div><div class="post-save-actions"><button type="button" onclick="startNewOrderFromPostSave()">開始新單</button><button type="button" class="secondary" onclick="location.href='./packing.html'">前往執貨後台</button></div>`);
+    } else {
+      await refreshOrders();
+      showSaveMessage('notice', `<div><strong>${htmlEscape(orderId || '')}</strong><br>✅ 本機已保存<br>🟡 已送出到雲端，但暫時未確認寫入成功；系統會每 5 分鐘自動再檢查。</div><div class="post-save-actions"><button type="button" onclick="startNewOrderFromPostSave()">開始新單</button><button type="button" class="secondary" onclick="location.href='./packing.html'">前往執貨後台</button></div>`);
+    }
   } catch (err) {
     order.syncStatus = 'failed';
     order.lastSyncError = String(err && err.message ? err.message : err);
@@ -1218,6 +1330,7 @@ async function sendOrder(orderId) {
     showSaveMessage('error', `送到 Google Sheet 失敗：${order.lastSyncError}`);
   }
 }
+
 
 function renderSheetDashboard(data) {
   latestSheetDashboard = data;
@@ -1362,7 +1475,7 @@ function buildSheetReceiptText(o) {
   const itemText = (o.items && o.items.length)
     ? o.items.map(i => `- ${String(i.name || i.sku || '').replace(/\n/g, ' ')} x ${Number(i.qty || 0)}${i.priceMode === 'box' ? ' 原箱' : ''} = ${money(i.lineSubtotal || 0)}`).join('\n')
     : (o.itemsText || '');
-  return `Hi ${o.customerName || ''}，以下係你嘅 2026 HK 寵物展預訂單：\n\n訂單編號：${o.orderId || ''}\n\n${itemText}\n\n${totalAmountLabel(o)}：${money(o.total || 0)}\n\n送貨地址：${o.address || ''}\n\n請核對資料，確認後回覆「Yes」，我哋會稍後確認付款及送貨安排，多謝。`;
+  return `Hi ${o.customerName || ''}，以下係你嘅香港貓咪博覽會 2026 快遞送貨單：\n\n訂單編號：${o.orderId || ''}\n\n${itemText}\n\n${totalAmountLabel(o)}：${money(o.total || 0)}\n送貨安排：${shippingArrangementLabel(o)}\n\n送貨地址：${o.address || ''}\n\n我哋已收到款項，請你確認以上送貨資料及訂單內容。\n確認後我哋會安排執貨及快遞配送，謝謝。`;
 }
 
 async function copySheetReceipt(orderId) {
@@ -1507,7 +1620,7 @@ async function exportCsv() {
   const orders = await getAllOrders();
   const headers = [
     'orderId','deviceId','createdAt','customerName','phone','email','address','notes',
-    'staffNotes','paymentMethod','paymentStatus','shippingMethod','retailSubtotal','subtotal','boxDiscountAmount','discountAmount',
+    'staffNotes','paymentMethod','paymentStatus','shippingMethod','shippingFreeEligible','shippingArrangement','retailSubtotal','subtotal','boxDiscountAmount','discountAmount',
     'discountedSubtotal','totalDiscountAmount','total','giftEligible',
     'syncStatus','syncedAt','lastSyncError','itemsJson','whatsappText'
   ];
@@ -1926,7 +2039,11 @@ $('clearTestOrdersBtn').addEventListener('click', clearLocalTestOrders);
 $('exportCsvBtn').addEventListener('click', exportCsv);
 $('exportJsonBtn').addEventListener('click', exportJson);
 
-window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('online', () => {
+  updateOnlineStatus();
+  autoVerifyUnverifiedOrders(false);
+  refreshSheetDashboard(false);
+});
 window.addEventListener('offline', updateOnlineStatus);
 window.addEventListener('scroll', () => {
   if (!$('scrollTopBtn')) return;
@@ -1946,5 +2063,9 @@ window.addEventListener('scroll', () => {
   renderCart();
   await refreshOrders();
   loadPackingDashboardCache();
-  if (navigator.onLine) refreshSheetDashboard(false);
+  if (navigator.onLine) {
+    refreshSheetDashboard(false);
+    autoVerifyUnverifiedOrders(false);
+  }
+  startAutoVerifyLoop();
 })();

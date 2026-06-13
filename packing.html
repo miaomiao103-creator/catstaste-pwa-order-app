@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-HK">
 <head>
   <meta charset="utf-8" />
@@ -29,11 +29,11 @@
     <section class="hero">
       <div class="hero-head">
         <div>
-          <h2>今日要執嘅貨</h2>
-          <p>同事只需要開呢頁，就可以睇今日 Google Sheet 訂單要執邊啲 SKU、幾多件、屬於邊張單。入到收唔到網位置都可以用最後一次快取。</p>
+          <h2>待執貨清單</h2>
+          <p>同事只需要開呢頁，就可以睇 Google Sheet 內待執貨訂單要執邊啲 SKU、幾多件、屬於邊張單。訂單會按時間排序；入到收唔到網位置都可以用最後一次快取。</p>
         </div>
         <div class="hero-actions">
-          <button id="refreshBtn" type="button">更新今日執貨清單</button>
+          <button id="refreshBtn" type="button">更新待執貨清單</button>
           <button id="useCacheBtn" class="secondary" type="button">使用離線快取</button>
         </div>
       </div>
@@ -60,7 +60,7 @@
         </div>
         <button type="button" id="sortBtn" class="sort-btn">數量優先</button>
       </div>
-      <div id="statusLine" class="status-line">未下載資料。請有網時按「更新今日執貨清單」。</div>
+      <div id="statusLine" class="status-line">未下載資料。請有網時按「更新待執貨清單」。</div>
       <div id="packingList" class="packing-list"></div>
       <div id="ordersBoard" class="orders-board" hidden></div>
     </section>
@@ -76,6 +76,40 @@
       </div>
       <div id="verifyItems" class="verify-items"></div>
       <div id="verifyNotes" class="verify-meta"></div>
+
+      <div class="verify-form-grid">
+        <div>
+          <label for="verifyCourierCompany">快遞公司</label>
+          <select id="verifyCourierCompany">
+            <option value="">請選擇</option>
+            <option value="SF Express">SF Express</option>
+            <option value="JD Logistics">JD Logistics</option>
+            <option value="Hongkong Post">Hongkong Post</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="verifyTrackingNo">快遞單號</label>
+          <input id="verifyTrackingNo" placeholder="可掃描 / 手動輸入" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="verify-scanner-actions">
+        <button type="button" class="secondary" id="startScanBtn">掃描 barcode / QR code</button>
+        <button type="button" class="secondary hidden" id="stopScanBtn">停止掃描</button>
+        <button type="button" class="secondary" id="copyShipNoticeBtn">複製出貨通知</button>
+      </div>
+
+      <div id="scannerWrap" class="scanner-wrap hidden">
+        <video id="scanVideo" playsinline muted></video>
+        <div class="scanner-hint">將快遞單號 barcode / QR code 對準鏡頭中央；如裝置不支援，請手動輸入。</div>
+      </div>
+
+      <div>
+        <label for="shipNoticePreview">WhatsApp 出貨通知預覽</label>
+        <textarea id="shipNoticePreview" readonly></textarea>
+      </div>
+
       <div class="verify-actions">
         <button type="button" class="secondary" id="verifyCloseBtn">關閉</button>
         <button type="button" id="verifyConfirmBtn">確認已寄出</button>
